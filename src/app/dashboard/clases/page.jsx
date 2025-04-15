@@ -2,7 +2,7 @@ import React from 'react'
 
 function clases() {
   return (
-    <div>clases</div>
+    <div>clasesss2</div>
   )
 }
 
