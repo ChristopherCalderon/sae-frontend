@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="flex min-h-screen w-screen">
       <Navbar />
-      <main className="">{children}</main>
+      <main className="w-[85.7%]">{children}</main>
     </div>
   );
 }
