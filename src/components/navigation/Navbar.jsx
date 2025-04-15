@@ -14,35 +14,35 @@ function Navbar() {
         </figure>
 
         <div className="w-full h-2/3 bg-black/50 absolute bottom-0 z-10 text-white px-2 py-3">
-          <h1 className="font-bold text-md text-center leading-tight">
+          <h1 className="font-mono font-bold text-md text-center leading-tight">
             Sistema Automatizado de Evaluación
           </h1>
           <div className="flex w-full items-center gap-2 mt-2">
             <FaUser />
-            <span className="text-sm">Nombre de usuario</span>
+            <span className="font-mono text-sm">Nombre de usuario</span>
           </div>
         </div>
       </div>
 
       <div className="flex flex-col gap-4 p-2 text-primary text-xl font-semibold flex-1">
-        <div className="flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
           <GiBrain />
           <span>Modelos IA</span>
         </div>
 
-        <div className="flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
           <HiAcademicCap />
           <span>Mis clases</span>
         </div>
 
-        <div className="flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
           <FaCog />
           <span>Configuración</span>
         </div>
       </div>
 
-      <div className="p-4 text-blue-900 text-xl font-bold">
-        <div className="flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+      <div className="p-4 text-blue-900 text-lg font-bold">
+        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
           <FaSignOutAlt />
           <span>Cerrar sesion</span>
         </div>

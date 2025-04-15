@@ -1,9 +1,15 @@
-import Image from "next/image";
+import AuthCard from '../components/Login/AuthCard';
 
-export default function Login() {
+export default function LoginPage() {
   return (
-    <div className="">
-      <h1 className="text-red-500">Inicio de sesion</h1>
-    </div>
+    <main 
+      className="w-full h-screen bg-cover bg-center flex items-center justify-center p-4"
+      style={{ 
+        backgroundImage: "url('/Fondo_Login.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
+      <AuthCard />
+      </main>
   );
 }
