@@ -24,7 +24,7 @@ function Navbar() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 p-2 text-primary text-xl font-bold flex-1">
+      <div className="flex flex-col gap-4 p-2 text-primary text-xl font-semibold flex-1">
         <div className="flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
           <GiBrain />
           <span>Modelos IA</span>
