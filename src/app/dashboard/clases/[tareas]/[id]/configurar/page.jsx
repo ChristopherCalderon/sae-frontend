@@ -52,12 +52,12 @@ function Configurar() {
         </div>
       </div>
 
-      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5 gap-3 rounded-md overflow-auto flex flex-col justify-center">
+      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-1 gap-3 rounded-md overflow-auto flex flex-col justify-center">
         <h1 className="text-primary text-lg font-bold">Configurar tarea</h1>
         {step === 1 && (
           <div className="bg-background rounded-md h-[85%] p-8 flex flex-col items-center justify-center gap-5 text-primary">
             <h3 className="text-lg font-bold mb-4">Aspectos generales</h3>
-            <div className="w-1/2">
+            <div className="w-1/2 flex flex-col gap-1">
               <p className="font-medium">Lenguaje de programacion</p>
               <input
                 className="w-full mb-4 p-2 shadow-md rounded bg-white"
@@ -67,7 +67,7 @@ function Configurar() {
               />
               <p className="font-medium">Nivel de estudiante</p>
               <select
-                className="w-full mb-4 p-2 shadow-md rounded bg-white"
+                className="w-full mb-4 p-2 appearance-none shadow-md rounded bg-white"
                 value={formData.nivel}
                 onChange={(e) => handleChange(e, "nivel")}
               >
