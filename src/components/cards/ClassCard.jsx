@@ -12,7 +12,7 @@ function ClassCard() {
         </h1>
       </div>
       <button className="w-20 text-sm text-white font-bold bg-accent px-2 py-1 rounded-md shadow-md ">
-        Active
+        Activo
       </button>
       <a
         href="https://github.com/tu-usuario/tu-repo"
