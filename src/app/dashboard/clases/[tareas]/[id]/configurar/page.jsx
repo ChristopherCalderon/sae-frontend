@@ -108,7 +108,9 @@ function Configurar() {
       {/* TEMAS */}
       <div className="flex flex-col w-1/3">
         <h4 className="font-semibold mb-2">Temas a evaluar</h4>
-        <div className="flex flex-col gap-2 mb-2 h-50 overflow-y-auto">
+        <div className="flex flex-col gap-2 mb-2 h-50 overflow-y-auto [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-background
+        [&::-webkit-scrollbar-thumb]:bg-primary">
           {formData.temas.map((tema, i) => (
             <div key={i} className="flex items-center justify-between bg-secondary px-3 py-1 rounded-md text-sm shadow-md">
               {tema}
@@ -151,7 +153,9 @@ function Configurar() {
       {/* RESTRICCIONES */}
       <div className="flex flex-col w-1/3">
         <h4 className="font-semibold mb-2">Restricciones</h4>
-        <div className="flex flex-col gap-2 mb-2 h-50 overflow-y-auto">
+        <div className="flex flex-col gap-2 mb-2 h-50 overflow-y-auto [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-background
+        [&::-webkit-scrollbar-thumb]:bg-primary">
           {formData.restricciones.map((restriccion, i) => (
             <div key={i} className="flex items-center justify-between bg-secondary px-3 py-1 rounded-md text-sm shadow-md">
               {restriccion}

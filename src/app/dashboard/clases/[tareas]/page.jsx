@@ -8,7 +8,10 @@ function tareas() {
       <h1 className="text-2xl font-bold">Mis Tareas</h1>
       <p className="font-semibold">Nombre del curso</p>
     </div>
-    <div className="w-full h-[90%] bg-white shadow-xl px-10 py-5 flex flex-col gap-3 overflow-y-scroll rounded-md">
+    <div className="w-full h-[90%] bg-white shadow-xl px-10 py-5 flex flex-col gap-3 overflow-y-scroll rounded-md
+    [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-white
+        [&::-webkit-scrollbar-thumb]:bg-primary">
       <AssignmentCard />
       <AssignmentCard />
       <AssignmentCard />
