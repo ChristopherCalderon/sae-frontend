@@ -95,7 +95,7 @@ function entrega() {
             <p className="font-semibold">Feedback powered by OpenAI</p>
           </div>
           {/* Botones de retroalimentacion */}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 justify-center">
             <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
               Editar retroalimentacion
             </button>
@@ -110,7 +110,7 @@ function entrega() {
 
         {/* Contenedor de feedback */}
         <div
-          className="w-full h-3/4 p-3 rounded-md shadow-md overflow-y-scroll bg-background   [&::-webkit-scrollbar]:w-1
+          className="w-full h-3/4 p-5 rounded-md shadow-md overflow-y-scroll bg-background   [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-background
         [&::-webkit-scrollbar-thumb]:bg-primary"
         >
