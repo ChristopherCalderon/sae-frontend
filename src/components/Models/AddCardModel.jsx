@@ -32,7 +32,7 @@ export default function AgregarModeloCard() {
                 <div className="flex justify-center mt-6">
                     <button
                         type="submit"
-                        className="p-20 font-mono font-bold bg-primary text-white py-2 rounded-md hover:bg-secondary hover:text-black transition"
+                        className="p-20 font-mono font-bold bg-primary text-white py-2 rounded-md hover:bg-primary-hover transition"
                     >
                         Aceptar
                     </button>
