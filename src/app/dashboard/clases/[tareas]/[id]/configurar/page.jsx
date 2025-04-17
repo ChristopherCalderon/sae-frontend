@@ -1,8 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
+import { useRouter } from 'next/navigation';
 
 function Configurar() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     lenguaje: "",
@@ -86,7 +88,7 @@ function Configurar() {
 
             <div className="flex gap-4">
               <button
-                onClick={cancelar}
+                onClick={() => router.back()}
                 className="bg-primary font-semibold text-white px-4 py-2 rounded"
               >
                 Cancelar

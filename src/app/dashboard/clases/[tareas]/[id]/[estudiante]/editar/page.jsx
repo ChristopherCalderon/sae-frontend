@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
+import { useRouter } from 'next/navigation';
 
 function editar() {
+  const router = useRouter();
   const [markdownText, setMarkdownText] = useState(`
         # 🔵 Ejercicio X: Números primos en un rango
         
@@ -66,6 +68,7 @@ function editar() {
         - Se recomienda crear una función bool \`es_primo(int n)\` para la verificación.
         `);
   return (
+    
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
       <div className="w-full text-primary flex items-center justify-between ">
         <div>
@@ -99,7 +102,7 @@ function editar() {
             <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-8 hover:bg-primary-hover py-2 rounded shadow-lg">
               Guardar cambios
             </button>
-            <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-8 hover:bg-primary-hover py-2 rounded shadow-lg">
+            <button onClick={() => router.back()} className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-8 hover:bg-primary-hover py-2 rounded shadow-lg">
               Cancelar
             </button>
           </div>
