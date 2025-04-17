@@ -25,7 +25,9 @@ function tarea() {
           </button>
         </div>
       </div>
-      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5 gap-3 overflow-y-scroll rounded-md">
+      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5 gap-3 overflow-y-scroll [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-white
+        [&::-webkit-scrollbar-thumb]:bg-primary rounded-md">
         <AssignmentsTable />
       </div>
     </div>
