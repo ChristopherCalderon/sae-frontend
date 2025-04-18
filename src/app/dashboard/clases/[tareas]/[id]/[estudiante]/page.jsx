@@ -1,6 +1,8 @@
-import React from "react";
+'use client';
 import { FaGithub } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const markdownText = `
 # 🔵 Ejercicio X: Números primos en un rango
@@ -65,6 +67,7 @@ Escribe un programa que reciba dos números enteros (inicio y fin) y muestre tod
 `;
 
 function entrega() {
+  const pathname = usePathname();
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
       <div className="w-full text-primary flex items-center justify-between ">
@@ -96,9 +99,9 @@ function entrega() {
           </div>
           {/* Botones de retroalimentacion */}
           <div className="flex flex-col gap-1 justify-center">
-            <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
+            <Link href={`${pathname}/editar`} className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
               Editar retroalimentacion
-            </button>
+            </Link>
             <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
               Agregar pull request
             </button>

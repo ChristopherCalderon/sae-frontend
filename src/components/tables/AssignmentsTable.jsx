@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const users = Array.from({ length: 13 }).map((_, i) => ({
   username: "@GithubUser",
@@ -17,6 +19,7 @@ function getFeedbackColor(status) {
 }
 
 function AssignmentsTable() {
+  const pathname = usePathname();
   return (
     <div className="p-4 overflow-x-auto">
       <table className="min-w-full text-sm border border-gray-300 rounded-md shadow-md">
@@ -35,11 +38,19 @@ function AssignmentsTable() {
         <tbody>
           {users.map((u, i) => (
             <tr key={i} className="border-t">
-              <td className="px-4 py-2">{u.username}</td>
+              <td className="px-4 py-2">
+                <Link href={`${pathname}/entrega`} className="hover:underline hover:font-bold">
+                  {u.username}
+                </Link>
+              </td>
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.commits}</td>
               <td className="px-4 py-2">{u.score}</td>
-              <td className={`px-4 py-2 font-semibold ${getFeedbackColor(u.feedback)}`}>
+              <td
+                className={`px-4 py-2 font-semibold ${getFeedbackColor(
+                  u.feedback
+                )}`}
+              >
                 {u.feedback}
               </td>
               <td className="px-4 py-2">{u.date}</td>
@@ -57,4 +68,4 @@ function AssignmentsTable() {
   );
 }
 
-export default AssignmentsTable
+export default AssignmentsTable;

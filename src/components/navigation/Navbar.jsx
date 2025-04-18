@@ -1,13 +1,15 @@
-import React from "react";
+'use client';
+
+import Link from 'next/link';
 import { FaBrain, FaUser, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { GiBrain } from "react-icons/gi";
 import { HiAcademicCap } from "react-icons/hi";
 import Image from "next/image";
 
+
 function Navbar() {
   return (
     <div className="w-[14.3%] h-screen bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] flex flex-col">
-      
       <div className="h-1/5 w-full relative">
         <figure className="absolute w-full h-full z-10">
           <Image src="/fachada.jpg" alt="fachada" fill />
@@ -25,20 +27,19 @@ function Navbar() {
       </div>
 
       <div className="flex flex-col gap-4 p-2 text-primary text-xl font-semibold flex-1">
-        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
-          <GiBrain />
-          <span>Modelos IA</span>
-        </div>
-
-        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <Link href={'/dashboard/clases'} className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
           <HiAcademicCap />
           <span>Mis clases</span>
-        </div>
+        </Link>
+        <Link href={'/dashboard/modelos'} className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+          <GiBrain />
+          <span>Modelos IA</span>
+        </Link>
 
-        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <Link href={'/dashboard/admin'} className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
           <FaCog />
           <span>Configuración</span>
-        </div>
+        </Link>
       </div>
 
       <div className="p-4 text-blue-900 text-lg font-bold">
