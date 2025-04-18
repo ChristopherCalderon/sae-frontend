@@ -1,8 +1,12 @@
-import { getSession } from 'next-auth/react';
+'use client';
+import { useSession, getSession } from "next-auth/react"
+import { useRouter } from 'next/navigation';
 import ClassCard from "@/components/cards/ClassCard";
-import React from "react";
+import React, { useEffect } from "react";
 
-function clases() {
+export default function Clases() {
+
+
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
       <div className="w-full text-primary ">
@@ -19,8 +23,6 @@ function clases() {
         <ClassCard />
         <ClassCard />
         <ClassCard />
-        
-        
         <ClassCard />
         <ClassCard />
         <ClassCard />
@@ -28,24 +30,4 @@ function clases() {
       </div>
     </div>
   );
-}
-
-export default clases;
-
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-
-  // Si no hay sesión, redirige a la página de inicio de sesión
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/auth', // Ruta a tu página de login
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { session },
-  };
 }

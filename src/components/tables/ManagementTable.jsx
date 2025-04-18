@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 
+import { usePathname } from "next/navigation";
+import Link from 'next/link';
+
 const initialUsers = Array.from({ length: 13 }).map((_, i) => ({
   subject: 'Fundamentos del programacion',
   professor: '',
@@ -19,6 +22,8 @@ const professors = [
 
 function AssignmentsTable() {
   const [users, setUsers] = useState(initialUsers);
+  
+  const pathname = usePathname();
 
   const handleProfessorChange = (index, newProfessor) => {
     const updatedUsers = [...users];
@@ -59,9 +64,9 @@ function AssignmentsTable() {
                   </div>
                 </td>
                 <td className="px-2 py-2 border border-gray-300">
-                  <button className="bg-blue-200 hover:bg-blue-400 hover:text-white text-primary font-bold text-sm px-3 py-1 rounded">
+                  <Link href={`${pathname}/Asignatura`} className="bg-blue-200 hover:bg-blue-400 hover:text-white text-primary font-bold text-sm px-3 py-1 rounded">
                     Administrar
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}

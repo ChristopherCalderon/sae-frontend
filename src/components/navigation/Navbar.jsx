@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import { signOut } from "next-auth/react";
+import Link from "next/link";
 import { FaBrain, FaUser, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { GiBrain } from "react-icons/gi";
 import { HiAcademicCap } from "react-icons/hi";
 import Image from "next/image";
-
 
 function Navbar() {
   return (
@@ -27,23 +27,37 @@ function Navbar() {
       </div>
 
       <div className="flex flex-col gap-4 p-2 text-primary text-xl font-semibold flex-1">
-        <Link href={'/dashboard/clases'} className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <Link
+          href={"/dashboard/clases"}
+          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+        >
           <HiAcademicCap />
           <span>Mis clases</span>
         </Link>
-        <Link href={'/dashboard/modelos'} className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <Link
+          href={"/dashboard/modelos"}
+          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+        >
           <GiBrain />
           <span>Modelos IA</span>
         </Link>
 
-        <Link href={'/dashboard/admin'} className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <Link
+          href={"/dashboard/admin"}
+          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+        >
           <FaCog />
           <span>Configuración</span>
         </Link>
       </div>
 
       <div className="p-4 text-blue-900 text-lg font-bold">
-        <div className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded">
+        <div
+          onClick={() => {
+            signOut({ callbackUrl: "/" }); // Redirige al login o página principal después de cerrar sesión
+          }}
+          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+        >
           <FaSignOutAlt />
           <span>Cerrar sesion</span>
         </div>
