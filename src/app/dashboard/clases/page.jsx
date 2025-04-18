@@ -4,8 +4,28 @@ import { useRouter } from "next/navigation";
 import ClassCard from "@/components/cards/ClassCard";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { getClasses } from "@/services/githubService";
 
 export default function Clases() {
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const getData = async () => {
+    try {
+      setLoading(true);
+      const response = await getClasses();
+      if (response) {
+        setClasses(response.data);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al obtener datos de la API:", error);
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
       <div className="w-full text-primary ">
@@ -18,16 +38,13 @@ export default function Clases() {
         [&::-webkit-scrollbar-track]:bg-white
         [&::-webkit-scrollbar-thumb]:bg-primary"
       >
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
+        {loading ? (
+          <h1>Cargando...</h1>
+        ) : classes.length === 0 ? (
+          <p>No hay clases disponibles</p>
+        ) : (
+          classes.map((clase) => <ClassCard key={clase.id} id={clase.id} name={clase.name} url={clase.url} status={clase.archived} />)
+        )}
       </div>
     </div>
   );

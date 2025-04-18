@@ -1,4 +1,4 @@
-// middleware.ts
+
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
@@ -18,8 +18,6 @@ export default withAuth(
     // Si la ruta es protegida y el usuario no es admin, redirigir
     if (isAdminRoute && req.nextauth.token?.role !== "admin") {
       return NextResponse.redirect(new URL("/dashboard/clases", req.url));
-      // También puedes usar rewrite si prefieres:
-      // return NextResponse.rewrite(new URL("/dashboard/unauthorized", req.url));
     }
   },
   {
@@ -30,7 +28,7 @@ export default withAuth(
       },
     },
     pages: {
-      signIn: "/", // Redirige al login si no hay sesión
+      signIn: "/", // Redirige al login
     },
   }
 );
