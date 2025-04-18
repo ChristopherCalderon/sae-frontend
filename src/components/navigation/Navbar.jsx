@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { FaBrain, FaUser, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { GiBrain } from "react-icons/gi";
@@ -8,6 +8,10 @@ import { HiAcademicCap } from "react-icons/hi";
 import Image from "next/image";
 
 function Navbar() {
+  const { data: session, status } = useSession(); // Obtenemos la sesión actual
+  const isAdmin = session?.role === "admin"; // Verificamos si el rol es 'admin'
+  console.log("Sesión:", session); 
+
   return (
     <div className="w-[14.3%] h-screen bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] flex flex-col">
       <div className="h-1/5 w-full relative">
@@ -21,7 +25,9 @@ function Navbar() {
           </h1>
           <div className="flex w-full items-center gap-2 mt-2">
             <FaUser />
-            <span className="font-mono text-sm">Nombre de usuario</span>
+            <span className="font-mono text-sm">
+              {session?.user?.name || "Nombre de usuario"}
+            </span>
           </div>
         </div>
       </div>
@@ -34,21 +40,26 @@ function Navbar() {
           <HiAcademicCap />
           <span>Mis clases</span>
         </Link>
-        <Link
-          href={"/dashboard/modelos"}
-          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-        >
-          <GiBrain />
-          <span>Modelos IA</span>
-        </Link>
+        {/* Mostrar "Modelos IA" solo si es admin */}
+        {isAdmin && (
+          <Link
+            href={"/dashboard/modelos"}
+            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+          >
+            <GiBrain />
+            <span>Modelos IA</span>
+          </Link>
+        )}
 
-        <Link
-          href={"/dashboard/admin"}
-          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-        >
-          <FaCog />
-          <span>Configuración</span>
-        </Link>
+        {isAdmin && (
+          <Link
+            href={"/dashboard/admin"}
+            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+          >
+            <FaCog />
+            <span>Configuración</span>
+          </Link>
+        )}
       </div>
 
       <div className="p-4 text-blue-900 text-lg font-bold">

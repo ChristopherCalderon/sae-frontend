@@ -26,6 +26,7 @@ export default NextAuth({
         },
       });
 
+
       if (res.ok) {
         const data = await res.json();
         // Guardamos el rol del usuario en el token
