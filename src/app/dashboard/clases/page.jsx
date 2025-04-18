@@ -1,3 +1,4 @@
+import { getSession } from 'next-auth/react';
 import ClassCard from "@/components/cards/ClassCard";
 import React from "react";
 
@@ -30,3 +31,21 @@ function clases() {
 }
 
 export default clases;
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  // Si no hay sesión, redirige a la página de inicio de sesión
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth', // Ruta a tu página de login
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { session },
+  };
+}
