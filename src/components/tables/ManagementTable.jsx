@@ -46,7 +46,7 @@ function AssignmentsTable() {
                     <select
                       value={u.professor}
                       onChange={(e) => handleProfessorChange(i, e.target.value)}
-                      className="w-full px-3 py-2 bg-white border rounded appearance-none focus:outline-none"
+                      className="w-full px-3 py-2 bg-background rounded appearance-none focus:outline-none"
                     >
                       <option value="">Seleccionar catedrático</option>
                       {professors.map((prof, idx) => (
