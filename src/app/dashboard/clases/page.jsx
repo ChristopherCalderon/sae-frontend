@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Clases() {
-
+  git add .
 
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
