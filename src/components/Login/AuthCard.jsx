@@ -13,38 +13,7 @@ export default function AuthCard() {
     await signIn("github", { callbackUrl: "/dashboard/clases" });
   };
 
-//   const [userInfo, setUserInfo] = useState(null);
 
-//   useEffect(() => {
-//     const fetchRole = async () => {
-//         if (!session?.accessToken) {
-//             console.log("No hay accessToken disponible");
-//             return;
-//           }
-
-//       try {
-//         const res = await axios.get(
-//           'https://sae-backend-n9d3.onrender.com/repo/whoami',
-//           {
-//             params: {
-//               org: 'ProyectoGraduacionUCA',
-//             },
-//             headers: {
-//               Authorization: `Bearer ${session.accessToken}`,
-//             },
-//           }
-//         );
-
-//         setUserInfo(res.data);
-//       } catch (error) {
-//         console.error('Error al obtener el rol:', error);
-//       }
-//     };
-
-//     fetchRole();
-//   }, [session]);
-
-//   console.log(userInfo)
 
   return (
     <div className="text-center space-y-6  bg-white/80 px-10 py-20 rounded-lg">
