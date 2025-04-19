@@ -12,7 +12,7 @@ function ClassCard({ id, name, url, status }) {
       <div className="w-full flex items-center justify-center gap-8">
         <HiAcademicCap className="text-4xl" />
         <Link
-          href={`${pathname}/${name}`}
+          href={`${pathname}/${id}`}
           className="font-bold w-2/3 hover:underline"
         >
           {name}

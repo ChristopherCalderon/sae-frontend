@@ -35,3 +35,20 @@ export const getClasses = async () => {
     return [];
   }
 };
+
+export const getAssignments = async (id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/repo/classrooms/${id}/assignments`);
+    if(res.status === 200){
+      console.log(res.data)
+      return res.data
+    }else{
+      return [];
+    }
+    
+  } catch (error) {
+    console.log(error)
+    return [];
+  }
+};

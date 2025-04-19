@@ -5,6 +5,7 @@ import ClassCard from "@/components/cards/ClassCard";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { getClasses } from "@/services/githubService";
+import Loading from "@/components/loader/Loading";
 
 export default function Clases() {
   const [classes, setClasses] = useState([]);
@@ -33,17 +34,27 @@ export default function Clases() {
         <p className="font-semibold">Vista general de los cursos</p>
       </div>
       <div
-        className="w-full h-[90%] bg-white shadow-xl px-3 py-5 grid grid-cols-2 gap-3 overflow-y-scroll  rounded-md
+        className={`w-full h-[90%] bg-white shadow-xl px-3 py-5  ${
+          loading ? " " : "grid grid-cols-2"
+        } gap-3 overflow-y-scroll  rounded-md
       [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-white
-        [&::-webkit-scrollbar-thumb]:bg-primary"
+        [&::-webkit-scrollbar-thumb]:bg-primary`}
       >
         {loading ? (
-          <h1>Cargando...</h1>
+          <Loading />
         ) : classes.length === 0 ? (
           <p>No hay clases disponibles</p>
         ) : (
-          classes.map((clase) => <ClassCard key={clase.id} id={clase.id} name={clase.name} url={clase.url} status={clase.archived} />)
+          classes.map((clase) => (
+            <ClassCard
+              key={clase.id}
+              id={clase.id}
+              name={clase.name}
+              url={clase.url}
+              status={clase.archived}
+            />
+          ))
         )}
       </div>
     </div>
