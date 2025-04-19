@@ -13,12 +13,12 @@ const users = Array.from({ length: 13 }).map((_, i) => ({
 }));
 
 function getFeedbackColor(status) {
-  if (status === "Enviada") return "text-accent";
-  if (status === "Vacia") return "text-[#710000]";
+  if (status === "sent") return "text-accent";
+  if (status === "pending") return "text-[#710000]";
   return "text-primary";
 }
 
-function AssignmentsTable() {
+function AssignmentsTable({ submissions }) {
   const pathname = usePathname();
   return (
     <div className="p-4 overflow-x-auto">
@@ -36,26 +36,40 @@ function AssignmentsTable() {
           </tr>
         </thead>
         <tbody>
-          {users.map((u, i) => (
+          {submissions.map((u, i) => (
             <tr key={i} className="border-t">
-              <td className="px-4 py-2">
-                <Link href={`${pathname}/entrega`} className="hover:underline hover:font-bold">
-                  {u.username}
-                </Link>
+              <td className="px-3 py-2">
+                <p className="">@{u.students[0].login}</p>
               </td>
-              <td className="px-4 py-2">{u.email}</td>
-              <td className="px-4 py-2">{u.commits}</td>
-              <td className="px-4 py-2">{u.score}</td>
+              <td className="px-2 py-2">{u.email}</td>
+              <td className="px-2 py-2 text-center">{u.commit_count}</td>
+              <td className="px-2 py-2 text-center">{u.grade}</td>
               <td
-                className={`px-4 py-2 font-semibold ${getFeedbackColor(
-                  u.feedback
+                className={`px-2 py-2 font-semibold text-center ${getFeedbackColor(
+                  u.feedback_status
                 )}`}
               >
-                {u.feedback}
+                {u.feedback_status === "generated" ||
+                u.feedback_status === "sent" ? (
+                  <Link
+                    href={`${pathname}/${u.id}`}
+                    className="hover:font-bold hover:underline"
+                  >
+                    {u.feedback_status}
+                  </Link>
+                ) : (
+                  <p
+                    className=""
+                  >
+                    {u.feedback_status}
+                  </p>
+                )}
               </td>
-              <td className="px-4 py-2">{u.date}</td>
-              <td className="px-4 py-2 text-blue-500">{u.repo}</td>
-              <td className="px-4 py-2">
+              <td className="px-2 py-2">{u.date}</td>
+              <td className="px-1 py-2 text-blue-500 text-xs">
+                {u.repository.html_url}
+              </td>
+              <td className="px-2 py-2">
                 <button className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded">
                   Generar
                 </button>
