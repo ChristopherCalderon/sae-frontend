@@ -30,8 +30,8 @@ function AssignmentsTable({ submissions }) {
             <th className="px-4 py-2">Commits</th>
             <th className="px-4 py-2">Calificación</th>
             <th className="px-4 py-2">Retroalimentación</th>
-            <th className="px-4 py-2">Última retroalimentación</th>
             <th className="px-4 py-2">Repositorio</th>
+            <th className="px-4 py-2">URL</th>
             <th className="px-4 py-2">Acción</th>
           </tr>
         </thead>
@@ -52,7 +52,15 @@ function AssignmentsTable({ submissions }) {
                 {u.feedback_status === "generated" ||
                 u.feedback_status === "sent" ? (
                   <Link
-                    href={`${pathname}/${u.id}`}
+                  href={{
+                    pathname: `${pathname}/${u.id}`,
+                    query: {
+                      data: btoa(JSON.stringify({ 
+                        email: u.email, 
+                        repo: u.assignment.title 
+                      }))
+                    }
+                  }}
                     className="hover:font-bold hover:underline"
                   >
                     {u.feedback_status}
@@ -65,7 +73,7 @@ function AssignmentsTable({ submissions }) {
                   </p>
                 )}
               </td>
-              <td className="px-2 py-2">{u.date}</td>
+              <td className="px-2 py-2">{u.repository.name}</td>
               <td className="px-1 py-2 text-blue-500 text-xs">
                 {u.repository.html_url}
               </td>

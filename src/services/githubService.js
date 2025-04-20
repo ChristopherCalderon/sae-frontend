@@ -49,6 +49,40 @@ export const getAssignments = async (id) => {
   }
 };
 
+export const getFeedback = async (email, repo) => {
+  const client = await apiClient();
+  try {
+    // Peticion inicial para obtener el feedback y repositorio
+    const res = await client.get(`/feedback/search?email=${email}&task=${repo}`);
+    
+    if (res.status !== 200) {
+      return [];
+    }
+    console.log(res.data.repo)
+    const workflowRes = await client.get(`/repo/${res.data.repo}/workflow/details`)
+    const statusRes = await client.get(`/feedback/status/${res.data.repo}`)
+
+    const workflow = workflowRes.data.data;
+    const status = statusRes.data 
+
+    console.log(status)
+
+    return {
+      ...res.data,
+      feedback_status: status.status || null,
+      workflow_name: workflow.workflow_name || null,
+      workflow_status: workflow.status || null,
+      workflow_conclusion: workflow.conclusion || null,
+      workflow_url: workflow.run_url || null,
+
+
+    };
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
 export const getSubmissions = async (id) => {
   const client = await apiClient();
   try {
@@ -74,6 +108,7 @@ export const getSubmissions = async (id) => {
           const statusRes = await client.get(
             `/feedback/status/${submission.repository.name}`
           );
+
           return {
             ...submission,
             email: emailRes.data.email || null, 

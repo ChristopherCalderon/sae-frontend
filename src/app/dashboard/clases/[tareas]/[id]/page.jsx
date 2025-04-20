@@ -2,6 +2,7 @@
 import Loading from "@/components/loader/Loading";
 import AssignmentsTable from "@/components/tables/AssignmentsTable";
 import { getSubmissions } from "@/services/githubService";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
 import { RiAiGenerate2 } from "react-icons/ri";
@@ -9,11 +10,12 @@ import { RiAiGenerate2 } from "react-icons/ri";
 function tarea() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const {id} = useParams();   
 
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await getSubmissions(764602);
+      const response = await getSubmissions(id);
       console.log(response);
       setSubmissions(response || []);
     } catch (error) {
