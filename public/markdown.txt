@@ -1,0 +1,57 @@
+
+- 🟢 **Sugerencias generales:**
+  - Evita el uso de `using namespace std;` para prevenir posibles conflictos de nombres. Usa `std::` antes de cada elemento de la biblioteca estándar.
+  - Valida siempre las entradas del usuario para garantizar que cumplen con los requisitos (ej.: valores positivos).
+  - Prefiere nombres de variables descriptivos (ej.: `fila` en lugar de `i` para mejorar legibilidad).
+
+- ✅ **Verificación de requisitos:**
+  - **Cumple parcialmente**: La función `imprimirTriangulo` está correctamente implementada, pero el programa **no solicita valores al usuario** (usa alturas fijas: 3, 2, 3). Esto incumple el enunciado.
+  - El archivo se llama correctamente `Ejercicio.cpp`.
+
+- 📖 **Explicación con ejemplos:**
+  - **Condicionales/Loops**: Los bucles `for` anidados son adecuados para construir el triángulo. Ejemplo de estructura:
+    ```cpp
+    for (int fila = 1; fila <= altura; fila++) {
+        for (int asteriscos = 1; asteriscos <= fila; asteriscos++) {
+            std::cout << "*";
+        }
+        std::cout << "\n";
+    }
+    ```
+
+- 🚨 **Errores detectados:**
+  1. **Falta de entrada de usuario**: El `main` no usa `std::cin` para leer las alturas, lo que hace que el programa no sea interactivo.
+  2. **Posible comportamiento no deseado**: Si se ingresaran alturas ≤ 0, el código no manejaría esos casos (aunque el enunciado especifica "enteros positivos", es buena práctica validar).
+
+- 🛠️ **Mejoras y correcciones:**
+  - Modificar el `main` para leer tres valores del usuario:
+    ```cpp
+    int main() {
+        int alturas[3];
+        std::cout << "Ingrese tres alturas positivas: ";
+        for (int i = 0; i < 3; i++) {
+            std::cin >> alturas[i];
+        }
+        for (int i = 0; i < 3; i++) {
+            imprimirTriangulo(alturas[i]);
+        }
+        return 0;
+    }
+    ```
+  - Eliminar `using namespace std;` y usar `std::` explícitamente.
+
+- ✍️ **Estilo y legibilidad:**
+  - La indentación y estructura son correctas.
+  - **Pendiente**: Seguir el [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html):
+    - Evitar `using namespace std;` (ya mencionado).
+    - Usar `\n` en lugar de `std::endl` para evitar flushes innecesarios del buffer.
+
+- 🤔 **Preguntas orientadoras:**
+  1. ¿Cómo garantizarías que el usuario solo ingrese valores positivos?
+  2. ¿Qué modificaciones harías si el enunciado pidiera triángulos alineados a la derecha en lugar de a la izquierda?
+  3. ¿Por qué es importante evitar el uso de nombres de variables genéricas como `i` o `j` en programas más complejos?
+
+- 📊 **Nota final:**  
+  **NOTA_RETROALIMENTACION: [5.5]**  
+  **Justificación**: La función `imprimirTriangulo` está bien implementada, pero la omisión de la interacción con el usuario (requisito central del problema) reduce significativamente la calificación. Se reconocen aspectos positivos en la lógica de los bucles, pero es crítico seguir todos los requisitos del enunciado.
+
