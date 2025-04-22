@@ -26,6 +26,23 @@ function tarea() {
     }
   };
 
+  // const generateFeedback = async (repo, id, setLoading, setSuccessMessage, getFeedbacks) => {
+  //   setLoading(true);
+  //   try {
+  //     const repoData = await getData(repo.repository.name);
+  //     //const assignmentConfig = await getConfig(id)
+  //     await postFeedback(repo, repoData);
+  //     setSuccessMessage("Generado correctamente");
+  //   } catch (error) {
+  //     console.log("Error al generar retroalimentación", error);
+  //     setSuccessMessage("Error al generar retroalimentación");
+  //   } finally {
+  //     setLoading(false);
+  //     setTimeout(() => setSuccessMessage(null), 2000);
+  //     getFeedbacks();
+  //   }
+  // };
+
   useEffect(() => {
     getData();
   }, []);
@@ -60,7 +77,7 @@ function tarea() {
         ) : submissions.length === 0 ? (
           <h1>No se encontraron entregas</h1>
         ) : (
-          <AssignmentsTable submissions={submissions}/>
+          <AssignmentsTable submissions={submissions} id={id} getFeedbacks={getData}/>
         )}
       </div>
     </div>

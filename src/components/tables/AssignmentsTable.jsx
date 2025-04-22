@@ -1,16 +1,14 @@
 "use client";
+import {
+  getAssignmentConfig,
+  getFeedback,
+  getRepoData,
+  postFeedback,
+} from "@/services/githubService";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const users = Array.from({ length: 13 }).map((_, i) => ({
-  username: "@GithubUser",
-  email: "Correo@gmail.com",
-  commits: 4,
-  score: "8/10",
-  feedback: i === 1 ? "Enviada" : i === 2 ? "Vacia" : "Generada",
-  date: "11/11/11 7:00 AM",
-  repo: "github.com/repositorio",
-}));
+import { useState } from "react";
+import Loading from "../loader/Loading";
 
 function getFeedbackColor(status) {
   if (status === "sent") return "text-accent";
@@ -18,10 +16,75 @@ function getFeedbackColor(status) {
   return "text-primary";
 }
 
-function AssignmentsTable({ submissions }) {
+const getData = async (repoName) => {
+  try {
+    const response = await getRepoData(repoName);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getConfig = async (id) => {
+  try {
+    const response = await getAssignmentConfig(id);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const generateOne = async (repo, id, setLoading, setSuccessMessage, getFeedbacks) => {
+  setLoading(true);
+  try {
+    const repoData = await getData(repo.repository.name);
+    //const assignmentConfig = await getConfig(id)
+    await postFeedback(repo, repoData);
+    setSuccessMessage("Generado correctamente");
+  } catch (error) {
+    console.log("Error al generar retroalimentación", error);
+    setSuccessMessage("Error al generar retroalimentación");
+  } finally {
+    setLoading(false);
+    setTimeout(() => setSuccessMessage(null), 2000);
+    getFeedbacks();
+  }
+};
+
+const generateAll = (repos) => {
+  repos.array.forEach(repo => {
+    generateOne(repo,id, setLoading, setSuccessMessage, getFeedback)
+  });
+}
+
+function AssignmentsTable({ submissions, id, getFeedbacks }) {
   const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
+
   return (
-    <div className="p-4 overflow-x-auto">
+    <div className="relative p-4 overflow-x-auto">
+      {/* Modal loader */}
+      {loading && (
+        <div className="absolute inset-0 bg-black/40 flex justify-center items-center z-10">
+          <div className="bg-white p-6 rounded shadow-md text-center">
+            <Loading />
+            <p className="text-sm font-semibold">
+              Generando retroalimentación...
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Success message */}
+      {successMessage && (
+        <div className="absolute inset-0 bg-black/40 flex justify-center items-center z-10">
+          <div className="bg-white p-6 rounded shadow-md text-center">
+            {successMessage}
+          </div>
+        </div>
+      )}
+
       <table className="min-w-full text-sm border border-gray-300 rounded-md shadow-md">
         <thead className="bg-secondary text-left">
           <tr>
@@ -38,9 +101,7 @@ function AssignmentsTable({ submissions }) {
         <tbody>
           {submissions.map((u, i) => (
             <tr key={i} className="border-t">
-              <td className="px-3 py-2">
-                <p className="">@{u.students[0].login}</p>
-              </td>
+              <td className="px-3 py-2">@{u.students[0].login}</td>
               <td className="px-2 py-2">{u.email}</td>
               <td className="px-2 py-2 text-center">{u.commit_count}</td>
               <td className="px-2 py-2 text-center">{u.grade}</td>
@@ -52,25 +113,23 @@ function AssignmentsTable({ submissions }) {
                 {u.feedback_status === "generated" ||
                 u.feedback_status === "sent" ? (
                   <Link
-                  href={{
-                    pathname: `${pathname}/${u.id}`,
-                    query: {
-                      data: btoa(JSON.stringify({ 
-                        email: u.email, 
-                        repo: u.assignment.title 
-                      }))
-                    }
-                  }}
+                    href={{
+                      pathname: `${pathname}/${u.id}`,
+                      query: {
+                        data: btoa(
+                          JSON.stringify({
+                            email: u.email,
+                            repo: u.assignment.title,
+                          })
+                        ),
+                      },
+                    }}
                     className="hover:font-bold hover:underline"
                   >
                     {u.feedback_status}
                   </Link>
                 ) : (
-                  <p
-                    className=""
-                  >
-                    {u.feedback_status}
-                  </p>
+                  <p>{u.feedback_status}</p>
                 )}
               </td>
               <td className="px-2 py-2">{u.repository.name}</td>
@@ -78,9 +137,16 @@ function AssignmentsTable({ submissions }) {
                 {u.repository.html_url}
               </td>
               <td className="px-2 py-2">
-                <button className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded">
-                  Generar
-                </button>
+                {u.feedback_status === "pending" && (
+                  <button
+                    onClick={() =>
+                      generateOne(u, id, setLoading, setSuccessMessage, getFeedbacks)
+                    }
+                    className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded"
+                  >
+                    Generar
+                  </button>
+                )}
               </td>
             </tr>
           ))}
