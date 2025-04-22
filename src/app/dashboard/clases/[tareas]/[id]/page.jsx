@@ -1,7 +1,7 @@
 "use client";
 import Loading from "@/components/loader/Loading";
 import AssignmentsTable from "@/components/tables/AssignmentsTable";
-import { getSubmissions } from "@/services/githubService";
+import { getRepoData, getSubmissions, postFeedback } from "@/services/githubService";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
@@ -26,22 +26,32 @@ function tarea() {
     }
   };
 
-  // const generateFeedback = async (repo, id, setLoading, setSuccessMessage, getFeedbacks) => {
-  //   setLoading(true);
-  //   try {
-  //     const repoData = await getData(repo.repository.name);
-  //     //const assignmentConfig = await getConfig(id)
-  //     await postFeedback(repo, repoData);
-  //     setSuccessMessage("Generado correctamente");
-  //   } catch (error) {
-  //     console.log("Error al generar retroalimentación", error);
-  //     setSuccessMessage("Error al generar retroalimentación");
-  //   } finally {
-  //     setLoading(false);
-  //     setTimeout(() => setSuccessMessage(null), 2000);
-  //     getFeedbacks();
-  //   }
-  // };
+  const getSubmissionData = async (repoName) => {
+    try {
+      const response = await getRepoData(repoName);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const generateFeedback = async () => {
+    setLoading(true);
+    try {
+      await Promise.all(
+        submissions.map(async (submission) => {
+          console.log(submission.repository.name)
+          const repoData = await getSubmissionData(submission.repository.name);
+          console.log(repoData)
+          await postFeedback(submission, repoData);
+        })
+      );
+    } catch (error) {
+      console.log("Error al generar retroalimentación", error);
+    } finally {
+      getData();
+    }
+  };
 
   useEffect(() => {
     getData();
@@ -57,7 +67,8 @@ function tarea() {
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg">
+          <button onClick={() => generateFeedback()} 
+          className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg">
             <RiAiGenerate2 className="text-xl" />
             Generar retroalimentacion
           </button>

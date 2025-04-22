@@ -169,11 +169,13 @@ export const getRepoData = async (repo) => {
 };
 
 export const postFeedback = async (repo, repoData) => {
+
+  const [value, total] = repo.grade.split('/').map(Number);
   const payload = {
     readme: repoData.readme,
     code: repoData.code,
-    gradeValue: 6,
-    gradeTotal: 10,
+    gradeValue: value,
+    gradeTotal: total,
     modelIA: "gemini",
     email: repo.email,
     task: repo.assignment.title,
@@ -205,3 +207,26 @@ export const postFeedback = async (repo, repoData) => {
     console.log(error)
   }
 };
+
+export const postPullRequest = async (repo, feedbackText) => {
+  const client = await apiClient();
+  try {
+    const res = await client.post((`/repo/${repo}/pr/feedback`), {
+      feedback: feedbackText
+    },
+      {
+        headers: {
+          'Content-Type' : 'application/json'
+        }
+      }
+    )
+    if (res.status === 200) {
+      console.log(res);
+      return res;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
