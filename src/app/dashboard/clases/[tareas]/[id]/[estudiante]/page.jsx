@@ -16,7 +16,6 @@ function entrega() {
   const { email, repo } = JSON.parse(atob(encodedData));
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState();
-  const [markdownContent, setMarkdownContent] = useState("");
 
   const getData = async () => {
     try {
@@ -25,7 +24,6 @@ function entrega() {
       const text = await responseMd.text();
       const response = await getFeedback(email, repo);
       console.log(response);
-      setMarkdownContent(text);
       setFeedback(response);
     } catch (error) {
       console.error("Error:", error);
@@ -38,6 +36,7 @@ function entrega() {
   const createPullRequest = async () => {
     try {
       await postPullRequest(feedback.repo, feedback.feedback)
+      getData();
     } catch (error) {
       console.log(error)
     }
