@@ -4,7 +4,7 @@ import { FaGithub } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { getFeedback, postPullRequest } from "@/services/githubService";
+import { getFeedback, getRepoData, patchFeedback, postFeedback, postPullRequest } from "@/services/githubService";
 import { useEffect, useState } from "react";
 import Loading from "@/components/loader/Loading";
 
@@ -33,9 +33,48 @@ function entrega() {
     }
   };
 
+  const updateFeedback = async (email, name, feedback) => {
+    try {
+      const res = await patchFeedback(email, name, feedback)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const createPullRequest = async () => {
     try {
       await postPullRequest(feedback.repo, feedback.feedback)
+      getData();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getSubmissionData = async () => {
+    try {
+      const response = await getRepoData(feedback.repo);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const generateFeedback = async () => {
+    try {
+      const repoData = await getSubmissionData();
+      const payload = {
+        grade: `${feedback.gradeValue}/${feedback.gradeTotal}`,
+        email: feedback.email,
+        assignment: {  
+          title: feedback.task
+        },
+        repository: {  
+          name: feedback.repo 
+        }
+      }
+      const res = await postFeedback(payload, repoData)
+      const newFeedback = res.feedback
+      const newData = await updateFeedback(feedback.email, feedback.task , newFeedback) 
       getData();
     } catch (error) {
       console.log(error)
@@ -104,7 +143,8 @@ function entrega() {
                   </button>
                 )}
 
-                <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
+                <button onClick={() => generateFeedback()}
+                className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
                   Volver a generar
                 </button>
               </div>

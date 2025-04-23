@@ -186,7 +186,6 @@ export const postFeedback = async (repo, repoData) => {
     constraints: "No usar librerías externas",
     style: "Google C++ Style Guide",
   };
-  console.log(repo.repository.name)
   try {
     const res = await axios.post(
       `https://sae-backend-n9d3.onrender.com/feedback/${repo.repository.name}/gemini`,
@@ -197,6 +196,30 @@ export const postFeedback = async (repo, repoData) => {
         }
       }
     );
+    
+    if (res.status === 201) {
+      console.log(res);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+};
+
+export const patchFeedback = async (email, name , feedback) => {
+  const client = await apiClient();
+  try {
+    const res = await client.patch((`/feedback/update?email=${email}&task=${name}`), {
+      feedback: feedback
+    },
+      {
+        headers: {
+          'Content-Type' : 'application/json'
+        }
+      }
+    )
     if (res.status === 200) {
       console.log(res);
       return res;
@@ -206,7 +229,7 @@ export const postFeedback = async (repo, repoData) => {
   } catch (error) {
     console.log(error)
   }
-};
+}
 
 export const postPullRequest = async (repo, feedbackText) => {
   const client = await apiClient();
