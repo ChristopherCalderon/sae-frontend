@@ -49,23 +49,44 @@ export const getAssignments = async (id) => {
   }
 };
 
+export const getAssignmentConfig = async (id) => {
+  const client = await apiClient();
+  try {
+    console.log(id);
+    const res = await client.get(`/task-config/${id}`);
+    if (res.status === 200) {
+      console.log(res.data);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
 export const getFeedback = async (email, repo) => {
   const client = await apiClient();
   try {
     // Peticion inicial para obtener el feedback y repositorio
-    const res = await client.get(`/feedback/search?email=${email}&task=${repo}`);
-    
+    const res = await client.get(
+      `/feedback/search?email=${email}&task=${repo}`
+    );
+
     if (res.status !== 200) {
       return [];
     }
-    console.log(res.data.repo)
-    const workflowRes = await client.get(`/repo/${res.data.repo}/workflow/details`)
-    const statusRes = await client.get(`/feedback/status/${res.data.repo}`)
+    console.log(res.data.repo);
+    const workflowRes = await client.get(
+      `/repo/${res.data.repo}/workflow/details`
+    );
+    const statusRes = await client.get(`/feedback/status/${res.data.repo}`);
 
     const workflow = workflowRes.data.data;
-    const status = statusRes.data 
+    const status = statusRes.data;
 
-    console.log(status)
+    console.log(status);
 
     return {
       ...res.data,
@@ -74,8 +95,6 @@ export const getFeedback = async (email, repo) => {
       workflow_status: workflow.status || null,
       workflow_conclusion: workflow.conclusion || null,
       workflow_url: workflow.run_url || null,
-
-
     };
   } catch (error) {
     console.log(error);
@@ -111,8 +130,8 @@ export const getSubmissions = async (id) => {
 
           return {
             ...submission,
-            email: emailRes.data.email || null, 
-            feedback_status: statusRes.data.status || null
+            email: emailRes.data.email || null,
+            feedback_status: statusRes.data.status || null,
           };
         } catch (error) {
           console.error(
@@ -133,3 +152,104 @@ export const getSubmissions = async (id) => {
     return [];
   }
 };
+
+export const getRepoData = async (repo) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/repo/${repo}/files?ext=.cpp`);
+    if (res.status === 200) {
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
+export const postFeedback = async (repo, repoData) => {
+
+  const [value, total] = repo.grade.split('/').map(Number);
+  const payload = {
+    readme: repoData.readme,
+    code: repoData.code,
+    gradeValue: value,
+    gradeTotal: total,
+    modelIA: "gemini",
+    email: repo.email,
+    task: repo.assignment.title,
+    language: "C++",
+    subject: "Estructuras Dinámicas",
+    studentLevel: "Universitario - Segundo Año",
+    topics: "condicionales y loops",
+    constraints: "No usar librerías externas",
+    style: "Google C++ Style Guide",
+  };
+  try {
+    const res = await axios.post(
+      `https://sae-backend-n9d3.onrender.com/feedback/${repo.repository.name}/gemini`,
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    if (res.status === 201) {
+      console.log(res);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+};
+
+export const patchFeedback = async (email, name , feedback) => {
+  const client = await apiClient();
+  try {
+    const res = await client.patch((`/feedback/update?email=${email}&task=${name}`), {
+      feedback: feedback
+    },
+      {
+        headers: {
+          'Content-Type' : 'application/json'
+        }
+      }
+    )
+    if (res.status === 200) {
+      console.log(res);
+      return res;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const postPullRequest = async (repo, feedbackText) => {
+  const client = await apiClient();
+  try {
+    const res = await client.post((`/repo/${repo}/pr/feedback`), {
+      feedback: feedbackText
+    },
+      {
+        headers: {
+          'Content-Type' : 'application/json'
+        }
+      }
+    )
+    if (res.status === 200) {
+      console.log(res);
+      return res;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}

@@ -4,7 +4,7 @@ import { FaGithub } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { getFeedback } from "@/services/githubService";
+import { getFeedback, getRepoData, patchFeedback, postFeedback, postPullRequest } from "@/services/githubService";
 import { useEffect, useState } from "react";
 import Loading from "@/components/loader/Loading";
 
@@ -16,7 +16,6 @@ function entrega() {
   const { email, repo } = JSON.parse(atob(encodedData));
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState();
-  const [markdownContent, setMarkdownContent] = useState("");
 
   const getData = async () => {
     try {
@@ -25,7 +24,6 @@ function entrega() {
       const text = await responseMd.text();
       const response = await getFeedback(email, repo);
       console.log(response);
-      setMarkdownContent(text);
       setFeedback(response);
     } catch (error) {
       console.error("Error:", error);
@@ -34,6 +32,54 @@ function entrega() {
       setLoading(false);
     }
   };
+
+  const updateFeedback = async (email, name, feedback) => {
+    try {
+      const res = await patchFeedback(email, name, feedback)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const createPullRequest = async () => {
+    try {
+      await postPullRequest(feedback.repo, feedback.feedback)
+      getData();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getSubmissionData = async () => {
+    try {
+      const response = await getRepoData(feedback.repo);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const generateFeedback = async () => {
+    try {
+      const repoData = await getSubmissionData();
+      const payload = {
+        grade: `${feedback.gradeValue}/${feedback.gradeTotal}`,
+        email: feedback.email,
+        assignment: {  
+          title: feedback.task
+        },
+        repository: {  
+          name: feedback.repo 
+        }
+      }
+      const res = await postFeedback(payload, repoData)
+      const newFeedback = res.feedback
+      const newData = await updateFeedback(feedback.email, feedback.task , newFeedback) 
+      getData();
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     getData();
@@ -58,7 +104,7 @@ function entrega() {
               {/* Informacion de retroalimentacion */}
               <div className="flex flex-col">
                 <h1 className="font-bold">
-                  PROGRAMACION-DE-ESTRUCTURAS-DINAMICAS-Sección-01-CICLO-02/2025
+                  {feedback.repo}
                 </h1>
                 <p>Workflow: {feedback.workflow_name}</p>
                 <p>Estado: {feedback.workflow_status}</p>
@@ -91,12 +137,14 @@ function entrega() {
                   Editar retroalimentacion
                 </Link>
                 {feedback.feedback_status == "generated" && (
-                  <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
+                  <button onClick={() => createPullRequest()} 
+                  className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
                     Agregar pull request
                   </button>
                 )}
 
-                <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
+                <button onClick={() => generateFeedback()}
+                className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
                   Volver a generar
                 </button>
               </div>
