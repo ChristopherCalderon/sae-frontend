@@ -9,14 +9,18 @@ export default withAuth(
       "/dashboard/admin",
       "/dashboard/modelos",
     ];
-
+    if (req.nextauth.token?.activeRole === "guest") {
+      return NextResponse.redirect(new URL("/organizations", req.url));
+    }
     // Verificar si la ruta actual requiere rol admin
     const isAdminRoute = adminProtectedRoutes.some(route => 
       req.nextUrl.pathname.startsWith(route)
     );
 
+
+
     // Si la ruta es protegida y el usuario no es admin, redirigir
-    if (isAdminRoute && req.nextauth.token?.role !== "admin") {
+    if (isAdminRoute && req.nextauth.token?.activeRole !== "ORG_Admin") {
       return NextResponse.redirect(new URL("/dashboard/clases", req.url));
     }
   },

@@ -9,9 +9,9 @@ import Image from "next/image";
 
 function Navbar() {
   const { data: session, status } = useSession(); // Obtenemos la sesión actual
-  const isAdmin = session?.role === "admin"; // Verificamos si el rol es 'admin'
+  const isAdmin = session?.user.activeRole === "ORG_Admin"; // Verificamos si el rol es 'admin'
 
-
+  console.log(session)
   return (
     <div className="w-[14.3%] h-screen bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] flex flex-col">
       <div className="h-1/5 w-full relative">
@@ -29,6 +29,8 @@ function Navbar() {
               {session?.user?.name || "Nombre de usuario"}
             </span>
           </div>
+          <span>
+          {session?.user?.selectedOrg || "Nombre de usuario"}</span>
         </div>
       </div>
 

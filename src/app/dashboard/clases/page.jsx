@@ -16,7 +16,7 @@ export default function Clases() {
       setLoading(true);
       const response = await getClasses();
       if (response) {
-        setClasses(response.data);
+        setClasses(response.data || []);
       }
       setLoading(false);
     } catch (error) {

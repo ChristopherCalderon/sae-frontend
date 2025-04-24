@@ -1,48 +1,79 @@
 "use client";
 import { useSession } from "next-auth/react";
-import React from "react";
+import { useRouter } from "next/navigation";
+import { useState, startTransition, useEffect } from "react";
 
-function organizationSelect() {
-  const { data: session, status, update } = useSession();
+function OrganizationSelect() {
+  const { data: session, update } = useSession();
+  const router = useRouter();
+  const [pendingOrg, setPendingOrg] = useState(null);
+  const [localSession, setLocalSession] = useState(session); // Copia local
 
-  if (status === "loading") {
-    return <div>Cargando sesión...</div>; // O algún spinner de carga
-  }
+  // Sincroniza la sesión local cuando cambia
+  useEffect(() => {
+    setLocalSession(session);
+  }, [session]);
 
-  if (!session || !session.user.organizations) {
-    return <div>No se encontraron organizaciones.</div>;
-  }
+  const handleSelectOrg = async (orgName, orgRole) => {
+    setPendingOrg(orgName);
+    
+    try {
+      // Actualización optimista
+      setLocalSession(prev => ({
+        ...prev,
+        user: {
+          ...prev?.user,
+          activeRole: orgRole,
+          selectedOrg: orgName
+        }
+      }));
 
-  
-  const handleSelectOrg = async (orgId, orgRole) => {
-    // Tu lógica para seleccionar la organización
-    console.log("Organización seleccionada:", orgId);
-    console.log("Rol:", orgRole);
-    console.log("ANTES:", session.user.activeRole);
-    await update({
+      const result = await update({
         activeRole: orgRole,
-        selectedOrg: orgId
+        selectedOrg: orgName
       });
-      console.log("DESPUES:", session.user.activeRole);
-      
-console.log("Rol actualizado:", orgRole);
+
+      startTransition(() => {
+        router.push("/dashboard/clases");
+      });
+    } catch (error) {
+      setPendingOrg(null);
+      // Revertir en caso de error
+      setLocalSession(session);
+      console.error("Error:", error);
+    }
   };
+
+  if (!localSession?.user?.organizations) {
+    return <div>Cargando organizaciones...</div>;
+  }
+
   return (
     <div className="bg-background h-screen flex flex-col gap-5 w-full p-8 overflow-clip">
-      <div className="w-full text-primary ">
+      <div className="w-full text-primary">
         <h1 className="text-2xl font-bold">Mis Clases</h1>
         <p className="font-semibold">Vista general de los cursos</p>
       </div>
-      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5  grid grid-cols-2gap-3   rounded-md">
-      {session.user.organizations.map((org) => (
-        <button key={org.orgId} onClick={() => handleSelectOrg(org.orgId, org.role)}>
-          {org.orgName} ({org.role})
-        </button>
-      ))}
+      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5 grid grid-cols-2 gap-3 rounded-md">
+        {localSession.user.organizations.map((org) => (
+          <button
+            key={org.orgId}
+            type="button"
+            onClick={() => handleSelectOrg(org.orgName, org.role)}
+            className={`p-4 border rounded-lg transition-colors ${
+              pendingOrg === org.orgName 
+                ? "bg-gray-100 cursor-wait" 
+                : "hover:bg-gray-50"
+            }`}
+            disabled={pendingOrg === org.orgName}
+          >
+            {org.orgName} ({org.role})
+            {pendingOrg === org.orgName && "..."}
+          </button>
+        ))}
       </div>
-
     </div>
   );
 }
 
-export default organizationSelect;
+export default OrganizationSelect;
