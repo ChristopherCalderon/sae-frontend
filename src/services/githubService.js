@@ -1,9 +1,9 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
-
 export const apiClient = async () => {
   const session = await getSession();
   const token = session?.accessToken;
+  
 
   if (!token) throw new Error("No hay accessToken disponible");
 
@@ -168,6 +168,8 @@ export const getRepoData = async (repo) => {
   }
 };
 
+
+
 export const postFeedback = async (repo, repoData) => {
 
   const [value, total] = repo.grade.split('/').map(Number);
@@ -237,6 +239,27 @@ export const postPullRequest = async (repo, feedbackText) => {
     const res = await client.post((`/repo/${repo}/pr/feedback`), {
       feedback: feedbackText
     },
+      {
+        headers: {
+          'Content-Type' : 'application/json'
+        }
+      }
+    )
+    if (res.status === 200) {
+      console.log(res);
+      return res;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const createUserData = async (username) => {
+  const client = await apiClient();
+  try {
+    const res = await client.post((`/user/first-login?username=${username}`),
       {
         headers: {
           'Content-Type' : 'application/json'

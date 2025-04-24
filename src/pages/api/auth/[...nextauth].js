@@ -18,10 +18,11 @@ export default NextAuth({
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
-
+        
+        console.log(token.name)
         try {
-          const res = await axios.get(
-            "https://sae-backend-n9d3.onrender.com/repo/whoami?org=ProyectoGraduacionUCA",
+          const res = await axios.post((`https://sae-backend-n9d3.onrender.com/user/first-login?username=${token.name}`),{}
+            ,
             {
               headers: {
                 Authorization: `Bearer ${account.access_token}`,
@@ -29,8 +30,13 @@ export default NextAuth({
             }
           );
 
-          if (res.data?.role) {
-            token.role = res.data.role;
+          
+          if (res.data) {
+            const response = res.data.user;
+            token.organizations = response.organizations;
+            token.isRoot = response.isRoot;
+            token.role = 'guest';
+            token.selectedOrg = null;
           } else {
             console.warn("No se recibió 'role' desde el backend");
           }
@@ -44,7 +50,10 @@ export default NextAuth({
 
     async session({ session, token }) {
       session.accessToken = token.accessToken;
-      session.role = "admin";
+      session.organizations = token.organizations;
+      session.role = token.role;
+      session.selectedOrg = token.selectedOrg;
+      session.isRoot = token.isRoot;
       return session;
     },
   },

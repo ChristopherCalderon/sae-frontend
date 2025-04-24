@@ -8,7 +8,7 @@ import { getFeedback, getRepoData, patchFeedback, postFeedback, postPullRequest 
 import { useEffect, useState } from "react";
 import Loading from "@/components/loader/Loading";
 
-//const markdownText = await fetch('/markdown.md');
+
 
 function entrega() {
   const searchParams = useSearchParams();
