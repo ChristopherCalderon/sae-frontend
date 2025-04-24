@@ -10,7 +10,7 @@ export default function AuthCard() {
   const { data: session } = useSession();
 
   const handleSignIn = async () => {
-    await signIn("github", { callbackUrl: "/dashboard/clases" });
+    await signIn("github", { callbackUrl: "/organizations" });
   };
 
 

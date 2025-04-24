@@ -15,7 +15,7 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, trigger, session:updateData }) {
       if (account) {
         token.accessToken = account.access_token;
         
@@ -35,7 +35,7 @@ export default NextAuth({
             const response = res.data.user;
             token.organizations = response.organizations;
             token.isRoot = response.isRoot;
-            token.role = 'guest';
+            token.activeRole = 'guest';
             token.selectedOrg = null;
           } else {
             console.warn("No se recibió 'role' desde el backend");
@@ -45,15 +45,22 @@ export default NextAuth({
           console.error("Error al obtener el rol del usuario:", error.message);
         }
       }
+
+    if (trigger === "update" && updateData?.activeRole) {
+      token.activeRole = updateData.activeRole;
+      token.selectedOrg = updateData.selectedOrg;
+    }
       return token;
     },
 
+    
+
     async session({ session, token }) {
       session.accessToken = token.accessToken;
-      session.organizations = token.organizations;
-      session.role = token.role;
-      session.selectedOrg = token.selectedOrg;
-      session.isRoot = token.isRoot;
+      session.user.organizations = token.organizations;
+      session.user.selectedOrg = token.selectedOrg
+      session.user.activeRole = token.activeRole;
+      session.user.isRoot = token.isRoot;
       return session;
     },
   },
