@@ -1,36 +1,38 @@
 "use client";
+import OrganizationCard from "@/components/cards/OrganizationCard";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, startTransition, useEffect } from "react";
+
+
 
 function OrganizationSelect() {
   const { data: session, update } = useSession();
   const router = useRouter();
   const [pendingOrg, setPendingOrg] = useState(null);
-  const [localSession, setLocalSession] = useState(session); // Copia local
+  const [localSession, setLocalSession] = useState(session); // Copia local de la sesion para acatualizar ui
 
-  // Sincroniza la sesión local cuando cambia
   useEffect(() => {
     setLocalSession(session);
   }, [session]);
 
   const handleSelectOrg = async (orgName, orgRole) => {
     setPendingOrg(orgName);
-    
+
     try {
       // Actualización optimista
-      setLocalSession(prev => ({
+      setLocalSession((prev) => ({
         ...prev,
         user: {
           ...prev?.user,
           activeRole: orgRole,
-          selectedOrg: orgName
-        }
+          selectedOrg: orgName,
+        },
       }));
 
       const result = await update({
         activeRole: orgRole,
-        selectedOrg: orgName
+        selectedOrg: orgName,
       });
 
       startTransition(() => {
@@ -44,33 +46,29 @@ function OrganizationSelect() {
     }
   };
 
-  if (!localSession?.user?.organizations) {
-    return <div>Cargando organizaciones...</div>;
-  }
-
   return (
     <div className="bg-background h-screen flex flex-col gap-5 w-full p-8 overflow-clip">
       <div className="w-full text-primary">
         <h1 className="text-2xl font-bold">Mis Clases</h1>
         <p className="font-semibold">Vista general de los cursos</p>
       </div>
-      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5 grid grid-cols-2 gap-3 rounded-md">
-        {localSession.user.organizations.map((org) => (
-          <button
-            key={org.orgId}
-            type="button"
-            onClick={() => handleSelectOrg(org.orgName, org.role)}
-            className={`p-4 border rounded-lg transition-colors ${
-              pendingOrg === org.orgName 
-                ? "bg-gray-100 cursor-wait" 
-                : "hover:bg-gray-50"
-            }`}
-            disabled={pendingOrg === org.orgName}
-          >
-            {org.orgName} ({org.role})
-            {pendingOrg === org.orgName && "..."}
-          </button>
-        ))}
+      <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5 grid grid-cols-3 gap-3 rounded-md">
+        {!localSession?.user?.organizations ? (
+          <p>Cargando organizaciones...</p>
+        ) :  pendingOrg ? <p>Redirigiendo...</p> 
+        :
+        localSession.user.organizations.length === 0 ? (
+          <p>No se encontraron organizaciones</p>
+        ) : (
+          localSession.user.organizations.map((org) => (
+            <OrganizationCard
+              key={org.orgId}
+              pendingOrg={pendingOrg}
+              handleSelected={handleSelectOrg}
+              org={org}
+            ></OrganizationCard>
+          ))
+        )}
       </div>
     </div>
   );
