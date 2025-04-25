@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
+
 export const apiClient = async () => {
   const session = await getSession();
   const token = session?.accessToken;
@@ -17,10 +18,11 @@ export const apiClient = async () => {
   return instance;
 };
 
-export const getClasses = async () => {
+export const getClasses = async (orgId) => {
+
   const client = await apiClient();
   try {
-    const res = await client.get("/repo/classrooms");
+    const res = await client.get(`/repo/classrooms?orgId=${orgId}`);
     if (res.status === 200) {
       console.log(res.data);
       return res.data;
@@ -71,7 +73,7 @@ export const getFeedback = async (email, repo) => {
   try {
     // Peticion inicial para obtener el feedback y repositorio
     const res = await client.get(
-      `/feedback/search?email=${email}&task=${repo}`
+      `/feedback/search?email=${email}&idTaskGithubClassroom=${repo}`
     );
 
     if (res.status !== 200) {
@@ -120,7 +122,7 @@ export const getSubmissions = async (id) => {
         try {
           // Petición para obtener el email de cada usuario
           const emailRes = await client.get(
-            `/feedback/students/${submission.students[0].login}/email`
+            `/user/students/${submission.students[0].login}/email`
           );
 
           // Petición para obtener el estado de feedback de cada usuario
@@ -172,6 +174,9 @@ export const getRepoData = async (repo) => {
 
 export const postFeedback = async (repo, repoData) => {
 
+  
+  console.log(repo.repository.name)
+  console.log(repo.assignment.id)
   const [value, total] = repo.grade.split('/').map(Number);
   const payload = {
     readme: repoData.readme,
@@ -180,7 +185,7 @@ export const postFeedback = async (repo, repoData) => {
     gradeTotal: total,
     modelIA: "gemini",
     email: repo.email,
-    task: repo.assignment.title,
+    idTaskGithubClassroom: repo.assignment.id,
     language: "C++",
     subject: "Estructuras Dinámicas",
     studentLevel: "Universitario - Segundo Año",
@@ -210,10 +215,10 @@ export const postFeedback = async (repo, repoData) => {
   }
 };
 
-export const patchFeedback = async (email, name , feedback) => {
+export const patchFeedback = async (email, id , feedback) => {
   const client = await apiClient();
   try {
-    const res = await client.patch((`/feedback/update?email=${email}&task=${name}`), {
+    const res = await client.patch((`/feedback/update?email=${email}&idTaskGithubClassroom=${id}`), {
       feedback: feedback
     },
       {

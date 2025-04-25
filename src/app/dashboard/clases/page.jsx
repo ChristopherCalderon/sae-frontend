@@ -8,24 +8,33 @@ import { getClasses } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
 
 export default function Clases() {
+
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession(); // Obtenemos el status
 
-  const getData = async () => {
+  const getData = async (orgId) => {
     try {
       setLoading(true);
-      const response = await getClasses();
-      if (response) {
-        setClasses(response.data || []);
-      }
-      setLoading(false);
+      console.log(orgId)
+      const response = await getClasses(orgId);
+      setClasses(response?.data || []);
     } catch (error) {
-      console.error("Error al obtener datos de la API:", error);
+      console.error("Error al obtener clases:", error);
+    } finally {
+      setLoading(false);
     }
   };
+  console.log(status)
+
   useEffect(() => {
-    getData();
-  }, []);
+    if (status === "authenticated" ) {
+      getData(session.user.selectedOrgId)
+    } else if (status === "loading") {
+      // Sesión aún cargando
+      setLoading(true);
+    }
+  }, [status]); 
 
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">

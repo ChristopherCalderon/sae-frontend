@@ -119,7 +119,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks }) {
                         data: btoa(
                           JSON.stringify({
                             email: u.email,
-                            repo: u.assignment.title,
+                            repo: u.assignment.id,
                           })
                         ),
                       },

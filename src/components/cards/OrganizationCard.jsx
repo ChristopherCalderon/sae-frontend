@@ -11,7 +11,7 @@ function OrganizationCard({ org, pendingOrg, handleSelected }) {
         <h1 className="text-xl font-bold">{org.orgName} </h1>
         <p className="font-medium">Rol: {org.role}</p>
       </div>
-      <button onClick={() => handleSelected(org.orgId, org.role)}
+      <button onClick={() => handleSelected(org.orgName, org.orgId, org.role)}
       className="flex items-center text-white px-5 py-2 justify-center gap-2 bg-primary hover:bg-primary-hover rounded">
         Acceder
       </button>

@@ -16,7 +16,7 @@ function OrganizationSelect() {
     setLocalSession(session);
   }, [session]);
 
-  const handleSelectOrg = async (orgName, orgRole) => {
+  const handleSelectOrg = async (orgName,orgId, orgRole) => {
     setPendingOrg(orgName);
 
     try {
@@ -27,12 +27,14 @@ function OrganizationSelect() {
           ...prev?.user,
           activeRole: orgRole,
           selectedOrg: orgName,
+          selectedOrgId: orgId,
         },
       }));
 
       const result = await update({
         activeRole: orgRole,
         selectedOrg: orgName,
+        selectedOrgId: orgId,
       });
 
       startTransition(() => {
@@ -49,8 +51,8 @@ function OrganizationSelect() {
   return (
     <div className="bg-background h-screen flex flex-col gap-5 w-full p-8 overflow-clip">
       <div className="w-full text-primary">
-        <h1 className="text-2xl font-bold">Mis Clases</h1>
-        <p className="font-semibold">Vista general de los cursos</p>
+        <h1 className="text-2xl font-bold">Mis Organizaciones</h1>
+        <p className="font-semibold">Selecciona una organizacion para acceder</p>
       </div>
       <div className="w-full h-[90%] bg-white shadow-xl px-3 py-5 grid grid-cols-3 gap-3 rounded-md">
         {!localSession?.user?.organizations ? (
@@ -60,7 +62,7 @@ function OrganizationSelect() {
         localSession.user.organizations.length === 0 ? (
           <p>No se encontraron organizaciones</p>
         ) : (
-          localSession.user.organizations.map((org) => (
+          localSession.user.organizations.map((org) => (org.role !== 'Student' &&
             <OrganizationCard
               key={org.orgId}
               pendingOrg={pendingOrg}
