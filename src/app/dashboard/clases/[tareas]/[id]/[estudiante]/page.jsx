@@ -22,8 +22,6 @@ function entrega() {
   const getData = async () => {
     try {
       setLoading(true);
-      const responseMd = await fetch("/markdown.txt");
-      const text = await responseMd.text();
       const response = await getFeedback(email, repo);
       console.log(response);
       setFeedback(response);
@@ -141,12 +139,22 @@ function entrega() {
               {/* Botones de retroalimentacion */}
               <div className="flex flex-col gap-1 justify-center">
                 <Link
-                  href={`${pathname}/editar`}
+                href={{
+                  pathname: `${pathname}/editar`,
+                  query: {
+                    data: btoa(
+                      JSON.stringify({
+                        email: email,
+                        repo: repo,
+                      })
+                    ),
+                  },
+                }}
                   className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg"
                 >
                   Editar retroalimentacion
                 </Link>
-                {feedback.feedback_status == "generated" && (
+                {feedback.feedback_status == "Generado" && (
                   <button onClick={() => createPullRequest()} 
                   disabled={adding}
                   className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
