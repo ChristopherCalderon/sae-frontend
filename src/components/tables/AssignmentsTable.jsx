@@ -34,7 +34,13 @@ const getConfig = async (id) => {
   }
 };
 
-const generateOne = async (repo, id, setLoading, setSuccessMessage, getFeedbacks) => {
+const generateOne = async (
+  repo,
+  id,
+  setLoading,
+  setSuccessMessage,
+  getFeedbacks
+) => {
   setLoading(true);
   try {
     const repoData = await getData(repo.repository.name);
@@ -52,10 +58,10 @@ const generateOne = async (repo, id, setLoading, setSuccessMessage, getFeedbacks
 };
 
 const generateAll = (repos) => {
-  repos.array.forEach(repo => {
-    generateOne(repo,id, setLoading, setSuccessMessage, getFeedback)
+  repos.array.forEach((repo) => {
+    generateOne(repo, id, setLoading, setSuccessMessage, getFeedback);
   });
-}
+};
 
 function AssignmentsTable({ submissions, id, getFeedbacks }) {
   const pathname = usePathname();
@@ -110,8 +116,29 @@ function AssignmentsTable({ submissions, id, getFeedbacks }) {
                   u.feedback_status
                 )}`}
               >
-                {u.feedback_status === "generated" ||
-                u.feedback_status === "sent" ? (
+                  <p>{u.feedback_status}</p>
+              </td>
+              <td className="px-2 py-2">{u.repository.name}</td>
+              <td className="px-1 py-2 text-blue-500 text-xs">
+                {u.repository.html_url}
+              </td>
+              <td className="px-2 py-2">
+                {u.feedback_status === "pending" ? (
+                  <button
+                    onClick={() =>
+                      generateOne(
+                        u,
+                        id,
+                        setLoading,
+                        setSuccessMessage,
+                        getFeedbacks
+                      )
+                    }
+                    className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded"
+                  >
+                    Generar
+                  </button>
+                ) : u.feedback_status === "Generado"  || u.feedback_status === "sent" ? (
                   <Link
                     href={{
                       pathname: `${pathname}/${u.id}`,
@@ -119,34 +146,16 @@ function AssignmentsTable({ submissions, id, getFeedbacks }) {
                         data: btoa(
                           JSON.stringify({
                             email: u.email,
-                            repo: u.assignment.title,
+                            repo: u.assignment.id,
                           })
                         ),
                       },
                     }}
-                    className="hover:font-bold hover:underline"
-                  >
-                    {u.feedback_status}
-                  </Link>
-                ) : (
-                  <p>{u.feedback_status}</p>
-                )}
-              </td>
-              <td className="px-2 py-2">{u.repository.name}</td>
-              <td className="px-1 py-2 text-blue-500 text-xs">
-                {u.repository.html_url}
-              </td>
-              <td className="px-2 py-2">
-                {u.feedback_status === "pending" && (
-                  <button
-                    onClick={() =>
-                      generateOne(u, id, setLoading, setSuccessMessage, getFeedbacks)
-                    }
                     className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded"
                   >
-                    Generar
-                  </button>
-                )}
+                    Ver
+                  </Link>
+                ): ''}
               </td>
             </tr>
           ))}

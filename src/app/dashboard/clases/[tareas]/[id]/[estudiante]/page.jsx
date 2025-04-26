@@ -8,7 +8,7 @@ import { getFeedback, getRepoData, patchFeedback, postFeedback, postPullRequest 
 import { useEffect, useState } from "react";
 import Loading from "@/components/loader/Loading";
 
-//const markdownText = await fetch('/markdown.md');
+
 
 function entrega() {
   const searchParams = useSearchParams();
@@ -16,12 +16,12 @@ function entrega() {
   const { email, repo } = JSON.parse(atob(encodedData));
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState();
+  const [generating, setGenerating] = useState(false);
+  const [adding, setAdding ] = useState(false);
 
   const getData = async () => {
     try {
       setLoading(true);
-      const responseMd = await fetch("/markdown.txt");
-      const text = await responseMd.text();
       const response = await getFeedback(email, repo);
       console.log(response);
       setFeedback(response);
@@ -33,9 +33,9 @@ function entrega() {
     }
   };
 
-  const updateFeedback = async (email, name, feedback) => {
+  const updateFeedback = async (email, id, feedback) => {
     try {
-      const res = await patchFeedback(email, name, feedback)
+      const res = await patchFeedback(email, id, feedback)
     } catch (error) {
       console.log(error)
     }
@@ -43,8 +43,11 @@ function entrega() {
 
   const createPullRequest = async () => {
     try {
+      
+      setAdding(true)
       await postPullRequest(feedback.repo, feedback.feedback)
       getData();
+      setAdding(false)
     } catch (error) {
       console.log(error)
     }
@@ -61,21 +64,26 @@ function entrega() {
 
   const generateFeedback = async () => {
     try {
+      setGenerating(true)
       const repoData = await getSubmissionData();
       const payload = {
         grade: `${feedback.gradeValue}/${feedback.gradeTotal}`,
         email: feedback.email,
         assignment: {  
-          title: feedback.task
+          id: feedback.idTaskGithubClassroom
         },
         repository: {  
           name: feedback.repo 
         }
       }
+      console.log('feedback')
+      console.log(feedback)
+      console.log(feedback.idTaskGithubClassroom)
       const res = await postFeedback(payload, repoData)
       const newFeedback = res.feedback
-      const newData = await updateFeedback(feedback.email, feedback.task , newFeedback) 
+      const newData = await updateFeedback(feedback.email, feedback.idTaskGithubClassroom , newFeedback) 
       getData();
+      setGenerating(false)
     } catch (error) {
       console.log(error)
     }
@@ -131,21 +139,33 @@ function entrega() {
               {/* Botones de retroalimentacion */}
               <div className="flex flex-col gap-1 justify-center">
                 <Link
-                  href={`${pathname}/editar`}
+                href={{
+                  pathname: `${pathname}/editar`,
+                  query: {
+                    data: btoa(
+                      JSON.stringify({
+                        email: email,
+                        repo: repo,
+                      })
+                    ),
+                  },
+                }}
                   className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg"
                 >
                   Editar retroalimentacion
                 </Link>
-                {feedback.feedback_status == "generated" && (
+                {feedback.feedback_status == "Generado" && (
                   <button onClick={() => createPullRequest()} 
+                  disabled={adding}
                   className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
-                    Agregar pull request
+                    
+                    {!adding ? 'Agregar pull request' : 'Agregando...'}
                   </button>
                 )}
 
-                <button onClick={() => generateFeedback()}
+                <button onClick={() => generateFeedback()} disabled={generating}
                 className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
-                  Volver a generar
+                  {!generating ? 'Volver a generar' : 'Generando...'}
                 </button>
               </div>
             </div>

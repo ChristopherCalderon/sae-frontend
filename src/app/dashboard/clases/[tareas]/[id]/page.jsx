@@ -40,7 +40,7 @@ function tarea() {
     try {
       await Promise.all(
         submissions.map(async (submission) => {
-          console.log(submission.repository.name)
+          console.log(submission.repository.status)
           const repoData = await getSubmissionData(submission.repository.name);
           console.log(repoData)
           await postFeedback(submission, repoData);
