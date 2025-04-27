@@ -1,7 +1,12 @@
 "use client";
+import ExcelButton from "@/components/buttons/ExcelButon";
 import Loading from "@/components/loader/Loading";
 import AssignmentsTable from "@/components/tables/AssignmentsTable";
-import { getRepoData, getSubmissions, postFeedback } from "@/services/githubService";
+import {
+  getRepoData,
+  getSubmissions,
+  postFeedback,
+} from "@/services/githubService";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
@@ -10,7 +15,7 @@ import { RiAiGenerate2 } from "react-icons/ri";
 function tarea() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {id} = useParams();   
+  const { id } = useParams();
 
   const getData = async () => {
     try {
@@ -40,10 +45,14 @@ function tarea() {
     try {
       await Promise.all(
         submissions.map(async (submission) => {
-          console.log(submission.repository.status)
-          const repoData = await getSubmissionData(submission.repository.name);
-          console.log(repoData)
-          await postFeedback(submission, repoData);
+          if (submission.feedback_status  === 'Pendiente') {
+            console.log(submission.repository.name)
+            const repoData = await getSubmissionData(
+              submission.repository.name
+            );
+            console.log(repoData);
+            await postFeedback(submission, repoData);
+          }
         })
       );
     } catch (error) {
@@ -67,15 +76,14 @@ function tarea() {
           </p>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => generateFeedback()} 
-          className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg">
+          <button
+            onClick={() => generateFeedback()}
+            className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
+          >
             <RiAiGenerate2 className="text-xl" />
             Generar retroalimentacion
           </button>
-          <button className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg">
-            <IoMdDownload className="text-xl" />
-            Descargar notas
-          </button>
+          <ExcelButton data={submissions} />
         </div>
       </div>
       <div
@@ -88,7 +96,11 @@ function tarea() {
         ) : submissions.length === 0 ? (
           <h1>No se encontraron entregas</h1>
         ) : (
-          <AssignmentsTable submissions={submissions} id={id} getFeedbacks={getData}/>
+          <AssignmentsTable
+            submissions={submissions}
+            id={id}
+            getFeedbacks={getData}
+          />
         )}
       </div>
     </div>
