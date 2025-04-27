@@ -12,7 +12,7 @@ import Loading from "../loader/Loading";
 
 function getFeedbackColor(status) {
   if (status === "sent") return "text-accent";
-  if (status === "pending") return "text-[#710000]";
+  if (status === "Pendiente") return "text-[#710000]";
   return "text-primary";
 }
 
@@ -123,7 +123,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks }) {
                 {u.repository.html_url}
               </td>
               <td className="px-2 py-2">
-                {u.feedback_status === "pending" ? (
+                {u.feedback_status === "Pendiente" ? (
                   <button
                     onClick={() =>
                       generateOne(
