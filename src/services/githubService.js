@@ -297,6 +297,20 @@ export const getModelProviders = async() => {
     
   }
 }
+export const getOrgModels = async(id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/model-types/org-models?orgId=${id}`)
+    if (res.status = 200){
+      return res.data.models
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    
+  }
+}
 
 export const createOrgModel = async(provider, model, name, key, org) => {
   const client = await apiClient();

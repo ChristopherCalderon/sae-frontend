@@ -6,7 +6,7 @@ import { RiGeminiLine } from "react-icons/ri";
 import React, { useEffect, useState } from "react";
 import { ImCancelCircle } from "react-icons/im";
 import { IoIosArrowDown } from "react-icons/io";
-import { createOrgModel, getModelProviders } from "@/services/githubService";
+import { createOrgModel, getModelProviders, getOrgModels } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
 import { useSession } from "next-auth/react";
 
@@ -32,18 +32,20 @@ function ModelsPage() {
       : nuevoModelo;
     setModelos([...modelos, nombreCompleto]);
 
-    setProveedor("");
-    setNuevoModelo("");
-    setNombreLlave("");
-    setLlave("");
+
   };
 
-  const getData = async () => {
+  const getData = async (id) => {
     try {
       setLoading(true);
-      const response = await getModelProviders();
-      if (response) {
-        setProviderArray(response);
+      const responseProviders = await getModelProviders();
+      if (responseProviders) {
+        setProviderArray(responseProviders);
+      }      
+      const responseModels = await getOrgModels(id);
+      if (responseModels) {
+        console.log(responseModels)
+        setModelos(responseModels);
       }
       setLoading(false);
     } catch (error) {
@@ -53,19 +55,27 @@ function ModelsPage() {
 
   const addModel = async () => {
     try {
-      const response = await createOrgModel(
+      await createOrgModel(
         proveedor,
         nuevoModelo,
         nombreLlave,
         llave,
         session.user.selectedOrgId
       );
+      setProveedor("");
+      setNuevoModelo("");
+      setNombreLlave("");
+      setLlave("");
+
+      getData(session.user.selectedOrgId)
+
+
     } catch (error) {}
   };
   useEffect(() => {
     if (status === "authenticated" ) {
     
-      getData()
+      getData(session.user.selectedOrgId)
     } else if (status === "loading") {
       // Sesión aún cargando
       setLoading(true);
@@ -84,9 +94,9 @@ function ModelsPage() {
           <Loading />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 h-full">
-            <div className="font-mono text-primary space-y-6 lg:border-r-2 border-gray-300 lg:pr-10">
+            <div className="font-mono text-primary space-y-6 lg:border-r-2 border-gray-300 lg:pr-20">
               <div>
-                <p className="font-bold">Modelos</p>
+                <p className="text-xl font-bold text-center mb-2">Modelos</p>
                 <div className="ml-4 md:ml-10 space-y-2">
                   {modelos.length === 0 ? (
                     <p className="text-gray-500 italic">
@@ -96,9 +106,9 @@ function ModelsPage() {
                     modelos.map((modelo, index) => (
                       <div
                         key={index}
-                        className="bg-blue-100 px-4 py-2 max-w-xs rounded shadow-md flex justify-between items-center"
+                        className="bg-blue-100 px-4 py-2 w-full rounded shadow-md flex justify-between items-center"
                       >
-                        <span>{modelo}</span>
+                        <span>{modelo.modelType.name} - {modelo.version} | {modelo.name}</span>
                         <button
                           onClick={() => eliminarModelo(index)}
                           className="text-primary hover:text-red-800 text-lg"
@@ -113,7 +123,7 @@ function ModelsPage() {
             </div>
 
             <div className="font-mono text-primary space-y-4 flex flex-col items-center">
-              <h2 className="text-xl font-bold">Agregar modelo</h2>
+              <h2 className="text-xl font-bold mt-1">Agregar modelo</h2>
 
               <div className="w-full max-w-sm">
                 <label className="font-bold">Proveedor</label>
