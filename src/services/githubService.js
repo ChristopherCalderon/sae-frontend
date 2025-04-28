@@ -281,3 +281,76 @@ export const createUserData = async (username) => {
     console.log(error)
   }
 }
+
+export const getModelProviders = async() => {
+  const client = await apiClient();
+  try {
+    const res = await client.get('/model-types/all')
+    if (res.status = 200){
+      console.log(res.data.modelTypes)
+      return res.data.modelTypes
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    
+  }
+}
+export const getOrgModels = async(id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/model-types/org-models?orgId=${id}`)
+    if (res.status = 200){
+      return res.data.models
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    
+  }
+}
+
+export const createOrgModel = async(provider, model, name, key, org) => {
+  const client = await apiClient();
+  const payload = {
+    "name": name,
+    "version": model,
+    "apiKey": key, 
+    "modelType": provider,
+    "orgId": org
+  }
+  console.log(payload)
+  try {
+    const res = await client.post(('/model-types/create'),payload,{
+      headers: {
+        'Content-Type': 'application/json'
+      }}
+    )
+    if (res.status = 200){
+      console.log(res.data.modelTypes)
+      return res.data.modelTypes
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    
+  }
+}
+
+export const deleteOrgModel = async(id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.delete(`/model-types/delete/${id}`)
+    if (res.status = 200){
+      return res.data.models
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    
+  }
+}
