@@ -6,7 +6,7 @@ import { RiGeminiLine } from "react-icons/ri";
 import React, { useEffect, useState } from "react";
 import { ImCancelCircle } from "react-icons/im";
 import { IoIosArrowDown } from "react-icons/io";
-import { createOrgModel, getModelProviders, getOrgModels } from "@/services/githubService";
+import { createOrgModel, deleteOrgModel, getModelProviders, getOrgModels } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
 import { useSession } from "next-auth/react";
 
@@ -25,15 +25,6 @@ function ModelsPage() {
     setModelos(nuevosModelos);
   };
 
-  const agregarModelo = () => {
-    if (nuevoModelo.trim() === "") return;
-    const nombreCompleto = proveedor
-      ? `${proveedor} - ${nuevoModelo} - `
-      : nuevoModelo;
-    setModelos([...modelos, nombreCompleto]);
-
-
-  };
 
   const getData = async (id) => {
     try {
@@ -68,10 +59,18 @@ function ModelsPage() {
       setLlave("");
 
       getData(session.user.selectedOrgId)
-
-
     } catch (error) {}
   };
+
+  const deleteModel = async(id) => {
+    try {
+      await deleteOrgModel(id)
+      getData(session.user.selectedOrgId)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     if (status === "authenticated" ) {
     
@@ -105,12 +104,12 @@ function ModelsPage() {
                   ) : (
                     modelos.map((modelo, index) => (
                       <div
-                        key={index}
+                        key={modelo._id}
                         className="bg-blue-100 px-4 py-2 w-full rounded shadow-md flex justify-between items-center"
                       >
                         <span>{modelo.modelType.name} - {modelo.version} | {modelo.name}</span>
                         <button
-                          onClick={() => eliminarModelo(index)}
+                          onClick={() => deleteModel(modelo._id)}
                           className="text-primary hover:text-red-800 text-lg"
                         >
                           <ImCancelCircle />

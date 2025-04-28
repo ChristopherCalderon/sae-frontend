@@ -339,3 +339,18 @@ export const createOrgModel = async(provider, model, name, key, org) => {
     
   }
 }
+
+export const deleteOrgModel = async(id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.delete(`/model-types/delete/${id}`)
+    if (res.status = 200){
+      return res.data.models
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    
+  }
+}
