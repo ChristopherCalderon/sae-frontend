@@ -309,6 +309,7 @@ export const getOrgModels = async(id) => {
     }
   } catch (error) {
     
+    console.log(error.message)
   }
 }
 
@@ -352,5 +353,76 @@ export const deleteOrgModel = async(id) => {
     }
   } catch (error) {
     
+    console.log(error.message)
   }
 }
+
+export const getTeachers = async(id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/user/teachers?orgId=${id}`)
+    if (res.status = 200){
+      return res.data.data
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+export const getOneTeacher = async() => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/user/teacher/chris2001289@gmail.com`)
+    if (res.status = 200){
+      console.log(res.data)
+      return res.data
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+export const getTeacherModels = async(email) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/model-types/models-for-teacher?email=${email}`)
+    if (res.status = 200){
+      console.log(res.data)
+      return res.data
+    }
+    else{
+      return []
+    }
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+export const patchTeacherModels = async (model,email,org) => {
+  const client = await apiClient();
+  try {
+    const res = await client.patch((`/model-types/add-teacher?modelId=${model}&email=${email}&orgId=${org}`), {
+    },
+      {
+        headers: {
+          'Content-Type' : 'application/json'
+        }
+      }
+    )
+    if (res.status === 200) {
+      console.log(res);
+      return res;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
