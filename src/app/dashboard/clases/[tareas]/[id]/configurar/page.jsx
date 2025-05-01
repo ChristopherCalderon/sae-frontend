@@ -1,46 +1,83 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from "next/navigation";
+import {
+  createTaskConfig,
+  getTaskConfig,
+  getTeacherModels,
+} from "@/services/githubService";
+import Loading from "@/components/loader/Loading";
+import { useSession } from "next-auth/react";
 
 function Configurar() {
   const router = useRouter();
+  const pathname = usePathname();
+  const [taskId, setTaskId] = useState(null);
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [models, setModels] = useState();
+  const [config, setConfig] = useState();
   const [formData, setFormData] = useState({
-    lenguaje: "",
-    nivel: "Intermedio",
-    estilo: "",
-    temas: [],
-    restricciones: [],
-    newTema: "",
-    newRestriccion: "",
+    constraints: "",
+    extension: "",
+    language: "",
+    modelIA: "",
+    providerNameIA: "",
+    studentLevel: "",
+    style: "",
+    topic: "",
   });
 
-  const handleChange = (e, field, index, section) => {
-    if (section) {
-      const newArr = [...formData[section]];
-      newArr[index] = e.target.value;
-      setFormData({ ...formData, [section]: newArr });
-    } else {
-      setFormData({ ...formData, [field]: e.target.value });
+  const { data: session, status } = useSession();
+
+  const getData = async (id, teacherId) => {
+    setLoading(true);
+    try {
+      console.log(id);
+      const modelsRes = await getTeacherModels(teacherId);
+      setModels(modelsRes.models);
+      const response = await getTaskConfig(id);
+      if(response){
+        setFormData(response.data);
+        console.log(response.data);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const addField = (section) => {
-    setFormData({ ...formData, [section]: [...formData[section], ""] });
+  const handleChange = (e, field) => {
+      setFormData({ ...formData, [field]: e.target.value });
   };
 
-  const removeField = (section, index) => {
-    const newArr = formData[section].filter((_, i) => i !== index);
-    setFormData({ ...formData, [section]: newArr });
-  };
+  const handleModelChange = (e) => {
+    const selectedModelName = e.target.value;
+    const selectedModel = models.find((model) => model._id === selectedModelName);
+  
+    if (selectedModel) {
+      setFormData((prevData) => ({
+        ...prevData,
+        modelIA: selectedModel.name,
+        providerNameIA: selectedModel.modelType.name
+      }));
+    }
+};
+  
+  console.log(formData)
 
-  const cancelar = () => {
-  };
+  useEffect(() => {
+    if (pathname) {
+      const partes = pathname.split("/");
+      const id = partes[4];
+      setTaskId(id);
+    }
 
-  const guardar = () => {
-    console.log("Datos enviados:", formData);
-  };
+    if (pathname && status === "authenticated") {
+      getData(taskId, session.user.email);
+    }
+  }, [pathname, status]);
 
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
@@ -55,166 +92,101 @@ function Configurar() {
       </div>
 
       <div className="w-full h-[90%] bg-white shadow-xl px-3 py-1 gap-3 rounded-md overflow-auto flex flex-col justify-center">
-        <h1 className="text-primary text-lg font-bold">Configurar tarea</h1>
-        {step === 1 && (
-          <div className="bg-background rounded-md h-[85%] p-8 flex flex-col items-center justify-center gap-5 text-primary">
-            <h3 className="text-lg font-bold mb-4">Aspectos generales</h3>
-            <div className="w-1/2 flex flex-col gap-1">
-              <p className="font-medium">Lenguaje de programacion</p>
-              <input
-                className="w-full mb-4 p-2 shadow-md rounded bg-white"
-                placeholder="Lenguaje de programación"
-                value={formData.lenguaje}
-                onChange={(e) => handleChange(e, "lenguaje")}
-              />
-              <p className="font-medium">Nivel de estudiante</p>
-              <select
-                className="w-full mb-4 p-2 appearance-none shadow-md rounded bg-white"
-                value={formData.nivel}
-                onChange={(e) => handleChange(e, "nivel")}
-              >
-                <option value="Principiante">Principiante</option>
-                <option value="Intermedio">Intermedio</option>
-                <option value="Avanzado">Avanzado</option>
-              </select>
-              <p className="font-medium">Lenguaje de programacion</p>
-              <input
-                className="w-full mb-4 p-2 shadow-md rounded bg-white   "
-                placeholder="Reglas de estilo"
-                value={formData.estilo}
-                onChange={(e) => handleChange(e, "estilo")}
-              />
-            </div>
+        {loading ? (
+          <Loading />
+        ) : (
+          <div className="w-full h-full flex flex-col justify-center">
+            {step === 1 && (
+              <div className="bg-background rounded-md h-[90%] p-8 flex  items-center justify-center gap-5 text-primary">
+                <div className="w-1/2 h-full flex flex-col justify-center gap-1">
+                  <p className="font-medium">Lenguaje de programacion</p>
+                  <div className="flex gap-2">
+                    <input
+                      className="w-2/3 mb-4 p-2 shadow-md rounded bg-white"
+                      placeholder="Nombre del lenguaje"
+                      value={formData.language}
+                      onChange={(e) => handleChange(e, "language")}
+                    />
+                    <input
+                      className="w-1/3 mb-4 p-2 shadow-md rounded bg-white"
+                      placeholder="Extension"
+                      value={formData.extension}
+                      onChange={(e) => handleChange(e, "extension")}
+                    />
+                  </div>
 
-            <div className="flex gap-4">
-              <button
-                onClick={() => router.back()}
-                className="bg-primary font-semibold text-white px-4 py-2 rounded"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => setStep(2)}
-                className="bg-primary font-semibold text-white px-4 py-2 rounded"
-              >
-                Siguiente
-              </button>
-            </div>
+                  <p className="font-medium">Nivel de estudiante</p>
+                  <select
+                    className="w-full mb-4 p-2 appearance-none shadow-md rounded bg-white"
+                    value={formData.studentLevel}
+                    onChange={(e) => handleChange(e, "studentLevel")}
+                  >
+                  <option className="text-primary/40" value="">
+                        Selecciona el nivel
+                      </option>
+                    <option value="Principiante">Principiante</option>
+                    <option value="Intermedio">Intermedio</option>
+                    <option value="Avanzado">Avanzado</option>
+                  </select>
+                  <p className="font-medium">Reglas de estilo</p>
+                  <input
+                    className="w-full mb-4 p-2 shadow-md rounded bg-white   "
+                    placeholder="Reglas de estilo"
+                    value={formData.style}
+                    onChange={(e) => handleChange(e, "style")}
+                  />
+                  <p className="font-medium">Modelo de IA</p>
+                  <select
+                    className="w-full mb-4 p-2 appearance-none shadow-md rounded bg-white"
+                    value={formData.modelIA}
+                    onChange={(e) => handleModelChange(e)}
+                  >
+                    <option className="text-primary/40" value="">
+                        Selecciona un modelo
+                      </option>
+                    {models.map((model) => (
+                      <option key={model._id} value={model._id}>
+                        {model.modelType.name} - {model.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="w-1/2 h-full flex flex-col justify-center gap-1">
+                  <p className="font-medium">Temas a evaluuar</p>
+                  <textarea
+                    className="w-full mb-4 p-2 h-1/4 shadow-md rounded resize-none bg-white   "
+                    placeholder="Reglas de estilo"
+                    value={formData.topic}
+                    onChange={(e) => handleChange(e, "topic")}
+                  />
+                  <p className="font-medium">Restricciones</p>
+                  <textarea
+                    className="w-full mb-4 p-2 h-1/4 shadow-md rounded resize-none bg-white   "
+                    placeholder="Reglas de estilo"
+                    value={formData.constraints}
+                    onChange={(e) => handleChange(e, "constraints")}
+                  />
+                </div>
+              </div>
+            )}
+
+            {step === 2 && <a>a</a>}
           </div>
         )}
-
-{step === 2 && (
-  <div className="bg-background rounded-md h-[85%] p-8 flex flex-col items-center justify-center gap-5 text-primary">
-    <h3 className="text-lg font-bold mb-4">Temas a evaluar y Restricciones</h3>
-    <div className="w-full flex justify-center gap-8">
-      {/* TEMAS */}
-      <div className="flex flex-col w-1/3">
-        <h4 className="font-semibold mb-2">Temas a evaluar</h4>
-        <div className="flex flex-col gap-2 mb-2 h-50 overflow-y-auto [&::-webkit-scrollbar]:w-1
-        [&::-webkit-scrollbar-track]:bg-background
-        [&::-webkit-scrollbar-thumb]:bg-primary">
-          {formData.temas.map((tema, i) => (
-            <div key={i} className="flex items-center justify-between bg-secondary px-3 py-1 rounded-md text-sm shadow-md">
-              {tema}
-              <button
-                onClick={() => removeField("temas", i)}
-                className="ml-2 text-primary"
-              >
-                <FaTimes />
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2 mt-2">
-          <input
-            type="text"
-            placeholder="Nuevo tema"
-            className="w-full p-2 bg-white text-primary shadow-md rounded"
-            value={formData.newTema || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, newTema: e.target.value })
-            }
-          />
+        <div className="flex gap-4">
           <button
-            onClick={() => {
-              if (formData.newTema?.trim()) {
-                addField("temas");
-                setFormData({ ...formData, temas: [...formData.temas, formData.newTema], newTema: "" });
-              }
-            }}
-            className="bg-primary font-semibold text-white px-3 shadow-md hover:bg-primary-hover rounded"
+            onClick={() => router.back()}
+            className="bg-primary font-semibold text-white px-4 py-2 rounded"
           >
-            Agregar
+            Cancelar
+          </button>
+          <button
+            onClick={() => setStep(2)}
+            className="bg-primary font-semibold text-white px-4 py-2 rounded"
+          >
+            Siguiente
           </button>
         </div>
-      </div>
-
-      {/* DIVISOR */}
-      <div className="inline-block h-[250px] min-h-[1em] w-0.5 bg-[#003C71]/10 justify-self-center"></div>
-
-      {/* RESTRICCIONES */}
-      <div className="flex flex-col w-1/3">
-        <h4 className="font-semibold mb-2">Restricciones</h4>
-        <div className="flex flex-col gap-2 mb-2 h-50 overflow-y-auto [&::-webkit-scrollbar]:w-1
-        [&::-webkit-scrollbar-track]:bg-background
-        [&::-webkit-scrollbar-thumb]:bg-primary">
-          {formData.restricciones.map((restriccion, i) => (
-            <div key={i} className="flex items-center justify-between bg-secondary px-3 py-1 rounded-md text-sm shadow-md">
-              {restriccion}
-              <button
-                onClick={() => removeField("restricciones", i)}
-                className="ml-2 text-primary"
-              >
-                <FaTimes />
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2 mt-2">
-          <input
-            type="text"
-            placeholder="Nueva restricción"
-            className="w-full p-2 bg-white text-primary shadow-md rounded"
-            value={formData.newRestriccion || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, newRestriccion: e.target.value })
-            }
-          />
-          <button
-            onClick={() => {
-              if (formData.newRestriccion?.trim()) {
-                setFormData({
-                  ...formData,
-                  restricciones: [...formData.restricciones, formData.newRestriccion],
-                  newRestriccion: "",
-                });
-              }
-            }}
-            className="bg-primary hover:bg-primary-hover shadow-md font-semibold text-white px-3 rounded"
-          >
-            Agregar
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div className="flex gap-4 mt-6">
-      <button
-        onClick={() => setStep(1)}
-        className="bg-primary font-semibold text-white px-4 py-2 rounded"
-      >
-        Regresar
-      </button>
-      <button
-        onClick={guardar}
-        className="bg-primary font-semibold text-white px-4 py-2 rounded"
-      >
-        Guardar
-      </button>
-    </div>
-  </div>
-)}
-
       </div>
     </div>
   );

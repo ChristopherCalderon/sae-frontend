@@ -1,7 +1,7 @@
 "use client";
 
 import Loading from "@/components/loader/Loading";
-import { getOrgModels, getTeacherModels, patchTeacherModels } from "@/services/githubService";
+import { deleteAsignedModel, getOrgModels, getTeacherModels, patchTeacherModels } from "@/services/githubService";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -47,6 +47,17 @@ function SubjectPage() {
         console.log(error)
     }
   }
+
+  const deleteModel = async (model) =>{
+    try {
+        setLoading(true)
+        await deleteAsignedModel(model, email, session.user.selectedOrgId)
+        getData(session.user.selectedOrgId);
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
 
   const getData = async (orgId) => {
     try {
@@ -105,7 +116,7 @@ function SubjectPage() {
                       >
                         <span>{modelo.name}</span>
                         <button 
-                          onClick={() => eliminarModelo(index)}
+                          onClick={() => deleteModel(modelo._id)}
                           className="text-primary hover:text-red-800 text-lg"
                         >
                           <ImCancelCircle />
