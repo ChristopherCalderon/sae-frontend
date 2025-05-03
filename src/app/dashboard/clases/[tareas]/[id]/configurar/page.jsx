@@ -6,6 +6,7 @@ import {
   createTaskConfig,
   getTaskConfig,
   getTeacherModels,
+  updateTaskConfig,
 } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
 import { useSession } from "next-auth/react";
@@ -17,7 +18,7 @@ function Configurar() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
   const [models, setModels] = useState();
-  const [config, setConfig] = useState();
+  const [first, setFirst] = useState(true);
   const [formData, setFormData] = useState({
     constraints: "",
     extension: "",
@@ -39,6 +40,7 @@ function Configurar() {
       setModels(modelsRes.models);
       const response = await getTaskConfig(id);
       if(response){
+        setFirst(false)
         setFormData(response.data);
         console.log(response.data);
       }
@@ -47,6 +49,18 @@ function Configurar() {
       console.log(error);
     }
   };
+
+  const saveData = async () => {
+    try {
+      if(first){
+        await createTaskConfig(taskId, formData)
+      } else {
+        await updateTaskConfig(taskId, formData)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleChange = (e, field) => {
       setFormData({ ...formData, [field]: e.target.value });
@@ -59,7 +73,7 @@ function Configurar() {
     if (selectedModel) {
       setFormData((prevData) => ({
         ...prevData,
-        modelIA: selectedModel.name,
+        modelIA: selectedModel._id,
         providerNameIA: selectedModel.modelType.name
       }));
     }
@@ -181,7 +195,7 @@ function Configurar() {
             Cancelar
           </button>
           <button
-            onClick={() => setStep(2)}
+            onClick={() => saveData()}
             className="bg-primary font-semibold text-white px-4 py-2 rounded"
           >
             Siguiente

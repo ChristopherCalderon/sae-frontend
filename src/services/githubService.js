@@ -171,7 +171,7 @@ export const getRepoData = async (repo) => {
   }
 };
 
-export const postFeedback = async (repo, repoData) => {
+export const postFeedback = async (repo, repoData, config) => {
   console.log(repo.repository.name);
   console.log(repo.assignment.id);
   const [value, total] = repo.grade.split("/").map(Number);
@@ -180,19 +180,20 @@ export const postFeedback = async (repo, repoData) => {
     code: repoData.code,
     gradeValue: value,
     gradeTotal: total,
-    modelIA: "gemini",
     email: repo.email,
     idTaskGithubClassroom: repo.assignment.id,
-    language: "C++",
-    subject: "Estructuras Dinámicas",
-    studentLevel: "Universitario - Segundo Año",
-    topics: "condicionales y loops",
-    constraints: "No usar librerías externas",
-    style: "Google C++ Style Guide",
+    language: config.language,
+    topics: config.topic,
+    studentLevel: config.studentLevel,
+    constraints: config.constraints,
+    style: config.style,
+    modelId: config.modelIA
   };
+
+  const modelProvider = config.providerNameIA?.toLowerCase()
   try {
     const res = await axios.post(
-      `https://sae-backend-n9d3.onrender.com/feedback/${repo.repository.name}/gemini`,
+      `https://sae-backend-n9d3.onrender.com/feedback/${repo.repository.name}/${modelProvider}`,
       payload,
       {
         headers: {
@@ -454,17 +455,17 @@ export const getTaskConfig = async (id) => {
   }
 };
 
-export const createTaskConfig = async (id) => {
+export const createTaskConfig = async (id, body) => {
   const client = await apiClient();
   const payload = {
-    "language": "c++",
-    "extension": ".cpp",
-    "studentLevel": "intermedio",
-    "style": "google",
-    "topic": "arrays",
-    "constraints": "cosas",
-    "modelIA": "gemini",
-    "providerNameIA": "gemini",
+    "language": body.language,
+    "extension": body.extension,
+    "studentLevel": body.studentLevel,
+    "style": body.style,
+    "topic": body.topic,
+    "constraints": body.constraints,
+    "modelIA": body.modelIA,
+    "providerNameIA": body.providerNameIA,
     "idTaskGithubClassroom": id
   }
   try {
@@ -486,3 +487,36 @@ export const createTaskConfig = async (id) => {
     console.log(error);
   }
 };
+
+export const updateTaskConfig = async (id, body) => {
+  const client = await apiClient();
+  const payload = {
+    "language": body.language,
+    "extension": body.extension,
+    "studentLevel": body.studentLevel,
+    "style": body.style,
+    "topic": body.topic,
+    "constraints": body.constraints,
+    "modelIA": body.modelIA,
+    "providerNameIA": body.providerNameIA
+  }
+  try {
+    const res = await client.put(
+      `/task-config/${id}`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if ((res.status = 200)) {
+      return res;
+    }
+    return [];
+  } catch (error) {
+    console.log(error);
+  }
+};
+

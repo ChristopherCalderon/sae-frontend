@@ -5,16 +5,18 @@ import AssignmentsTable from "@/components/tables/AssignmentsTable";
 import {
   getRepoData,
   getSubmissions,
+  getTaskConfig,
   postFeedback,
 } from "@/services/githubService";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
 import { RiAiGenerate2 } from "react-icons/ri";
 
 function tarea() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [config, setConfig] = useState();
   const { id } = useParams();
 
   const getData = async () => {
@@ -23,6 +25,9 @@ function tarea() {
       const response = await getSubmissions(id);
       console.log(response);
       setSubmissions(response || []);
+      const taskResponse = await getTaskConfig(id)
+      console.log(taskResponse.data)
+      setConfig(taskResponse.data)
     } catch (error) {
       console.error("Error:", error);
       setSubmissions([]);
@@ -100,6 +105,7 @@ function tarea() {
             submissions={submissions}
             id={id}
             getFeedbacks={getData}
+            config={config}
           />
         )}
       </div>

@@ -39,13 +39,14 @@ const generateOne = async (
   id,
   setLoading,
   setSuccessMessage,
-  getFeedbacks
+  getFeedbacks,
+  config
 ) => {
   setLoading(true);
   try {
     const repoData = await getData(repo.repository.name);
     //const assignmentConfig = await getConfig(id)
-    await postFeedback(repo, repoData);
+    await postFeedback(repo, repoData,config);
     setSuccessMessage("Generado correctamente");
   } catch (error) {
     console.log("Error al generar retroalimentación", error);
@@ -63,7 +64,7 @@ const generateAll = (repos) => {
   });
 };
 
-function AssignmentsTable({ submissions, id, getFeedbacks }) {
+function AssignmentsTable({ submissions, id, getFeedbacks, config }) {
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -131,7 +132,8 @@ function AssignmentsTable({ submissions, id, getFeedbacks }) {
                         id,
                         setLoading,
                         setSuccessMessage,
-                        getFeedbacks
+                        getFeedbacks,
+                        config
                       )
                     }
                     className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded"
