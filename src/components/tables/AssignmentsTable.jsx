@@ -16,9 +16,9 @@ function getFeedbackColor(status) {
   return "text-primary";
 }
 
-const getData = async (repoName) => {
+const getData = async (repoName, org, extension) => {
   try {
-    const response = await getRepoData(repoName);
+    const response = await getRepoData(repoName, org, extension);
     return response;
   } catch (error) {
     console.log(error);
@@ -40,12 +40,13 @@ const generateOne = async (
   setLoading,
   setSuccessMessage,
   getFeedbacks,
-  config
+  config,
+  org
 ) => {
   setLoading(true);
   try {
-    const repoData = await getData(repo.repository.name);
-    //const assignmentConfig = await getConfig(id)
+    console.log(config)
+    const repoData = await getData(repo.repository.name, org, config.extension);
     await postFeedback(repo, repoData,config);
     setSuccessMessage("Generado correctamente");
   } catch (error) {
@@ -64,7 +65,7 @@ const generateAll = (repos) => {
   });
 };
 
-function AssignmentsTable({ submissions, id, getFeedbacks, config }) {
+function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -133,7 +134,8 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config }) {
                         setLoading,
                         setSuccessMessage,
                         getFeedbacks,
-                        config
+                        config,
+                        org
                       )
                     }
                     className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded"
@@ -149,6 +151,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config }) {
                           JSON.stringify({
                             email: u.email,
                             repo: u.assignment.id,
+                            org: org
                           })
                         ),
                       },

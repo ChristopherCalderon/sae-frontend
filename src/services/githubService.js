@@ -69,7 +69,7 @@ export const getAssignmentConfig = async (id) => {
 };
 
 //Feedback------------------------------------------------------
-export const getFeedback = async (email, repo) => {
+export const getFeedback = async (email, repo, org) => {
   const client = await apiClient();
   try {
     // Peticion inicial para obtener el feedback y repositorio
@@ -82,7 +82,7 @@ export const getFeedback = async (email, repo) => {
     }
     console.log(res.data.repo);
     const workflowRes = await client.get(
-      `/repo/${res.data.repo}/workflow/details`
+      `/repo/${res.data.repo}/workflow/details?orgName=${org}`
     );
     const statusRes = await client.get(`/feedback/status/${res.data.repo}`);
 
@@ -156,10 +156,10 @@ export const getSubmissions = async (id) => {
   }
 };
 
-export const getRepoData = async (repo) => {
+export const getRepoData = async (repo,org, extension) => {
   const client = await apiClient();
   try {
-    const res = await client.get(`/repo/${repo}/files?ext=.cpp`);
+    const res = await client.get(`/repo/${repo}/files?orgName=${org}&ext=${extension}`);
     if (res.status === 200) {
       return res.data;
     } else {
@@ -262,6 +262,22 @@ export const postPullRequest = async (repo, feedbackText) => {
     console.log(error);
   }
 };
+
+
+export const deleteFeedback = async (email, id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.delete(`/feedback/delete?email=${email}&idTaskGithubClassroom=${id}`);
+    if ((res.status = 200)) {
+      return res.data.models;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 
 //Login------------------------------------------------------
 export const createUserData = async (username) => {

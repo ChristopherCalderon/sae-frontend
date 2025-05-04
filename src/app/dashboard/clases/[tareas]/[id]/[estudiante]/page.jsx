@@ -4,26 +4,37 @@ import { FaGithub } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { getFeedback, getRepoData, patchFeedback, postFeedback, postPullRequest } from "@/services/githubService";
+import {
+  deleteFeedback,
+  getFeedback,
+  getRepoData,
+  getTaskConfig,
+  patchFeedback,
+  postFeedback,
+  postPullRequest,
+} from "@/services/githubService";
 import { useEffect, useState } from "react";
 import Loading from "@/components/loader/Loading";
-
-
+import { useSession } from "next-auth/react";
 
 function entrega() {
   const searchParams = useSearchParams();
   const encodedData = searchParams.get("data");
-  const { email, repo } = JSON.parse(atob(encodedData));
+  const { email, repo, org } = JSON.parse(atob(encodedData));
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState();
   const [generating, setGenerating] = useState(false);
-  const [adding, setAdding ] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [taskConfig, setTaskConfig] = useState();
 
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await getFeedback(email, repo);
-      console.log(response);
+      const response = await getFeedback(email, repo, org);
+      
+
+      const configResponse = await getTaskConfig(response.idTaskGithubClassroom)
+      setTaskConfig(configResponse.data);
       setFeedback(response);
     } catch (error) {
       console.error("Error:", error);
@@ -35,27 +46,26 @@ function entrega() {
 
   const updateFeedback = async (email, id, feedback) => {
     try {
-      const res = await patchFeedback(email, id, feedback)
+      const res = await patchFeedback(email, id, feedback);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const createPullRequest = async () => {
     try {
-      
-      setAdding(true)
-      await postPullRequest(feedback.repo, feedback.feedback)
+      setAdding(true);
+      await postPullRequest(feedback.repo, feedback.feedback);
       getData();
-      setAdding(false)
+      setAdding(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const getSubmissionData = async () => {
     try {
-      const response = await getRepoData(feedback.repo);
+      const response = await getRepoData(feedback.repo, org, taskConfig.extension);
       return response;
     } catch (error) {
       console.log(error);
@@ -64,34 +74,39 @@ function entrega() {
 
   const generateFeedback = async () => {
     try {
-      setGenerating(true)
+      setGenerating(true);
       const repoData = await getSubmissionData();
       const payload = {
         grade: `${feedback.gradeValue}/${feedback.gradeTotal}`,
         email: feedback.email,
-        assignment: {  
-          id: feedback.idTaskGithubClassroom
+        assignment: {
+          id: feedback.idTaskGithubClassroom,
         },
-        repository: {  
-          name: feedback.repo 
-        }
-      }
-      console.log('feedback')
-      console.log(feedback)
-      console.log(feedback.idTaskGithubClassroom)
-      const res = await postFeedback(payload, repoData)
-      const newFeedback = res.feedback
-      const newData = await updateFeedback(feedback.email, feedback.idTaskGithubClassroom , newFeedback) 
+        repository: {
+          name: feedback.repo,
+        },
+      };
+      console.log("feedback");
+      console.log(feedback);
+      console.log(feedback.idTaskGithubClassroom);
+      await deleteFeedback(feedback.email, feedback.idTaskGithubClassroom)
+      const res = await postFeedback(payload, repoData, taskConfig);
+      const newFeedback = res.feedback;
+      const newData = await updateFeedback(
+        feedback.email,
+        feedback.idTaskGithubClassroom,
+        newFeedback
+      );
       getData();
-      setGenerating(false)
+      setGenerating(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    getData();
-  }, []);
+      getData()
+  }, []); 
 
   const pathname = usePathname();
   return (
@@ -111,9 +126,7 @@ function entrega() {
             <div className="flex w-full justify-between">
               {/* Informacion de retroalimentacion */}
               <div className="flex flex-col">
-                <h1 className="font-bold">
-                  {feedback.repo}
-                </h1>
+                <h1 className="font-bold">{feedback.repo}</h1>
                 <p>Workflow: {feedback.workflow_name}</p>
                 <p>Estado: {feedback.workflow_status}</p>
                 <p>Conclusion: {feedback.workflow_conclusion}</p>
@@ -133,39 +146,43 @@ function entrega() {
                     <FaGithub className="text-lg" /> Ver ejecucion en github
                   </a>
                 </span>
-                <p>Generado con:  {feedback.modelIA}</p>
-                <p>Creado en:  {feedback.createdAt}</p>
+                <p>Generado con: {feedback.modelIA}</p>
+                <p>Creado en: {feedback.createdAt}</p>
               </div>
               {/* Botones de retroalimentacion */}
               <div className="flex flex-col gap-1 justify-center">
                 <Link
-                href={{
-                  pathname: `${pathname}/editar`,
-                  query: {
-                    data: btoa(
-                      JSON.stringify({
-                        email: email,
-                        repo: repo,
-                      })
-                    ),
-                  },
-                }}
+                  href={{
+                    pathname: `${pathname}/editar`,
+                    query: {
+                      data: btoa(
+                        JSON.stringify({
+                          email: email,
+                          repo: repo,
+                        })
+                      ),
+                    },
+                  }}
                   className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg"
                 >
                   Editar retroalimentacion
                 </Link>
                 {feedback.feedback_status == "Generado" && (
-                  <button onClick={() => createPullRequest()} 
-                  disabled={adding}
-                  className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
-                    
-                    {!adding ? 'Agregar pull request' : 'Agregando...'}
+                  <button
+                    onClick={() => createPullRequest()}
+                    disabled={adding}
+                    className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg"
+                  >
+                    {!adding ? "Agregar pull request" : "Agregando..."}
                   </button>
                 )}
 
-                <button onClick={() => generateFeedback()} disabled={generating}
-                className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
-                  {!generating ? 'Volver a generar' : 'Generando...'}
+                <button
+                  onClick={() => generateFeedback()}
+                  disabled={generating}
+                  className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg"
+                >
+                  {!generating ? "Volver a generar" : "Generando..."}
                 </button>
               </div>
             </div>

@@ -88,10 +88,11 @@ function Configurar() {
       setTaskId(id);
     }
 
-    if (pathname && status === "authenticated") {
+    if (taskId && status === "authenticated") {
+      console.log(taskId)
       getData(taskId, session.user.email);
     }
-  }, [pathname, status]);
+  }, [pathname, status, taskId]);
 
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
@@ -187,7 +188,7 @@ function Configurar() {
             {step === 2 && <a>a</a>}
           </div>
         )}
-        <div className="flex gap-4">
+        <div className="flex gap-4 justify-center">
           <button
             onClick={() => router.back()}
             className="bg-primary font-semibold text-white px-4 py-2 rounded"
@@ -198,7 +199,7 @@ function Configurar() {
             onClick={() => saveData()}
             className="bg-primary font-semibold text-white px-4 py-2 rounded"
           >
-            Siguiente
+            Guardar
           </button>
         </div>
       </div>
