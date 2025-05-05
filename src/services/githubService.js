@@ -4,7 +4,6 @@ import { getSession } from "next-auth/react";
 export const apiClient = async () => {
   const session = await getSession();
   const token = session?.accessToken;
-  
 
   if (!token) throw new Error("No hay accessToken disponible");
 
@@ -18,8 +17,8 @@ export const apiClient = async () => {
   return instance;
 };
 
+//Clases------------------------------------------------------
 export const getClasses = async (orgId) => {
-
   const client = await apiClient();
   try {
     const res = await client.get(`/repo/classrooms?orgId=${orgId}`);
@@ -35,6 +34,7 @@ export const getClasses = async (orgId) => {
   }
 };
 
+//Tareas------------------------------------------------------
 export const getAssignments = async (id) => {
   const client = await apiClient();
   try {
@@ -68,7 +68,8 @@ export const getAssignmentConfig = async (id) => {
   }
 };
 
-export const getFeedback = async (email, repo) => {
+//Feedback------------------------------------------------------
+export const getFeedback = async (email, repo, org) => {
   const client = await apiClient();
   try {
     // Peticion inicial para obtener el feedback y repositorio
@@ -81,7 +82,7 @@ export const getFeedback = async (email, repo) => {
     }
     console.log(res.data.repo);
     const workflowRes = await client.get(
-      `/repo/${res.data.repo}/workflow/details`
+      `/repo/${res.data.repo}/workflow/details?orgName=${org}`
     );
     const statusRes = await client.get(`/feedback/status/${res.data.repo}`);
 
@@ -155,10 +156,10 @@ export const getSubmissions = async (id) => {
   }
 };
 
-export const getRepoData = async (repo) => {
+export const getRepoData = async (repo,org, extension) => {
   const client = await apiClient();
   try {
-    const res = await client.get(`/repo/${repo}/files?ext=.cpp`);
+    const res = await client.get(`/repo/${repo}/files?orgName=${org}&ext=${extension}`);
     if (res.status === 200) {
       return res.data;
     } else {
@@ -170,40 +171,37 @@ export const getRepoData = async (repo) => {
   }
 };
 
-
-
-export const postFeedback = async (repo, repoData) => {
-
-  
-  console.log(repo.repository.name)
-  console.log(repo.assignment.id)
-  const [value, total] = repo.grade.split('/').map(Number);
+export const postFeedback = async (repo, repoData, config) => {
+  console.log(repo.repository.name);
+  console.log(repo.assignment.id);
+  const [value, total] = repo.grade.split("/").map(Number);
   const payload = {
     readme: repoData.readme,
     code: repoData.code,
     gradeValue: value,
     gradeTotal: total,
-    modelIA: "gemini",
     email: repo.email,
     idTaskGithubClassroom: repo.assignment.id,
-    language: "C++",
-    subject: "Estructuras Dinámicas",
-    studentLevel: "Universitario - Segundo Año",
-    topics: "condicionales y loops",
-    constraints: "No usar librerías externas",
-    style: "Google C++ Style Guide",
+    language: config.language,
+    topics: config.topic,
+    studentLevel: config.studentLevel,
+    constraints: config.constraints,
+    style: config.style,
+    modelId: config.modelIA
   };
+
+  const modelProvider = config.providerNameIA?.toLowerCase()
   try {
     const res = await axios.post(
-      `https://sae-backend-n9d3.onrender.com/feedback/${repo.repository.name}/gemini`,
+      `https://sae-backend-n9d3.onrender.com/feedback/${repo.repository.name}/${modelProvider}`,
       payload,
       {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
-    
+
     if (res.status === 201) {
       console.log(res);
       return res.data;
@@ -211,22 +209,24 @@ export const postFeedback = async (repo, repoData) => {
       return [];
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
-export const patchFeedback = async (email, id , feedback) => {
+export const patchFeedback = async (email, id, feedback) => {
   const client = await apiClient();
   try {
-    const res = await client.patch((`/feedback/update?email=${email}&idTaskGithubClassroom=${id}`), {
-      feedback: feedback
-    },
+    const res = await client.patch(
+      `/feedback/update?email=${email}&idTaskGithubClassroom=${id}`,
+      {
+        feedback: feedback,
+      },
       {
         headers: {
-          'Content-Type' : 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
-    )
+    );
     if (res.status === 200) {
       console.log(res);
       return res;
@@ -234,22 +234,24 @@ export const patchFeedback = async (email, id , feedback) => {
       return [];
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const postPullRequest = async (repo, feedbackText) => {
   const client = await apiClient();
   try {
-    const res = await client.post((`/repo/${repo}/pr/feedback`), {
-      feedback: feedbackText
-    },
+    const res = await client.post(
+      `/repo/${repo}/pr/feedback`,
+      {
+        feedback: feedbackText,
+      },
       {
         headers: {
-          'Content-Type' : 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
-    )
+    );
     if (res.status === 200) {
       console.log(res);
       return res;
@@ -257,20 +259,35 @@ export const postPullRequest = async (repo, feedbackText) => {
       return [];
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
+
+export const deleteFeedback = async (email, id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.delete(`/feedback/delete?email=${email}&idTaskGithubClassroom=${id}`);
+    if ((res.status = 200)) {
+      return res.data.models;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+//Login------------------------------------------------------
 export const createUserData = async (username) => {
   const client = await apiClient();
   try {
-    const res = await client.post((`/user/first-login?username=${username}`),
-      {
-        headers: {
-          'Content-Type' : 'application/json'
-        }
-      }
-    )
+    const res = await client.post(`/user/first-login?username=${username}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     if (res.status === 200) {
       console.log(res);
       return res;
@@ -278,79 +295,244 @@ export const createUserData = async (username) => {
       return [];
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-export const getModelProviders = async() => {
+//Modelos------------------------------------------------------
+export const getModelProviders = async () => {
   const client = await apiClient();
   try {
-    const res = await client.get('/model-types/all')
-    if (res.status = 200){
-      console.log(res.data.modelTypes)
-      return res.data.modelTypes
+    const res = await client.get("/model-types/all");
+    if ((res.status = 200)) {
+      console.log(res.data.modelTypes);
+      return res.data.modelTypes;
+    } else {
+      return [];
     }
-    else{
-      return []
-    }
-  } catch (error) {
-    
-  }
-}
-export const getOrgModels = async(id) => {
+  } catch (error) {}
+};
+export const getOrgModels = async (id) => {
   const client = await apiClient();
   try {
-    const res = await client.get(`/model-types/org-models?orgId=${id}`)
-    if (res.status = 200){
-      return res.data.models
-    }
-    else{
-      return []
+    const res = await client.get(`/model-types/org-models?orgId=${id}`);
+    if ((res.status = 200)) {
+      return res.data.models;
+    } else {
+      return [];
     }
   } catch (error) {
-    
+    console.log(error.message);
   }
-}
+};
 
-export const createOrgModel = async(provider, model, name, key, org) => {
+export const createOrgModel = async (provider, model, name, key, org) => {
   const client = await apiClient();
   const payload = {
-    "name": name,
-    "version": model,
-    "apiKey": key, 
-    "modelType": provider,
-    "orgId": org
-  }
-  console.log(payload)
+    name: name,
+    version: model,
+    apiKey: key,
+    modelType: provider,
+    orgId: org,
+  };
+  console.log(payload);
   try {
-    const res = await client.post(('/model-types/create'),payload,{
+    const res = await client.post("/model-types/create", payload, {
       headers: {
-        'Content-Type': 'application/json'
-      }}
-    )
-    if (res.status = 200){
-      console.log(res.data.modelTypes)
-      return res.data.modelTypes
+        "Content-Type": "application/json",
+      },
+    });
+    if ((res.status = 200)) {
+      console.log(res.data.modelTypes);
+      return res.data.modelTypes;
+    } else {
+      return [];
     }
-    else{
-      return []
-    }
-  } catch (error) {
-    
-  }
-}
+  } catch (error) {}
+};
 
-export const deleteOrgModel = async(id) => {
+export const deleteOrgModel = async (id) => {
   const client = await apiClient();
   try {
-    const res = await client.delete(`/model-types/delete/${id}`)
-    if (res.status = 200){
-      return res.data.models
-    }
-    else{
-      return []
+    const res = await client.delete(`/model-types/delete/${id}`);
+    if ((res.status = 200)) {
+      return res.data.models;
+    } else {
+      return [];
     }
   } catch (error) {
-    
+    console.log(error.message);
   }
-}
+};
+
+export const getTeachers = async (id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/user/teachers?orgId=${id}`);
+    if ((res.status = 200)) {
+      return res.data.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const getOneTeacher = async () => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/user/teacher/chris2001289@gmail.com`);
+    if ((res.status = 200)) {
+      console.log(res.data);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const getTeacherModels = async (email) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(
+      `/model-types/models-for-teacher?email=${email}`
+    );
+    if ((res.status = 200)) {
+      console.log(res.data);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const patchTeacherModels = async (model, email, org) => {
+  const client = await apiClient();
+  try {
+    const res = await client.patch(
+      `/model-types/add-teacher?modelId=${model}&email=${email}&orgId=${org}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (res.status === 200) {
+      console.log(res);
+      return res;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteAsignedModel = async (model, email, org) => {
+  const client = await apiClient();
+  try {
+    const res = await client.patch(
+      `/model-types/remove-teacher?modelId=${model}&email=${email}&orgId=${org}`
+    );
+    if ((res.status = 200)) {
+      return res.data.models;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+//Configuracion de tarea------------------------------------------------------
+export const getTaskConfig = async (id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/task-config/${id}`);
+    
+    if (res.status === 200) {
+      return res;
+    }
+
+    return undefined;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return undefined;
+    }
+
+    console.log(error);
+    throw error; 
+  }
+};
+
+export const createTaskConfig = async (id, body) => {
+  const client = await apiClient();
+  const payload = {
+    "language": body.language,
+    "extension": body.extension,
+    "studentLevel": body.studentLevel,
+    "style": body.style,
+    "topic": body.topic,
+    "constraints": body.constraints,
+    "modelIA": body.modelIA,
+    "providerNameIA": body.providerNameIA,
+    "idTaskGithubClassroom": id
+  }
+  try {
+    const res = await client.post(
+      `/task-config/create`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if ((res.status = 200)) {
+      return res;
+    }
+    return [];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateTaskConfig = async (id, body) => {
+  const client = await apiClient();
+  const payload = {
+    "language": body.language,
+    "extension": body.extension,
+    "studentLevel": body.studentLevel,
+    "style": body.style,
+    "topic": body.topic,
+    "constraints": body.constraints,
+    "modelIA": body.modelIA,
+    "providerNameIA": body.providerNameIA
+  }
+  try {
+    const res = await client.put(
+      `/task-config/${id}`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if ((res.status = 200)) {
+      return res;
+    }
+    return [];
+  } catch (error) {
+    console.log(error);
+  }
+};
+

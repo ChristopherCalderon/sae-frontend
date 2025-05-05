@@ -5,17 +5,23 @@ import AssignmentsTable from "@/components/tables/AssignmentsTable";
 import {
   getRepoData,
   getSubmissions,
+  getTaskConfig,
   postFeedback,
 } from "@/services/githubService";
-import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, useParams } from "next/navigation";
+import React, { use, useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
 import { RiAiGenerate2 } from "react-icons/ri";
 
 function tarea() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [config, setConfig] = useState();
+  const [org, setOrg] = useState()
+  const router = useRouter();
   const { id } = useParams();
+    const { data: session, status } = useSession();
 
   const getData = async () => {
     try {
@@ -23,17 +29,25 @@ function tarea() {
       const response = await getSubmissions(id);
       console.log(response);
       setSubmissions(response || []);
+      const taskResponse = await getTaskConfig(id);
+      if (!taskResponse) {
+        if (!window.location.pathname.endsWith("/configurar")) {
+          router.push(`${window.location.pathname}/configurar`);
+        }
+      } else {
+        setConfig(taskResponse.data);
+        setLoading(false);
+      }
     } catch (error) {
       console.error("Error:", error);
       setSubmissions([]);
     } finally {
-      setLoading(false);
     }
   };
 
   const getSubmissionData = async (repoName) => {
     try {
-      const response = await getRepoData(repoName);
+      const response = await getRepoData(repoName, org, config.extension);
       return response;
     } catch (error) {
       console.log(error);
@@ -45,13 +59,13 @@ function tarea() {
     try {
       await Promise.all(
         submissions.map(async (submission) => {
-          if (submission.feedback_status  === 'Pendiente') {
-            console.log(submission.repository.name)
+          if (submission.feedback_status === "Pendiente") {
+            console.log(submission.repository.name);
             const repoData = await getSubmissionData(
               submission.repository.name
             );
             console.log(repoData);
-            await postFeedback(submission, repoData);
+            await postFeedback(submission, repoData, config);
           }
         })
       );
@@ -63,8 +77,15 @@ function tarea() {
   };
 
   useEffect(() => {
-    getData();
-  }, []);
+    if (status === "authenticated" ) {
+
+      setOrg(session.user.selectedOrg)
+      getData();
+    } else if (status === "loading") {
+      // Sesión aún cargando
+      setLoading(true);
+    }
+  }, [status]); 
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
       <div className="w-full text-primary flex items-center justify-between ">
@@ -100,6 +121,8 @@ function tarea() {
             submissions={submissions}
             id={id}
             getFeedbacks={getData}
+            config={config}
+            org={org}
           />
         )}
       </div>

@@ -18,12 +18,8 @@ function ModelsPage() {
   const [nombreLlave, setNombreLlave] = useState("");
   const [llave, setLlave] = useState("");
   const [providerArray, setProviderArray] = useState();
-  const { data: session, status } = useSession(); // Obtenemos el status
+  const { data: session, status } = useSession(); 
 
-  const eliminarModelo = (index) => {
-    const nuevosModelos = modelos.filter((_, i) => i !== index);
-    setModelos(nuevosModelos);
-  };
 
 
   const getData = async (id) => {
