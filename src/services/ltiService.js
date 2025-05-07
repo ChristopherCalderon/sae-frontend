@@ -21,11 +21,12 @@ export const decodeToken = async (token) => {
   }
 };
 
-export const postConnection = async (ltiData, task, classroom, org, url) => {
+export const postConnection = async (ltiData, task, classroom, orgId, orgName, url) => {
   const payload = {
     "idTaskGithubClassroom": task,
     "idClassroom": classroom,
-    "orgId": org,
+    "orgId": orgId,
+    "orgName": orgName,
     "url_Invitation": url,
     "emailOwner": ltiData.email,
     "idTaskMoodle": ltiData.assignmentId,

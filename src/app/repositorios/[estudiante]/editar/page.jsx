@@ -50,7 +50,7 @@ function editar() {
   };
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
+    <div className="bg-background flex flex-col gap-5 w-full h-screen p-8 overflow-clip">
       <div className="w-full text-primary flex items-center justify-between ">
         <div>
           <h1 className="text-2xl font-bold">@UserGithub</h1>

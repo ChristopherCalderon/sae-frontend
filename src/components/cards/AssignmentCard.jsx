@@ -2,7 +2,7 @@
 import React from "react";
 import { FaUser, FaCheck, FaCheckDouble, FaLink, FaCogs } from "react-icons/fa";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { postConnection } from "@/services/ltiService";
 
@@ -15,10 +15,12 @@ function AssignmentCard({
   enabled,
   invite,
   ltiData,
-  org,
+  orgId,
+  orgName,
   classroom
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const handleCopy = () => {
     navigator.clipboard
@@ -32,7 +34,8 @@ function AssignmentCard({
   };
 
   const handleConnection = async () => {
-     await postConnection(ltiData, id, classroom, org, invite)
+     await postConnection(ltiData, id, classroom, orgId, orgName, invite)
+     router.push(`${pathname}/${id}/configurar`);
   }
 
   return (

@@ -70,6 +70,11 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  console.log(submissions)
+  console.log(id)
+  console.log(config)
+  console.log(org)
+
   return (
     <div className="relative p-4 overflow-x-auto">
       {/* Modal loader */}
