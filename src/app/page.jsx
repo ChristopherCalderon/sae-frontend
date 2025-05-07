@@ -5,26 +5,16 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import AuthCard from '../components/Login/AuthCard';
 
 export default function LoginPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  // Extrae el token directamente en el cliente
+  const token = typeof window !== 'undefined' 
+    ? new URLSearchParams(window.location.search).get('token')
+    : null;
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    
     if (token) {
-      try {
-        // Almacenar en sessionStorage
-        window.sessionStorage.setItem('jwtToken', token);
-        
-        // Limpiar la URL sin recargar
-        // const newUrl = window.location.origin + window.location.pathname;
-        // window.history.replaceState({}, '', newUrl);
-        
-      } catch (error) {
-        console.error('Error almacenando el token:', error);
-      }
+      window.sessionStorage.setItem('jwtToken', token);
     }
-  }, [searchParams, router]);
+  }, [token]);
 
   return (
     <main 
