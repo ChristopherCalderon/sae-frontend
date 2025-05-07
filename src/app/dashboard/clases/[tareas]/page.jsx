@@ -2,17 +2,34 @@
 import AssignmentCard from "@/components/cards/AssignmentCard";
 import Loading from "@/components/loader/Loading";
 import { getAssignments } from "@/services/githubService";
+import { decodeToken } from "@/services/ltiService";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 function tareas() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {tareas} = useParams();   
+  const [org, setOrg] = useState();
+  const [ltiData, setLtiData] = useState();
+
+  const { data: session, status } = useSession(); // Obtenemos el status
+  const { tareas } = useParams();
 
   const getData = async () => {
     try {
       setLoading(true);
+
+      // 1. Obtener el token de sessionStorage
+      const token = sessionStorage.getItem("jwtToken");
+
+      if (token) {
+        // 2. Decodificar el token para obtener información del curso
+        const decodedData = await decodeToken(token);
+        console.log("Datos decodificados:", decodedData);
+        setLtiData(decodedData);
+      }
+      console.log(tareas)
       const response = await getAssignments(tareas);
       setAssignments(response?.data || []);
     } catch (error) {
@@ -24,8 +41,14 @@ function tareas() {
   };
 
   useEffect(() => {
-      getData();
-  }, []); 
+    if (status === "authenticated" ) {
+      setOrg(session.user.selectedOrgId)
+      getData()
+    } else if (status === "loading") {
+      // Sesión aún cargando
+      setLoading(true);
+    }
+  }, [status]);
 
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
@@ -44,9 +67,21 @@ function tareas() {
         ) : assignments.length == 0 ? (
           <h1>No hay tareas disponibles</h1>
         ) : (
-          assignments.map((assignment) => <AssignmentCard key={assignment.id} id={assignment.id}
-          title={assignment.title} type={assignment.type} accepted={assignment.accepted} submissions={assignment.submissions}
-          enabled={assignment.invitations_enabled} invite={assignment.invite_link} /> )
+          assignments.map((assignment) => (
+            <AssignmentCard
+              key={assignment.id}
+              id={assignment.id}
+              title={assignment.title}
+              type={assignment.type}
+              accepted={assignment.accepted}
+              submissions={assignment.submissions}
+              enabled={assignment.invitations_enabled}
+              invite={assignment.invite_link}
+              ltiData={ltiData}
+              org={org}
+              classroom={tareas}
+            />
+          ))
         )}
       </div>
     </div>
