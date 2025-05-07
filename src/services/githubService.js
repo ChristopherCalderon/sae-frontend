@@ -258,11 +258,11 @@ export const patchFeedback = async (email, id, feedback) => {
   }
 };
 
-export const postPullRequest = async (repo, feedbackText) => {
+export const postPullRequest = async (repo, feedbackText, org) => {
   const client = await apiClient();
   try {
     const res = await client.post(
-      `/repo/${repo}/pr/feedback`,
+      `/repo/${repo}/pr/feedback?orgName=${org}`,
       {
         feedback: feedbackText,
       },

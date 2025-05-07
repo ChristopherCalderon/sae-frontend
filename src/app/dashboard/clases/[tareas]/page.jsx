@@ -10,7 +10,8 @@ import React, { useEffect, useState } from "react";
 function tareas() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [org, setOrg] = useState();
+  const [orgId, setOrgId] = useState();
+  const [orgName, setOrgName] = useState();
   const [ltiData, setLtiData] = useState();
 
   const { data: session, status } = useSession(); // Obtenemos el status
@@ -42,7 +43,8 @@ function tareas() {
 
   useEffect(() => {
     if (status === "authenticated" ) {
-      setOrg(session.user.selectedOrgId)
+      setOrgId(session.user.selectedOrgId)
+      setOrgName(session.user.selectedOrg)
       getData()
     } else if (status === "loading") {
       // Sesión aún cargando
@@ -78,7 +80,8 @@ function tareas() {
               enabled={assignment.invitations_enabled}
               invite={assignment.invite_link}
               ltiData={ltiData}
-              org={org}
+              orgId={orgId}
+              orgName={orgName}
               classroom={tareas}
             />
           ))

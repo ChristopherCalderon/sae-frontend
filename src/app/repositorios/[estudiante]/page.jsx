@@ -31,7 +31,6 @@ function entrega() {
     try {
       setLoading(true);
       const response = await getFeedback(email, repo, org);
-      
 
       const configResponse = await getTaskConfig(response.idTaskGithubClassroom)
       setTaskConfig(configResponse.data);
@@ -110,7 +109,7 @@ function entrega() {
 
   const pathname = usePathname();
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
+    <div className="bg-background flex flex-col gap-5 w-full h-screen p-8 overflow-clip">
       <div className="w-full text-primary flex items-center justify-between ">
         <div>
           <h1 className="text-2xl font-bold">@UserGithub</h1>
@@ -159,7 +158,7 @@ function entrega() {
                         JSON.stringify({
                           email: email,
                           repo: repo,
-                          org: org
+                          org: org,
                         })
                       ),
                     },
