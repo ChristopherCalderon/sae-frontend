@@ -52,3 +52,18 @@ export const postConnection = async (ltiData, task, classroom, orgId, orgName, u
     console.log(error)
   }
 }
+
+export const getLinkedTasks = async (classroom) => {
+  try {
+    const res = await axios.get(`https://sae-backend-n9d3.onrender.com/task-link/github-tasks?idClassroom=${classroom}`)
+
+    if (res.status === 200) {
+      console.log(res);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}

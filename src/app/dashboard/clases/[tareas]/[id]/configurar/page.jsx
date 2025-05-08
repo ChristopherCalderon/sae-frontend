@@ -17,6 +17,7 @@ function Configurar() {
   const [taskId, setTaskId] = useState(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [models, setModels] = useState();
   const [first, setFirst] = useState(true);
   const [formData, setFormData] = useState({
@@ -39,8 +40,8 @@ function Configurar() {
       const modelsRes = await getTeacherModels(teacherId);
       setModels(modelsRes.models);
       const response = await getTaskConfig(id);
-      if(response){
-        setFirst(false)
+      if (response) {
+        setFirst(false);
         setFormData(response.data);
         console.log(response.data);
       }
@@ -52,34 +53,45 @@ function Configurar() {
 
   const saveData = async () => {
     try {
-      if(first){
-        await createTaskConfig(taskId, formData)
+      if (first) {
+        await createTaskConfig(taskId, formData);
       } else {
-        await updateTaskConfig(taskId, formData)
+        await updateTaskConfig(taskId, formData);
       }
+
+      setShowModal(true);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleChange = (e, field) => {
-      setFormData({ ...formData, [field]: e.target.value });
+    setFormData({ ...formData, [field]: e.target.value });
   };
 
   const handleModelChange = (e) => {
     const selectedModelName = e.target.value;
-    const selectedModel = models.find((model) => model._id === selectedModelName);
-  
+    const selectedModel = models.find(
+      (model) => model._id === selectedModelName
+    );
+
     if (selectedModel) {
       setFormData((prevData) => ({
         ...prevData,
         modelIA: selectedModel._id,
-        providerNameIA: selectedModel.modelType.name
+        providerNameIA: selectedModel.modelType.name,
       }));
     }
-};
-  
-  console.log(formData)
+  };
+
+  console.log(formData);
+
+  const goToRepositories = () => {
+    const parts = pathname.split("/");
+    parts.pop(); // elimina "configurar"
+    const newPath = parts.join("/");
+    router.push(newPath);
+  };
 
   useEffect(() => {
     if (pathname) {
@@ -89,7 +101,7 @@ function Configurar() {
     }
 
     if (taskId && status === "authenticated") {
-      console.log(taskId)
+      console.log(taskId);
       getData(taskId, session.user.email);
     }
   }, [pathname, status, taskId]);
@@ -136,9 +148,9 @@ function Configurar() {
                     value={formData.studentLevel}
                     onChange={(e) => handleChange(e, "studentLevel")}
                   >
-                  <option className="text-primary/40" value="">
-                        Selecciona el nivel
-                      </option>
+                    <option className="text-primary/40" value="">
+                      Selecciona el nivel
+                    </option>
                     <option value="Principiante">Principiante</option>
                     <option value="Intermedio">Intermedio</option>
                     <option value="Avanzado">Avanzado</option>
@@ -157,8 +169,8 @@ function Configurar() {
                     onChange={(e) => handleModelChange(e)}
                   >
                     <option className="text-primary/40" value="">
-                        Selecciona un modelo
-                      </option>
+                      Selecciona un modelo
+                    </option>
                     {models.map((model) => (
                       <option key={model._id} value={model._id}>
                         {model.modelType.name} - {model.name}
@@ -203,6 +215,21 @@ function Configurar() {
           </button>
         </div>
       </div>
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg text-center">
+            <p className="text-primary text-lg font-semibold mb-2">
+              Configuracion guardada exitosamente
+            </p>
+            <button
+              className="mt-2 px-4 py-1 bg-primary text-white rounded"
+              onClick={goToRepositories}
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

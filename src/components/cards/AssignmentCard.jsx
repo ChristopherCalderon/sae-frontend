@@ -17,7 +17,8 @@ function AssignmentCard({
   ltiData,
   orgId,
   orgName,
-  classroom
+  classroom,
+  linkedTasks = []
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -32,6 +33,9 @@ function AssignmentCard({
         console.error("Error al copiar: ", err);
       });
   };
+
+  console.log(id)
+  console.log(linkedTasks)
 
   const handleConnection = async () => {
      await postConnection(ltiData, id, classroom, orgId, orgName, invite)
@@ -76,7 +80,8 @@ function AssignmentCard({
         <div className="flex flex-col w-1/3 gap-3 items-end text-white text-sm">
           <button
             onClick={handleConnection}
-            className="flex items-center w-2/3 justify-center gap-2 bg-primary hover:bg-primary-hover  py-1 rounded"
+            className={`flex items-center w-2/3 justify-center gap-2 bg-primary hover:bg-primary-hover  py-1 rounded
+               ${linkedTasks.includes(id.toString()) && 'hidden'}`}
           >
             <FaLink />
             Conectar

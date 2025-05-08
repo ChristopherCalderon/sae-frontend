@@ -2,7 +2,7 @@
 import AssignmentCard from "@/components/cards/AssignmentCard";
 import Loading from "@/components/loader/Loading";
 import { getAssignments } from "@/services/githubService";
-import { decodeToken } from "@/services/ltiService";
+import { decodeToken, getLinkedTasks } from "@/services/ltiService";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ function tareas() {
   const [loading, setLoading] = useState(true);
   const [orgId, setOrgId] = useState();
   const [orgName, setOrgName] = useState();
+  const [linkedTasks, setLinkedTasks] = useState();
   const [ltiData, setLtiData] = useState();
 
   const { data: session, status } = useSession(); // Obtenemos el status
@@ -27,6 +28,9 @@ function tareas() {
       if (token) {
         // 2. Decodificar el token para obtener información del curso
         const decodedData = await decodeToken(token);
+        const linkedTasks = await getLinkedTasks(tareas)
+        
+        setLinkedTasks(linkedTasks.data);
         console.log("Datos decodificados:", decodedData);
         setLtiData(decodedData);
       }
@@ -83,6 +87,7 @@ function tareas() {
               orgId={orgId}
               orgName={orgName}
               classroom={tareas}
+              linkedTasks={linkedTasks}
             />
           ))
         )}
