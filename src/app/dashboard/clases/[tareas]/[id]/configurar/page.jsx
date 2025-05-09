@@ -33,11 +33,11 @@ function Configurar() {
 
   const { data: session, status } = useSession();
 
-  const getData = async (id, teacherId) => {
+  const getData = async (id, teacherId, org) => {
     setLoading(true);
     try {
       console.log(id);
-      const modelsRes = await getTeacherModels(teacherId);
+      const modelsRes = await getTeacherModels(teacherId, org);
       setModels(modelsRes.models);
       const response = await getTaskConfig(id);
       if (response) {
@@ -102,7 +102,7 @@ function Configurar() {
 
     if (taskId && status === "authenticated") {
       console.log(taskId);
-      getData(taskId, session.user.email);
+      getData(taskId, session.user.email, session.user.selectedOrgId);
     }
   }, [pathname, status, taskId]);
 

@@ -41,6 +41,13 @@ function Navbar() {
           <HiAcademicCap />
           <span>Mis clases</span>
         </Link>
+        <Link
+            href={"/dashboard/modelo"}
+            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+          >
+            <GiBrain />
+            <span>Mis Modelos IA</span>
+          </Link>
         {/* Mostrar "Modelos IA" solo si es admin */}
         {isAdmin && (
           <Link
@@ -48,7 +55,7 @@ function Navbar() {
             className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
           >
             <GiBrain />
-            <span>Modelos IA</span>
+            <span>Modelos IA de Org</span>
           </Link>
         )}
 

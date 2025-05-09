@@ -371,6 +371,31 @@ export const createOrgModel = async (provider, model, name, key, org) => {
   } catch (error) {}
 };
 
+export const createTeacherModel = async (provider, model, name, key, email) => {
+  const client = await apiClient();
+  const payload = {
+    name: name,
+    version: model,
+    apiKey: key,
+    modelType: provider,
+    ownerEmail: email,
+  };
+  console.log(payload);
+  try {
+    const res = await client.post("/model-types/create", payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if ((res.status = 200)) {
+      console.log(res.data.modelTypes);
+      return res.data.modelTypes;
+    } else {
+      return [];
+    }
+  } catch (error) {}
+};
+
 export const deleteOrgModel = async (id) => {
   const client = await apiClient();
   try {
@@ -414,11 +439,11 @@ export const getOneTeacher = async () => {
   }
 };
 
-export const getTeacherModels = async (email) => {
+export const getTeacherModels = async (email, org) => {
   const client = await apiClient();
   try {
     const res = await client.get(
-      `/model-types/models-for-teacher?email=${email}`
+      `/model-types/models-for-teacher?email=${email}&orgId=${org} `
     );
     if ((res.status = 200)) {
       console.log(res.data);
