@@ -64,6 +64,10 @@ export const getLinkedTasks = async (classroom) => {
       return [];
     }
   } catch (error) {
+        if (error.response && error.response.status === 404) {
+      // No se encontraron tareas linkeadas
+      return [];
+    }
     console.log(error)
   }
 }
