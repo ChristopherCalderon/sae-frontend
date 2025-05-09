@@ -11,7 +11,7 @@ import { useState } from "react";
 import Loading from "../loader/Loading";
 
 function getFeedbackColor(status) {
-  if (status === "sent") return "text-accent";
+  if (status === "Enviado") return "text-accent";
   if (status === "Pendiente") return "text-[#710000]";
   return "text-primary";
 }
@@ -147,7 +147,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
                   >
                     Generar
                   </button>
-                ) : u.feedback_status === "Generado"  || u.feedback_status === "sent" ? (
+                ) : u.feedback_status === "Generado"  || u.feedback_status === "Enviado" ? (
                   <Link
                     href={{
                       pathname: `${pathname}/${u.id}`,
