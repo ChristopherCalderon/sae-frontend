@@ -192,8 +192,7 @@ export const getRepoData = async (repo,org, extension) => {
 };
 
 export const postFeedback = async (repo, repoData, config) => {
-  console.log(repo.repository.name);
-  console.log(repo.assignment.id);
+  const client = await apiClient();
   const [value, total] = repo.grade.split("/").map(Number);
   const payload = {
     readme: repoData.readme,
@@ -212,8 +211,8 @@ export const postFeedback = async (repo, repoData, config) => {
 
   const modelProvider = config.providerNameIA?.toLowerCase()
   try {
-    const res = await axios.post(
-      `https://sae-backend-n9d3.onrender.com/feedback/${repo.repository.name}/${modelProvider}`,
+    const res = await client.post(
+      `/feedback/${repo.repository.name}/${modelProvider}`,
       payload,
       {
         headers: {

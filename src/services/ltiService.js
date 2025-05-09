@@ -1,5 +1,21 @@
 import axios from "axios";
 
+export const apiClient = async () => {
+  const session = await getSession();
+  const token = session?.accessToken;
+
+  if (!token) throw new Error("No hay accessToken disponible");
+
+  const instance = axios.create({
+    baseURL: "https://sae-backend-n9d3.onrender.com",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return instance;
+};
+
 export const decodeToken = async (token) => {
   try {
     const res = await axios.get(
@@ -22,6 +38,8 @@ export const decodeToken = async (token) => {
 };
 
 export const postConnection = async (ltiData, task, classroom, orgId, orgName, url) => {
+  const client = await apiClient();
+
   const payload = {
     "idTaskGithubClassroom": task,
     "idClassroom": classroom,
@@ -35,7 +53,7 @@ export const postConnection = async (ltiData, task, classroom, orgId, orgName, u
   }
   console.log(payload)
   try {
-    const res = await axios.post('https://sae-backend-n9d3.onrender.com/task-link/create', payload , {
+    const res = await client.post('/task-link/create', payload , {
       headers: {
           "Content-Type": "application/json",
       },
@@ -55,7 +73,8 @@ export const postConnection = async (ltiData, task, classroom, orgId, orgName, u
 
 export const getLinkedTasks = async (classroom) => {
   try {
-    const res = await axios.get(`https://sae-backend-n9d3.onrender.com/task-link/github-tasks?idClassroom=${classroom}`)
+    const client = await apiClient();
+    const res = await client.get(`/task-link/github-tasks?idClassroom=${classroom}`)
 
     if (res.status === 200) {
       console.log(res);
