@@ -30,10 +30,8 @@ function repositorios() {
       ? new URLSearchParams(window.location.search).get("token")
       : null;
 
-      
   const getData = async () => {
     try {
-
       setLoading(true);
       const decodedRes = await decodeToken(token);
       console.log(decodedRes);
@@ -50,38 +48,42 @@ function repositorios() {
     }
   };
 
-    const getSubmissionData = async (repoName) => {
-      try {
-        const response = await getRepoData(repoName, data.orgName, config.extension);
-        console.log('-----------------Repo Data')
-        console.log(response)
-        return response;
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const getSubmissionData = async (repoName) => {
+    try {
+      const response = await getRepoData(
+        repoName,
+        data.orgName,
+        config.extension
+      );
+      console.log("-----------------Repo Data");
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const generateFeedback = async () => {
-      setLoading(true);
-      try {
-        await Promise.all(
-          submissions.map(async (submission) => {
-            if (submission.feedback_status === "Pendiente") {
-              console.log(submission.repository.name);
-              const repoData = await getSubmissionData(
-                submission.repository.name
-              );
-              console.log(repoData);
-              await postFeedback(submission, repoData, config);
-            }
-          })
-        );
-      } catch (error) {
-        console.log("Error al generar retroalimentación", error);
-      } finally {
-        getData();
-      }
-    };
+  const generateFeedback = async () => {
+    setLoading(true);
+    try {
+      await Promise.all(
+        submissions.map(async (submission) => {
+          if (submission.feedback_status === "Pendiente") {
+            console.log(submission.repository.name);
+            const repoData = await getSubmissionData(
+              submission.repository.name
+            );
+            console.log(repoData);
+            await postFeedback(submission, repoData, config);
+          }
+        })
+      );
+    } catch (error) {
+      console.log("Error al generar retroalimentación", error);
+    } finally {
+      getData();
+    }
+  };
 
   const handleSignIn = async () => {
     await signIn("github");
@@ -107,17 +109,8 @@ function repositorios() {
             curso
           </p>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => generateFeedback()}
-            className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
-          >
-            <RiAiGenerate2 className="text-xl" />
-            Generar retroalimentacion
-          </button>
-          <ExcelButton data={submissions} />
-
-          {status === "unauthenticated" && (
+        {status === "unauthenticated" ? (
+          <div className="flex gap-3">
             <button
               onClick={handleSignIn}
               className="font-mono font-normal bg-black text-[13px] text-white flex items-center justify-center px-4 py-2 rounded-md 
@@ -126,8 +119,19 @@ function repositorios() {
               <FaGithub className="mr-2" />
               Login with GitHub
             </button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex gap-3">
+            <button
+              onClick={() => generateFeedback()}
+              className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
+            >
+              <RiAiGenerate2 className="text-xl" />
+              Generar retroalimentacion
+            </button>
+            <ExcelButton data={submissions} />
+          </div>
+        )}
       </div>
       <div
         className="w-full h-[90%] bg-white shadow-xl px-3 py-5 gap-3 overflow-y-scroll [&::-webkit-scrollbar]:w-1
