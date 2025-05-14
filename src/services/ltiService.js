@@ -72,6 +72,34 @@ export const postConnection = async (ltiData, task, classroom, orgId, orgName, u
   }
 }
 
+export const postGrades = async (id, issuer) => {
+  const client = await apiClient();
+
+  const payload = {
+    "assignmentId": "6",
+    "issuer": "https://ecampusuca.moodlecloud.com"
+
+  }
+  console.log(payload)
+  try {
+    const res = await client.post('/send-grades', payload , {
+      headers: {
+          "Content-Type": "application/json",
+      },
+    } )
+
+    if (res.status === 201) {
+      console.log(res);
+      return res.data;
+    } else {
+      return [];
+    }
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const getLinkedTasks = async (classroom) => {
   try {
     const client = await apiClient();

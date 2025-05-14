@@ -10,7 +10,7 @@ import {
   getTaskConfig,
   postFeedback,
 } from "@/services/githubService";
-import { decodeToken } from "@/services/ltiService";
+import { decodeToken, postGrades } from "@/services/ltiService";
 import { useRouter, useParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
@@ -21,6 +21,7 @@ function repositorios() {
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState();
   const [data, setData] = useState();
+  const [generated, setGenerated] = useState(false)
   const router = useRouter();
   const { id } = useParams();
   const { data: session, status } = useSession();
@@ -47,6 +48,14 @@ function repositorios() {
       console.log(error);
     }
   };
+
+  const sendGrades = async () => {
+    try {
+      await postGrades(5, 'a')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const getSubmissionData = async (repoName) => {
     try {
@@ -128,6 +137,13 @@ function repositorios() {
             >
               <RiAiGenerate2 className="text-xl" />
               Generar retroalimentacion
+            </button>
+            <button
+              onClick={() => sendGrades()}
+              className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
+            >
+              <RiAiGenerate2 className="text-xl" />
+              Enviar notas
             </button>
             <ExcelButton data={submissions} />
           </div>
