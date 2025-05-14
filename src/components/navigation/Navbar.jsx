@@ -65,9 +65,20 @@ function Navbar() {
             className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
           >
             <FaCog />
+            <span>Secciones</span>
+          </Link>
+        )}
+
+                {isAdmin && (
+          <Link
+            href={"/dashboard/configurar"}
+            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+          >
+            <FaCog />
             <span>Configuración</span>
           </Link>
         )}
+        
       </div>
 
       <div className="p-4 text-blue-900 text-lg font-bold">

@@ -580,3 +580,58 @@ export const updateTaskConfig = async (id, body) => {
   }
 };
 
+
+
+//Administrador 
+export const getOrgUsers = async () => {
+
+  const client = await apiClient();
+  try {
+    const res = await client.get(
+      `/user/by-org`
+    );
+    if ((res.status = 200)) {
+      console.log(res.data);
+      return res.data;
+    } else {
+      return [];
+    }
+   }
+    catch (error) {
+  console.log(error)
+}
+};
+
+export const updateOrgAdmin = async (org, user) => {
+  const client = await apiClient();
+  try {
+    const res = await client.put(
+      `/user/assign-org-admin?userId=${user}&orgId=${org}`
+    );
+
+    if ((res.status = 200)) {
+      
+      return res;
+    }
+    return [];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateUserStatus = async (org, user, status) => {
+  const client = await apiClient();
+  try {
+    const res = await client.put(
+      `/user/status?userId=${user}&orgId=${org}&activate=${status}`
+    );
+
+    if ((res.status = 200)) {
+      
+      return res;
+    }
+    return [];
+  } catch (error) {
+    console.log(error);
+  }
+};

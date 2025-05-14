@@ -8,7 +8,26 @@ export default withAuth(
     const adminProtectedRoutes = [
       "/dashboard/admin",
       "/dashboard/modelos",
+      "/dashboard/configurar",
     ];
+    const { pathname } = req.nextUrl;
+
+    //Manejo de usuarios root---------------------------------
+    if (req.nextauth.token?.isRoot) {
+      // Redirigir cualquier acceso a dashboard o organizations
+      if (pathname.startsWith("/dashboard") || pathname.startsWith("/organizations")) {
+        return NextResponse.redirect(new URL("/system/usuarios", req.url));
+      }
+      // Permitir acceso a sysdashboard
+      return NextResponse.next();
+    }
+
+    //Usuarios no root -----------------------------------------
+    // Redirigir intentos de acceso a sysdashboard
+    if (pathname.startsWith("/system/")) {
+      return NextResponse.redirect(new URL("/dashboard/clases", req.url));
+    }
+
     if (req.nextauth.token?.activeRole === "guest") {
       return NextResponse.redirect(new URL("/organizations", req.url));
     }
@@ -39,6 +58,10 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/dashboard/:path*"
+
+    "/dashboard/:path*",
+    "/system/:path*",
+    "/organizations"
+
   ],
 };
