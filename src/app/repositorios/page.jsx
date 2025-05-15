@@ -146,13 +146,6 @@ function repositorios() {
               Enviar notas
             </button>
             <ExcelButton data={submissions} />
-            <a
-  href="https://sae-lti.onrender.com/login?purpose=sendgrades&iss=https://ecampusuca.moodlecloud.com&client_id=d8Af3rpbiUdOneX&target_link_uri=https://sae-lti.onrender.com/"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <button className="btn btn-success">Enviar notas a Moodle</button>
-</a>
           </div>
         )}
       </div>
