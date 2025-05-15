@@ -605,7 +605,7 @@ export const getOrgUsers = async () => {
 export const updateOrgAdmin = async (org, user) => {
   const client = await apiClient();
   try {
-    const res = await client.put(
+    const res = await client.patch(
       `/user/assign-org-admin?userId=${user}&orgId=${org}`
     );
 
