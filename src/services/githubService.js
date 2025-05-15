@@ -622,7 +622,7 @@ export const updateOrgAdmin = async (org, user) => {
 export const updateUserStatus = async (org, user, status) => {
   const client = await apiClient();
   try {
-    const res = await client.put(
+    const res = await client.patch(
       `/user/status?userId=${user}&orgId=${org}&activate=${status}`
     );
 
