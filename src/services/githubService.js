@@ -116,14 +116,12 @@ export const getStudentFeedback = async (email, repo) => {
       return [];
     }
 
-
-    return res.data
+    return res.data;
   } catch (error) {
     console.log(error);
     return [];
   }
 };
-
 
 export const getSubmissions = async (id) => {
   const client = await apiClient();
@@ -176,10 +174,12 @@ export const getSubmissions = async (id) => {
   }
 };
 
-export const getRepoData = async (repo,org, extension) => {
+export const getRepoData = async (repo, org, extension) => {
   const client = await apiClient();
   try {
-    const res = await client.get(`/repo/${repo}/files?orgName=${org}&ext=${extension}`);
+    const res = await client.get(
+      `/repo/${repo}/files?orgName=${org}&ext=${extension}`
+    );
     if (res.status === 200) {
       return res.data;
     } else {
@@ -206,10 +206,10 @@ export const postFeedback = async (repo, repoData, config) => {
     studentLevel: config.studentLevel,
     constraints: config.constraints,
     style: config.style,
-    modelId: config.modelIA
+    modelId: config.modelIA,
   };
 
-  const modelProvider = config.providerNameIA?.toLowerCase()
+  const modelProvider = config.providerNameIA?.toLowerCase();
   try {
     const res = await client.post(
       `/feedback/${repo.repository.name}/${modelProvider}`,
@@ -282,11 +282,12 @@ export const postPullRequest = async (repo, feedbackText, org) => {
   }
 };
 
-
 export const deleteFeedback = async (email, id) => {
   const client = await apiClient();
   try {
-    const res = await client.delete(`/feedback/delete?email=${email}&idTaskGithubClassroom=${id}`);
+    const res = await client.delete(
+      `/feedback/delete?email=${email}&idTaskGithubClassroom=${id}`
+    );
     if ((res.status = 200)) {
       return res.data.models;
     } else {
@@ -296,7 +297,6 @@ export const deleteFeedback = async (email, id) => {
     console.log(error.message);
   }
 };
-
 
 //Login------------------------------------------------------
 export const createUserData = async (username) => {
@@ -499,7 +499,7 @@ export const getTaskConfig = async (id) => {
   const client = await apiClient();
   try {
     const res = await client.get(`/task-config/${id}`);
-    
+
     if (res.status === 200) {
       return res;
     }
@@ -511,33 +511,29 @@ export const getTaskConfig = async (id) => {
     }
 
     console.log(error);
-    throw error; 
+    throw error;
   }
 };
 
 export const createTaskConfig = async (id, body) => {
   const client = await apiClient();
   const payload = {
-    "language": body.language,
-    "extension": body.extension,
-    "studentLevel": body.studentLevel,
-    "style": body.style,
-    "topic": body.topic,
-    "constraints": body.constraints,
-    "modelIA": body.modelIA,
-    "providerNameIA": body.providerNameIA,
-    "idTaskGithubClassroom": id
-  }
+    language: body.language,
+    extension: body.extension,
+    studentLevel: body.studentLevel,
+    style: body.style,
+    topic: body.topic,
+    constraints: body.constraints,
+    modelIA: body.modelIA,
+    providerNameIA: body.providerNameIA,
+    idTaskGithubClassroom: id,
+  };
   try {
-    const res = await client.post(
-      `/task-config/create`,
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const res = await client.post(`/task-config/create`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if ((res.status = 200)) {
       return res;
@@ -551,25 +547,21 @@ export const createTaskConfig = async (id, body) => {
 export const updateTaskConfig = async (id, body) => {
   const client = await apiClient();
   const payload = {
-    "language": body.language,
-    "extension": body.extension,
-    "studentLevel": body.studentLevel,
-    "style": body.style,
-    "topic": body.topic,
-    "constraints": body.constraints,
-    "modelIA": body.modelIA,
-    "providerNameIA": body.providerNameIA
-  }
+    language: body.language,
+    extension: body.extension,
+    studentLevel: body.studentLevel,
+    style: body.style,
+    topic: body.topic,
+    constraints: body.constraints,
+    modelIA: body.modelIA,
+    providerNameIA: body.providerNameIA,
+  };
   try {
-    const res = await client.put(
-      `/task-config/${id}`,
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const res = await client.put(`/task-config/${id}`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if ((res.status = 200)) {
       return res;
@@ -580,26 +572,61 @@ export const updateTaskConfig = async (id, body) => {
   }
 };
 
+//Administrador
 
-
-//Administrador 
-export const getOrgUsers = async () => {
-
+export const getOrganizations = async () => {
   const client = await apiClient();
   try {
-    const res = await client.get(
-      `/user/by-org`
-    );
+    const res = await client.get(`/user/organizations`);
     if ((res.status = 200)) {
       console.log(res.data);
       return res.data;
     } else {
       return [];
     }
-   }
-    catch (error) {
-  console.log(error)
-}
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const toggleOrganization = async (orgId, isActive) => {
+  const client = await apiClient();
+  try {
+    if (isActive) {
+      const res = await client.patch(`/user/deactivate-users/${orgId}`);
+      if ((res.status = 200)) {
+        console.log(res.data);
+        return res.data;
+      } else {
+        return [];
+      }
+    } else {
+      const res = await client.patch(`/user/activate-users/${orgId}`);
+      if ((res.status = 200)) {
+        console.log(res.data);
+        return res.data;
+      } else {
+        return [];
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getOrgUsers = async () => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/user/by-org`);
+    if ((res.status = 200)) {
+      console.log(res.data);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const updateOrgAdmin = async (org, user) => {
@@ -610,7 +637,6 @@ export const updateOrgAdmin = async (org, user) => {
     );
 
     if ((res.status = 200)) {
-      
       return res;
     }
     return [];
@@ -627,7 +653,6 @@ export const updateUserStatus = async (org, user, status) => {
     );
 
     if ((res.status = 200)) {
-      
       return res;
     }
     return [];
