@@ -11,7 +11,7 @@ export default function Clases() {
 
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { data: session, status } = useSession(); // Obtenemos el status
+  const { data: session, status } = useSession(); 
 
   const getData = async (orgId) => {
     try {

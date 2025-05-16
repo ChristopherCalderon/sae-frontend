@@ -7,7 +7,7 @@ import { GiBrain } from "react-icons/gi";
 import { HiAcademicCap } from "react-icons/hi";
 import Image from "next/image";
 
-function Navbar() {
+function SysNavbar() {
   const { data: session, status } = useSession(); 
   const isAdmin = session?.user.activeRole === "ORG_Admin"; // Verificamos si el rol es 'admin'
 
@@ -35,49 +35,19 @@ function Navbar() {
 
       <div className="flex flex-col gap-4 p-2 text-primary text-xl font-semibold flex-1">
         <Link
-          href={"/dashboard/clases"}
+          href={"/system/usuarios"}
           className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
         >
           <HiAcademicCap />
-          <span>Mis clases</span>
+          <span>Usuarios</span>
         </Link>
         <Link
-            href={"/dashboard/modelo"}
+            href={"/system/organizaciones"}
             className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
           >
             <GiBrain />
-            <span>Mis Modelos IA</span>
+            <span>Organizaciones</span>
           </Link>
-        {/* Mostrar "Modelos IA" solo si es admin */}
-        {isAdmin && (
-          <Link
-            href={"/dashboard/modelos"}
-            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-          >
-            <GiBrain />
-            <span>Modelos IA de Org</span>
-          </Link>
-        )}
-
-        {isAdmin && (
-          <Link
-            href={"/dashboard/admin"}
-            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-          >
-            <FaCog />
-            <span>Secciones</span>
-          </Link>
-        )}
-
-                {isAdmin && (
-          <Link
-            href={"/dashboard/configurar"}
-            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-          >
-            <FaCog />
-            <span>Configuración</span>
-          </Link>
-        )}
         
       </div>
 
@@ -96,4 +66,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default SysNavbar;

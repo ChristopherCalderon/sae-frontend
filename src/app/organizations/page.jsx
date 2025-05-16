@@ -62,7 +62,7 @@ function OrganizationSelect() {
         localSession.user.organizations.length === 0 ? (
           <p>No se encontraron organizaciones</p>
         ) : (
-          localSession.user.organizations.map((org) => (org.role !== 'Student' &&
+          localSession.user.organizations.map((org) => (org.role !== 'Student' && org.isActive &&
             <OrganizationCard
               key={org.orgId}
               pendingOrg={pendingOrg}

@@ -1,11 +1,16 @@
 "use client";
 
 import Loading from "@/components/loader/Loading";
-import { deleteAsignedModel, getOrgModels, getTeacherModels, patchTeacherModels } from "@/services/githubService";
+import {
+  deleteAsignedModel,
+  getOrgModels,
+  getTeacherModels,
+  patchTeacherModels,
+} from "@/services/githubService";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { ImCancelCircle } from "react-icons/im";
+import { ImCancelCircle, ImLock } from "react-icons/im";
 import { IoMdAddCircleOutline } from "react-icons/io";
 
 function SubjectPage() {
@@ -38,31 +43,30 @@ function SubjectPage() {
     setLlave("");
   };
 
-  const addOrgModel = async (model) =>{
+  const addOrgModel = async (model) => {
     try {
-        setLoading(true)
-        await patchTeacherModels(model, email, session.user.selectedOrgId)
-        getData(session.user.selectedOrgId);
+      setLoading(true);
+      await patchTeacherModels(model, email, session.user.selectedOrgId);
+      getData(session.user.selectedOrgId);
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  const deleteModel = async (model) =>{
+  const deleteModel = async (model) => {
     try {
-        setLoading(true)
-        await deleteAsignedModel(model, email, session.user.selectedOrgId)
-        getData(session.user.selectedOrgId);
+      setLoading(true);
+      await deleteAsignedModel(model, email, session.user.selectedOrgId);
+      getData(session.user.selectedOrgId);
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-  }
-
+  };
 
   const getData = async (orgId) => {
     try {
-        setLoading(true)
-      const res = await getTeacherModels(email);
+      setLoading(true);
+      const res = await getTeacherModels(email, orgId);
       const responseModels = await getOrgModels(orgId);
       if (responseModels && res) {
         console.log(responseModels);
@@ -114,13 +118,20 @@ function SubjectPage() {
                         key={index}
                         className="bg-blue-100 px-4 py-2 max-w-full mr-10 rounded shadow-md flex justify-between items-center"
                       >
-                        <span>{modelo.name}</span>
-                        <button 
-                          onClick={() => deleteModel(modelo._id)}
-                          className="text-primary hover:text-red-800 text-lg"
-                        >
-                          <ImCancelCircle />
-                        </button>
+                        {modelo.modelType.name} - {modelo.version} |{" "}
+                        {modelo.name}
+                        {modelo.orgId ? (
+                          <button
+                            onClick={() => deleteModel(modelo._id)}
+                            className="text-primary hover:text-red-800 text-lg"
+                          >
+                            <ImCancelCircle />
+                          </button>
+                        ) : (
+                          <button className="text-primary text-lg">
+                            <ImLock />
+                          </button>
+                        )}
                       </div>
                     ))
                   )}
@@ -131,22 +142,27 @@ function SubjectPage() {
             <div className="font-mono text-primary space-y-4 flex flex-col h-full items-center overflow-y-clip">
               <h2 className="text-xl font-bold">Agregar modelo</h2>
               <div className="w-full flex flex-col gap-2 px-10 h-[80%] max-h-[80%]overflow-y-scroll ">
-                {orgmodels.filter((modelo) => !modelos.some((m) => m._id === modelo._id)).map((modelo) => (
-                  <div
-                    key={modelo._id}
-                    className="bg-blue-100 px-4 py-2 w-full rounded shadow-md flex justify-between items-center"
-                  >
-                    <span>
-                      {modelo.modelType.name} - {modelo.version} | {modelo.name}
-                    </span>
-                    <button
-                      onClick={() => addOrgModel(modelo._id)}
-                      className="text-primary hover:text-accent text-lg"
+                {orgmodels
+                  .filter(
+                    (modelo) => !modelos.some((m) => m._id === modelo._id)
+                  )
+                  .map((modelo) => (
+                    <div
+                      key={modelo._id}
+                      className="bg-blue-100 px-4 py-2 w-full rounded shadow-md flex justify-between items-center"
                     >
-                      <IoMdAddCircleOutline />
-                    </button>
-                  </div>
-                ))}
+                      <span>
+                        {modelo.modelType.name} - {modelo.version} |{" "}
+                        {modelo.name}
+                      </span>
+                      <button
+                        onClick={() => addOrgModel(modelo._id)}
+                        className="text-primary hover:text-accent text-lg"
+                      >
+                        <IoMdAddCircleOutline />
+                      </button>
+                    </div>
+                  ))}
               </div>
               {/* <div className="w-full">
               <div className="w-full max-w-sm">
