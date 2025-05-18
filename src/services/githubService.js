@@ -149,10 +149,33 @@ export const getSubmissions = async (id) => {
             `/feedback/status/${submission.repository.name}`
           );
 
+          let gradeFeedback = 0;
+          
+          let grade_test = parseInt(submission.grade.split("/")[0]);
+          try {
+            // Petición para obtener nota de feedback
+            const gradeRes = await client.get(
+              `/feedback/gradeFeedback/${submission.repository.name}`
+            );
+            gradeFeedback = gradeRes.data.gradeFeedback || 0;
+          } catch (gradeError) {
+            if (gradeError.response && gradeError.response.status === 404) {
+              gradeFeedback = 0; // Manejo específico para 404
+            } else {
+              console.error(
+                `Error obteniendo gradeFeedback para ${submission.repository.name}:`,
+                gradeError
+              );
+            }
+          }
+
           return {
             ...submission,
             email: emailRes.data.email || null,
             feedback_status: statusRes.data.status || null,
+            grade_feedback: gradeFeedback,
+
+            grade_test: grade_test
           };
         } catch (error) {
           console.error(
@@ -162,6 +185,9 @@ export const getSubmissions = async (id) => {
           return {
             ...submission,
             email: null,
+            feedback_status: null,
+            grade_feedback: 0,
+            grade_test: grade_test
           };
         }
       })
@@ -169,7 +195,7 @@ export const getSubmissions = async (id) => {
 
     return submissionsWithEmails;
   } catch (error) {
-    console.log(error);
+    console.error("Error en getSubmissions:", error);
     return [];
   }
 };
