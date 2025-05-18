@@ -45,9 +45,9 @@ const generateOne = async (
 ) => {
   setLoading(true);
   try {
-    console.log(config)
+    console.log(config);
     const repoData = await getData(repo.repository.name, org, config.extension);
-    await postFeedback(repo, repoData,config);
+    await postFeedback(repo, repoData, config);
     setSuccessMessage("Generado correctamente");
   } catch (error) {
     console.log("Error al generar retroalimentación", error);
@@ -70,10 +70,10 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  console.log(submissions)
-  console.log(id)
-  console.log(config)
-  console.log(org)
+  console.log(submissions);
+  console.log(id);
+  console.log(config);
+  console.log(org);
 
   return (
     <div className="relative p-4 overflow-x-auto">
@@ -104,10 +104,10 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
             <th className="px-4 py-2">Usuario</th>
             <th className="px-4 py-2">Correo Electrónico</th>
             <th className="px-4 py-2">Commits</th>
-            <th className="px-4 py-2">Calificación</th>
+            <th className="px-4 py-2">Nota de Test</th>
+            <th className="px-4 py-2">Nota de Retroalimentacion</th>
             <th className="px-4 py-2">Retroalimentación</th>
             <th className="px-4 py-2">Repositorio</th>
-            <th className="px-4 py-2">URL</th>
             <th className="px-4 py-2">Acción</th>
           </tr>
         </thead>
@@ -117,17 +117,24 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
               <td className="px-3 py-2">@{u.students[0].login}</td>
               <td className="px-2 py-2">{u.email}</td>
               <td className="px-2 py-2 text-center">{u.commit_count}</td>
-              <td className="px-2 py-2 text-center">{u.grade}</td>
+              <td className="px-2 py-2 text-center">{u.grade_test}</td>
+              <td className="px-2 py-2 text-center">{u.grade_feedback}</td>
               <td
                 className={`px-2 py-2 font-semibold text-center ${getFeedbackColor(
                   u.feedback_status
                 )}`}
               >
-                  <p>{u.feedback_status}</p>
+                <p>{u.feedback_status}</p>
               </td>
-              <td className="px-2 py-2">{u.repository.name}</td>
               <td className="px-1 py-2 text-blue-500 text-xs">
-                {u.repository.html_url}
+                <a
+                  className="flex gap-1 items-center underline hover:font-semibold"
+                  href={u.repository.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {u.repository.name}
+                </a>
               </td>
               <td className="px-2 py-2">
                 {u.feedback_status === "Pendiente" ? (
@@ -147,7 +154,8 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
                   >
                     Generar
                   </button>
-                ) : u.feedback_status === "Generado"  || u.feedback_status === "Enviado" ? (
+                ) : u.feedback_status === "Generado" ||
+                  u.feedback_status === "Enviado" ? (
                   <Link
                     href={{
                       pathname: `${pathname}/${u.id}`,
@@ -156,7 +164,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
                           JSON.stringify({
                             email: u.email,
                             repo: u.assignment.id,
-                            org: org
+                            org: org,
                           })
                         ),
                       },
@@ -165,7 +173,9 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
                   >
                     Ver
                   </Link>
-                ): ''}
+                ) : (
+                  ""
+                )}
               </td>
             </tr>
           ))}

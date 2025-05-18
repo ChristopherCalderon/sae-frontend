@@ -21,7 +21,8 @@ function repositorios() {
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState();
   const [data, setData] = useState();
-  const [generated, setGenerated] = useState(false)
+  const [sendModal, setSendModal] = useState(false);
+  const [generated, setGenerated] = useState(false);
   const router = useRouter();
   const { id } = useParams();
   const { data: session, status } = useSession();
@@ -51,11 +52,11 @@ function repositorios() {
 
   const sendGrades = async () => {
     try {
-      await postGrades(5, 'a')
+      await postGrades(5, "a");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const getSubmissionData = async (repoName) => {
     try {
@@ -131,20 +132,26 @@ function repositorios() {
           </div>
         ) : (
           <div className="flex gap-3">
-            <button
-              onClick={() => generateFeedback()}
-              className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
-            >
-              <RiAiGenerate2 className="text-xl" />
-              Generar retroalimentacion
-            </button>
-            <button
-              onClick={() => sendGrades()}
-              className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
-            >
-              <RiAiGenerate2 className="text-xl" />
-              Enviar notas
-            </button>
+            {submissions.every(
+              (submission) => submission.feedback_status === "Enviado"
+            ) && !loading ? (
+              <button
+                onClick={() => setSendModal(true)}
+                className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
+              >
+                <RiAiGenerate2 className="text-xl" />
+                Enviar notas
+              </button>
+            ) : (
+              <button
+                onClick={() => generateFeedback()}
+                className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
+              >
+                <RiAiGenerate2 className="text-xl" />
+                Generar retroalimentacion
+              </button>
+            )}
+
             <ExcelButton data={submissions} />
           </div>
         )}
@@ -172,6 +179,29 @@ function repositorios() {
           ""
         )}
       </div>
+              {sendModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg text-center">
+              <p className="text-primary text-lg font-semibold mb-2">
+                Sera redirigido al moodle, seleccione nuevamente esta tarea para enviar las notas
+              </p>
+              <div className="flex gap-5 w-full justify-center">
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="mt-2 px-4 py-1 bg-primary text-white rounded"
+                >
+                  Cancelar
+                </button>
+                <a
+                href={data.url_return}
+                  className="mt-2 px-4 py-1 bg-primary text-white rounded"
+                >
+                  Confirmar
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }
