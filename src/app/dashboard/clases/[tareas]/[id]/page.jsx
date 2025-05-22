@@ -87,8 +87,8 @@ function tarea() {
     }
   }, [status]); 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
-      <div className="w-full text-primary flex items-center justify-between ">
+    <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-5 py-8 overflow-clip">
+      <div className="w-full flex flex-col items-center  text-primary">
         <div>
           <h1 className="text-2xl font-bold">Tarea de programación</h1>
           <p className="font-semibold">
@@ -96,7 +96,7 @@ function tarea() {
             curso
           </p>
         </div>
-        <div className="flex gap-3">
+        {/* <div className="flex gap-3">
           <button
             onClick={() => generateFeedback()}
             className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
@@ -105,17 +105,18 @@ function tarea() {
             Generar retroalimentacion
           </button>
           <ExcelButton data={submissions} />
-        </div>
+        </div> */}
       </div>
+
       <div
-        className="w-full h-[90%] bg-white shadow-xl px-3 py-5 gap-3 overflow-y-scroll [&::-webkit-scrollbar]:w-1
-        [&::-webkit-scrollbar-track]:bg-white
+        className="w-full h-[90%] gap-3 overflow-y-scroll [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-background
         [&::-webkit-scrollbar-thumb]:bg-primary rounded-md"
       >
         {loading ? (
           <Loading />
         ) : submissions.length === 0 ? (
-          <h1>No se encontraron entregas</h1>
+          <h1 className="text-center text-xl font-semibold">No se encontraron entregas</h1>
         ) : (
           <AssignmentsTable
             submissions={submissions}
