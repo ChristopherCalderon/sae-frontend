@@ -1,10 +1,17 @@
 "use client";
-import React from "react";
-import { FaUser, FaCheck, FaCheckDouble, FaLink, FaCogs } from "react-icons/fa";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FaUser,
+  FaCheck,
+  FaCheckDouble,
+  FaCogs,
+  FaShareAlt,
+} from "react-icons/fa";
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { postConnection } from "@/services/ltiService";
+import { HiDotsVertical } from "react-icons/hi";
 
 function AssignmentCard({
   id,
@@ -18,11 +25,14 @@ function AssignmentCard({
   orgId,
   orgName,
   classroom,
-  linkedTasks = []
+  linkedTasks = [],
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState();
+  const menuRef = useRef(null);
 
+  
   const handleCopy = () => {
     navigator.clipboard
       .writeText(invite)
@@ -34,54 +44,123 @@ function AssignmentCard({
       });
   };
 
-  console.log(id)
-  console.log(linkedTasks)
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleConnection = async () => {
-     await postConnection(ltiData, id, classroom, orgId, orgName, invite)
-     router.push(`${pathname}/${id}/configurar`);
-  }
+    await postConnection(ltiData, id, classroom, orgId, orgName, invite);
+    router.push(`${pathname}/${id}/configurar`);
+  };
+
+  const getFontSize = (text) => {
+    const length = text?.length || 0;
+
+    if (length > 50) return "text-sm";
+    if (length > 40) return "text-base";
+    if (length > 30) return "text-lg";
+    if (length > 15) return "text-xl";
+    return "text-2xl";
+  };
+  const fontSizeClass = getFontSize(title);
 
   return (
-    <div className="bg-background w-full h-24 shadow-md rounded-md py-5 px-8 text-primary flex justify-center items-center gap-2">
-      <div className="flex flex-col w-2/3 gap-2 ">
-        <Link
-          href={`${pathname}/${id}`}
-          className="text-lg font-bold hover:underline"
-        >
-          {title}
-        </Link>
-        <div className="flex gap-5 font-medium">
+    <div className="bg-white relative w-full h-50 rounded-md px-4  text-primary flex flex-col justify-center gap-10 shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+      {/* Vineta y configuracion */}
+      <div className="flex justify-between">
+        {enabled ? (
+          <button className="bg-white border-2 border-secondary  py-1 px-4 w-fit rounded-lg font-semibold text-sm text-secondary text-center  ">
+            Activo
+          </button>
+        ) : (
+          <button className="bg-white border-2 border-secondary  py-1 px-4 w-fit rounded-lg font-semibold text-sm text-secondary text-center ">
+            Inactivo
+          </button>
+        )}
+
+   <HiDotsVertical
+            className="text-xl text-secondary cursor-pointer"
+            onClick={() => setIsOpen(!isOpen)}
+          />
+          
+          {/* Menú desplegable */}
+          {isOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+              <div className="py-1">
+                              {ltiData ? (
+                <button
+                  onClick={handleConnection}
+                  className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ${
+                    linkedTasks.includes(id.toString()) && "hidden"
+                  }`}
+                >
+                  Conectar
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    router.push(`${pathname}/${id}/configurar`);
+                    setIsOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Configurar
+                </button>
+              )}
+              </div>
+            </div>
+          )}
+      </div>
+
+      {/* Titulo */}
+      {ltiData? <h1
+        href={`${pathname}/${id}`}
+        className={`${fontSizeClass} text-center font-bold text-md break-words whitespace-normal `}
+      >
+        {title}
+      </h1> : (<Link
+        href={`${pathname}/${id}`}
+        className={`${fontSizeClass} text-center font-bold text-md break-words whitespace-normal hover:underline`}
+      >
+        {title}
+      </Link>)}
+
+
+      {/* Datos y url */}
+
+      <div className="flex  items-center justify-between">
+        <div className="flex w-full gap-5">
           <span className="flex text-sm items-center gap-1 ">
             <FaUser />
-            <p>{type}</p>
           </span>
           <span className="flex text-sm items-center gap-1">
             <FaCheck />
-            <p>{accepted} aceptados</p>
+            <p className="text-xs md:text-sm lg:text-sm">{accepted} Aceptados </p>
           </span>
           <span className="flex text-sm items-center gap-1">
             <FaCheckDouble />
-            <p>{submissions} entregados</p>
+            <p className="text-xs md:text-sm lg:text-sm">{submissions} Entregados</p>
           </span>
-          {enabled ? (
-            <button className="w-20 text-xs text-white font-medium bg-accent  rounded-md shadow-md ">
-              Activo
-            </button>
-          ) : (
-            <button className="w-20 text-xs text-primary font-medium bg-secondary   rounded-md shadow-md ">
-              Inactivo
-            </button>
-          )}
         </div>
+
+        <FaShareAlt className="text-xl text-secondary" onClick={handleCopy} />
       </div>
 
-      {ltiData ? (
+      {/* {ltiData ? (
         <div className="flex flex-col w-1/3 gap-3 items-end text-white text-sm">
           <button
             onClick={handleConnection}
             className={`flex items-center w-2/3 justify-center gap-2 bg-primary hover:bg-primary-hover  py-1 rounded
-               ${linkedTasks.includes(id.toString()) && 'hidden'}`}
+               ${linkedTasks.includes(id.toString()) && "hidden"}`}
           >
             <FaLink />
             Conectar
@@ -89,13 +168,7 @@ function AssignmentCard({
         </div>
       ) : (
         <div className="flex flex-col w-1/3 gap-3 items-end text-white text-sm">
-          <button
-            onClick={handleCopy}
-            className="flex items-center w-2/3 justify-center gap-2 bg-primary hover:bg-primary-hover  py-1 rounded"
-          >
-            <FaLink />
-            Copiar invitacion
-          </button>
+
           <Link
             href={`${pathname}/${id}/configurar`}
             className="flex items-center w-2/3  justify-center gap-2 bg-primary hover:bg-primary-hover py-1 rounded"
@@ -104,7 +177,7 @@ function AssignmentCard({
             Configurar
           </Link>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

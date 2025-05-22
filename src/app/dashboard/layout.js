@@ -9,9 +9,9 @@ export const metadata = {
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="flex min-h-screen max-h-screen w-screen">
+    <div className="flex flex-col lg:flex-row h-screen lg:min-h-screen lg:max-h-screen w-full">
       <Navbar />
-      <main className="w-[85.7%]">{children}</main>
+      <main className="lg:w-[91%] w-full h-full mt-6 lg:mt-0">{children}</main>
     </div>
   );
 }

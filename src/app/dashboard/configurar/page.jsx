@@ -80,7 +80,6 @@ function configurar() {
 
   return (
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 ">
-      {/* Modal de confirmación */}
 
       <div className="w-full text-primary ">
         <h1 className="text-2xl font-mono font-bold">Administrar usuarios</h1>
@@ -103,6 +102,9 @@ function configurar() {
             )}
           </div>
         )}
+
+        
+      {/* Modal de confirmación -------------------------------------------*/}
         {showConfirmModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded shadow-lg text-center">
