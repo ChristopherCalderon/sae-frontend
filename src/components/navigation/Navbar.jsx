@@ -2,97 +2,175 @@
 
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { FaBrain, FaUser, FaCog, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaBrain,
+  FaUser,
+  FaCog,
+  FaSignOutAlt,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 import { GiBrain } from "react-icons/gi";
 import { HiAcademicCap } from "react-icons/hi";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 function Navbar() {
-  const { data: session, status } = useSession(); 
-  const isAdmin = session?.user.activeRole === "ORG_Admin"; // Verificamos si el rol es 'admin'
+  const { data: session, status } = useSession();
+  const isAdmin = session?.user.activeRole === "ORG_Admin";
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  return (
-    <div className="w-[14.3%] h-screen bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] flex flex-col">
-      <div className="h-1/5 w-full relative">
-        <figure className="absolute w-full h-full z-10">
-          <Image src="/fachada.jpg" alt="fachada" fill />
-        </figure>
+  // Efecto para detectar el tamaño de la pantalla
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024); // 1024px como breakpoint para tablet
+    };
 
-        <div className="w-full h-2/3 bg-black/50 absolute bottom-0 z-10 text-white px-2 py-3">
-          <h1 className="font-mono font-bold text-md text-center leading-tight">
-            Sistema Automatizado de Evaluación
-          </h1>
-          <div className="flex w-full items-center gap-2 mt-2">
-            <FaUser />
-            <span className="font-mono text-sm">
+    // Ejecutar al montar y añadir listener
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // Contenido del menú
+  const menuContent = (
+    <>
+      <div className="h-1/4 w-full ">
+        <div className="w-full px-2 py-3">
+          <div className="flex flex-col w-full items-center gap-2">
+            <img
+              className="rounded-full w-16"
+              src={session?.user.image}
+              alt="Picture of the author"
+            />
+            <span className="font-semibold w-full text-center text-sm break-words whitespace-normal">
               {session?.user?.name || "Nombre de usuario"}
             </span>
+            <span className="font-semibold w-full text-center text-sm break-words whitespace-normal">
+              {session?.user?.selectedOrg || "Nombre de org"}
+            </span>
           </div>
-          <span>
-          {session?.user?.selectedOrg || "Nombre de usuario"}</span>
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 p-2 text-primary text-xl font-semibold flex-1">
-        <Link
-          href={"/dashboard/clases"}
-          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-        >
-          <HiAcademicCap />
-          <span>Mis clases</span>
-        </Link>
-        <Link
+      <div className="flex h-3/5  lg:h-3/4 flex-col justify-between p-2 text-xl font-semibold">
+        <div className="h-full flex flex-col gap-4">
+          <Link
+            href={"/dashboard/clases"}
+            className="flex lg:flex-col  justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+            onClick={() => isMobile && setIsOpen(false)}
+          >
+            <HiAcademicCap className="text-2xl" />
+            <span>Mis clases</span>
+          </Link>
+          <Link
             href={"/dashboard/modelo"}
-            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+            className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+            onClick={() => isMobile && setIsOpen(false)}
           >
-            <GiBrain />
-            <span>Mis Modelos IA</span>
+            <GiBrain className="text-2xl" />
+            <span>Mis modelos</span>
           </Link>
-        {/* Mostrar "Modelos IA" solo si es admin */}
-        {isAdmin && (
-          <Link
-            href={"/dashboard/modelos"}
-            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-          >
-            <GiBrain />
-            <span>Modelos IA de Org</span>
-          </Link>
-        )}
 
-        {isAdmin && (
-          <Link
-            href={"/dashboard/admin"}
-            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-          >
-            <FaCog />
-            <span>Secciones</span>
-          </Link>
-        )}
+          {isAdmin && (
+            <Link
+              href={"/dashboard/modelos"}
+              className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+              onClick={() => isMobile && setIsOpen(false)}
+            >
+              <GiBrain className="text-2xl" />
+              <span>Modelos de Org</span>
+            </Link>
+          )}
 
-                {isAdmin && (
-          <Link
-            href={"/dashboard/configurar"}
-            className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-          >
-            <FaCog />
-            <span>Configuración</span>
-          </Link>
-        )}
-        
-      </div>
+          {isAdmin && (
+            <Link
+              href={"/dashboard/admin"}
+              className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+              onClick={() => isMobile && setIsOpen(false)}
+            >
+              <FaCog className="text-2xl" />
+              <span>Secciones</span>
+            </Link>
+          )}
 
-      <div className="p-4 text-blue-900 text-lg font-bold">
-        <div
-          onClick={() => {
-            signOut({ callbackUrl: "/" }); // Redirige al login o página principal después de cerrar sesión
-          }}
-          className="font-mono flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-        >
-          <FaSignOutAlt />
-          <span>Cerrar sesion</span>
+          {isAdmin && (
+            <Link
+              href={"/dashboard/configurar"}
+              className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+              onClick={() => isMobile && setIsOpen(false)}
+            >
+              <FaCog className="text-2xl" />
+              <span>Configuración</span>
+            </Link>
+          )}
+        </div>
+
+        <div>
+          <div
+            onClick={() => {
+              signOut({ callbackUrl: "/" });
+              isMobile && setIsOpen(false);
+            }}
+            className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+          >
+            <FaSignOutAlt className="text-2xl" />
+            <span>Cerrar sesion</span>
+          </div>
         </div>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Versión desktop  */}
+      <div className="hidden lg:block w-[9%] h-screen bg-[#2d3145] text-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+        {menuContent}
+      </div>
+
+      {/* Versión mobile/tablet */}
+      <div className="lg:hidden fixed top-0 left-0 w-full z-50">
+        {/* Botón hamburguesa */}
+        <div
+          className={`${
+            isOpen ? "bg-[#2d3145]" : "bg-background "
+          } h-14 p-4 flex justify-between items-center`}
+        >
+          <button
+            onClick={toggleMenu}
+            className={`${
+              !isOpen ? "text-[#2d3145]" : "text-background "
+            } focus:outline-none`}
+          >
+            {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
+
+ 
+        </div>
+
+        {/* Menú desplegable */}
+        {isOpen && (
+          <div className="bg-[#2d3145] text-white h-screen w-64 shadow-lg overflow-y-auto">
+            {menuContent}
+          </div>
+        )}
+      </div>
+
+      {/* Overlay para cuando el menú está abierto */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+    </>
   );
 }
 
