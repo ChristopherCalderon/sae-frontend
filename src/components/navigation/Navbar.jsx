@@ -132,7 +132,8 @@ function Navbar() {
     <>
       {/* Versión desktop  */}
       <div className="hidden lg:block w-[9%] h-screen bg-[#2d3145] text-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-        {menuContent}
+        {status === 'loading' ?  '' : menuContent}
+
       </div>
 
       {/* Versión mobile/tablet */}

@@ -7,31 +7,43 @@ import { usePathname } from "next/navigation";
 
 function ClassCard({ id, name, url, status }) {
   const pathname = usePathname();
+
+    const getFontSize = (text) => {
+    const length = text?.length || 0;
+
+    if (length > 50) return "text-sm"; 
+    if (length > 40) return "text-base"; 
+    if (length > 30) return "text-lg"; 
+    return "text-xl"; 
+  };
+  const fontSizeClass = getFontSize(name);
   return (
-    <div className="bg-background w-full h-40 shadow-md rounded-md py-5 px-8 text-primary flex flex-col items-center gap-2">
-      <div className="w-full flex items-center justify-center gap-8">
-        <HiAcademicCap className="text-4xl" />
-        <Link
-          href={`${pathname}/${id}`}
-          className="font-bold w-2/3 hover:underline"
-        >
-          {name}
-        </Link>
-      </div>
+    <div className="bg-white w-full h-50 rounded-md px-4  text-primary flex flex-col justify-center gap-10 shadow-[0px_8px_8px_rgba(0,0,0,0.25)] ">
+      {/* Estado de tarea */}
       {!status ? (
-        <button className="w-20 text-sm text-white font-bold bg-accent px-2 py-1 rounded-md shadow-md ">
+        <button className="bg-white border-2 border-secondary  py-1 px-4 w-fit rounded-lg font-semibold text-sm text-secondary text-center ">
           Activo
         </button>
       ) : (
-        <button className="w-20 text-sm text-white font-bold bg-accent px-2 py-1 rounded-md shadow-md ">
+        <button className="bg-white border-2 border-secondary  py-1 px-4 w-fit rounded-lg font-semibold text-sm text-secondary text-center">
           Inhabilitado
         </button>
       )}
+
+      {/* Titulo de tarea */}
+
+      <Link
+        href={`${pathname}/${id}`}
+        className={`${fontSizeClass} text-center font-bold text-md break-words whitespace-normal hover:underline`}
+      >
+        {name}
+      </Link>
+
       <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-semibold hover:font-bold hover:underline flex justify-center items-center gap-1"
+        className="font-semibold hover:font-bold hover:underline flex justify-center items-center gap-1 text-secondary justify-end" 
       >
         Ver Classroom
         <FaExternalLinkAlt className="text-md" />

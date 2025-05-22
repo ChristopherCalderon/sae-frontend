@@ -28,13 +28,13 @@ function tareas() {
       if (token) {
         // 2. Decodificar el token para obtener información del curso
         const decodedData = await decodeToken(token);
-        const linkedTasks = await getLinkedTasks(tareas)
-        
+        const linkedTasks = await getLinkedTasks(tareas);
+
         setLinkedTasks(linkedTasks.data);
         console.log("Datos decodificados:", decodedData);
         setLtiData(decodedData);
       }
-      console.log(tareas)
+      console.log(tareas);
       const response = await getAssignments(tareas);
       setAssignments(response?.data || []);
     } catch (error) {
@@ -46,10 +46,10 @@ function tareas() {
   };
 
   useEffect(() => {
-    if (status === "authenticated" ) {
-      setOrgId(session.user.selectedOrgId)
-      setOrgName(session.user.selectedOrg)
-      getData()
+    if (status === "authenticated") {
+      setOrgId(session.user.selectedOrgId);
+      setOrgName(session.user.selectedOrg);
+      getData();
     } else if (status === "loading") {
       // Sesión aún cargando
       setLoading(true);
@@ -57,16 +57,24 @@ function tareas() {
   }, [status]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
-      <div className="w-full text-primary ">
-        <h1 className="text-2xl font-bold">Mis Tareas</h1>
-        <p className="font-semibold">Nombre del curso</p>
+    <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-5 py-8 overflow-clip">
+      <div className="w-full flex flex-col items-center  text-primary">
+        <h1 className="text-2xl font-semibold">Tareas del curso</h1>
+        {ltiData ? (
+          <p className="font-light text-center text-sm">
+            Selecciona una tarea para conectar
+          </p>
+        ) : (
+          ""
+        )}
       </div>
       <div
-        className="w-full h-[90%] bg-white shadow-xl px-10 py-5 flex flex-col gap-3 overflow-y-scroll rounded-md
-    [&::-webkit-scrollbar]:w-1
-        [&::-webkit-scrollbar-track]:bg-white
-        [&::-webkit-scrollbar-thumb]:bg-primary"
+        className={`w-full  h-[90%] py-5  ${
+          loading ? " " : "grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3"
+        } gap-5 overflow-y-scroll  rounded-md
+      [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-background
+        [&::-webkit-scrollbar-thumb]:bg-primary`}
       >
         {loading ? (
           <Loading />

@@ -107,7 +107,11 @@ function Configurar() {
   }, [pathname, status, taskId]);
 
   return (
+
+
     <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
+
+      {/* Header-------------------------------------------------------------------- */}
       <div className="w-full text-primary flex items-center">
         <div>
           <h1 className="text-2xl font-bold">Tarea de programación</h1>
@@ -118,12 +122,15 @@ function Configurar() {
         </div>
       </div>
 
+      {/*Contenedor (Ya no usaremos el contenedor en si asi que aja XD)  */}
       <div className="w-full h-[90%] bg-white shadow-xl px-3 py-1 gap-3 rounded-md overflow-auto flex flex-col justify-center">
+        {/* Valdiacion de carga */}
         {loading ? (
           <Loading />
         ) : (
+
           <div className="w-full h-full flex flex-col justify-center">
-            {step === 1 && (
+       
               <div className="bg-background rounded-md h-[90%] p-8 flex  items-center justify-center gap-5 text-primary">
                 <div className="w-1/2 h-full flex flex-col justify-center gap-1">
                   <p className="font-medium">Lenguaje de programacion</p>
@@ -162,6 +169,9 @@ function Configurar() {
                     value={formData.style}
                     onChange={(e) => handleChange(e, "style")}
                   />
+
+
+                  {/* Select que carga los modelos */}
                   <p className="font-medium">Modelo de IA</p>
                   <select
                     className="w-full mb-4 p-2 appearance-none shadow-md rounded bg-white"
@@ -178,6 +188,8 @@ function Configurar() {
                     ))}
                   </select>
                 </div>
+
+                {/* Text areas---------------- */}
                 <div className="w-1/2 h-full flex flex-col justify-center gap-1">
                   <p className="font-medium">Temas a evaluuar</p>
                   <textarea
@@ -195,9 +207,7 @@ function Configurar() {
                   />
                 </div>
               </div>
-            )}
 
-            {step === 2 && <a>a</a>}
           </div>
         )}
         <div className="flex gap-4 justify-center">
@@ -215,6 +225,9 @@ function Configurar() {
           </button>
         </div>
       </div>
+
+
+      {/* Modal de confirmacion-------------------------- */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg text-center">
