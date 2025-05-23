@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
+import { IoIosArrowDown } from "react-icons/io";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createTaskConfig,
@@ -34,18 +35,18 @@ function Configurar() {
 
   //Mapeo de extensiones de lenguaje a sus respectivas extensiones
   const languageExtensions = {
-  "C++": ".cpp",
-  "Java": ".java",
-  "C#": ".cs",
+    "C++": ".cpp",
+    Java: ".java",
+    "C#": ".cs",
   };
 
   const handleLanguageChange = (e) => {
-  const selectedLang = e.target.value;
-  setFormData((prev) => ({
-    ...prev,
-    language: selectedLang,
-    extension: languageExtensions[selectedLang] || "",
-  }));
+    const selectedLang = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      language: selectedLang,
+      extension: languageExtensions[selectedLang] || "",
+    }));
   };
 
   const getData = async (id, teacherId, org) => {
@@ -122,9 +123,9 @@ function Configurar() {
   }, [pathname, status, taskId]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
+    <div className="bg-background flex flex-col gap-5 w-full min-h-screen p-5 py-8">
       {/* Header */}
-      <div className="w-full flex flex-col items-center text-primary px-4">
+      <div className="w-full flex flex-col items-center text-primary">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] text-center max-w-[250px] md:max-w-[382px] font-[Bitter]">
           Tarea de programación
         </h1>
@@ -141,52 +142,61 @@ function Configurar() {
               <label className="text-[14px] font-bold md:text-[20px]">
                 Lenguaje de programación
               </label>
-              <select
-                className="w-full h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] shadow-sm bg-white
+              <div className="relative mt-2">
+                <select
+                  className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
              md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
-                value={formData.language}
-                onChange={handleLanguageChange}
-              >
-                <option value="C++">C++</option>
-                <option value="Java">Java</option>
-                <option value="C#">C#</option>
-              </select>
+                  value={formData.language}
+                  onChange={handleLanguageChange}
+                >
+                  <option value="C++">C++</option>
+                  <option value="Java">Java</option>
+                  <option value="C#">C#</option>
+                </select>
+                <IoIosArrowDown className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-lg text-secondary" />
+              </div>
             </div>
 
             <div className="flex flex-col">
               <label className="text-[14px] font-bold md:text-[20px]">
                 Modelo de IA
               </label>
-              <select
-                className="w-full h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] shadow-sm bg-white
+              <div className="relative mt-2">
+                <select
+                  className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
              md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
-                value={formData.modelIA}
-                onChange={(e) => handleModelChange(e)}
-              >
-                <option value="">Selecciona el modelo</option>
-                {models.map((model) => (
-                  <option key={model._id} value={model._id}>
-                    {model.modelType.name} - {model.name}
-                  </option>
-                ))}
-              </select>
+                  value={formData.modelIA}
+                  onChange={(e) => handleModelChange(e)}
+                >
+                  <option value="">Selecciona el modelo</option>
+                  {models.map((model) => (
+                    <option key={model._id} value={model._id}>
+                      {model.modelType.name} - {model.name}
+                    </option>
+                  ))}
+                </select>
+                <IoIosArrowDown className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-lg text-secondary" />
+              </div>
             </div>
 
             <div className="flex flex-col">
               <label className="text-[14px] font-bold md:text-[20px]">
                 Nivel del estudiante
               </label>
-              <select
-                className="w-full h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] shadow-sm bg-white
+              <div className="relative mt-2">
+                <select
+                  className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
              md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
-                value={formData.studentLevel}
-                onChange={(e) => handleChange(e, "studentLevel")}
-              >
-                <option value="">Selecciona el nivel</option>
-                <option value="Principiante">Principiante</option>
-                <option value="Intermedio">Intermedio</option>
-                <option value="Avanzado">Avanzado</option>
-              </select>
+                  value={formData.studentLevel}
+                  onChange={(e) => handleChange(e, "studentLevel")}
+                >
+                  <option value="">Selecciona el nivel</option>
+                  <option value="Principiante">Principiante</option>
+                  <option value="Intermedio">Intermedio</option>
+                  <option value="Avanzado">Avanzado</option>
+                </select>
+                <IoIosArrowDown className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-lg text-secondary" />
+              </div>
             </div>
 
             <div className="flex flex-col">
@@ -194,7 +204,7 @@ function Configurar() {
                 Reglas de estilo
               </label>
               <input
-                className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] shadow-sm bg-white md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
+                className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] bg-white md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
                 placeholder="Google Style"
                 value={formData.style}
                 onChange={(e) => handleChange(e, "style")}
@@ -208,7 +218,7 @@ function Configurar() {
               <div className="relative w-full">
                 <textarea
                   maxLength={200}
-                  className="w-full min-h-[60px] p-[10px] rounded-[5px] text-[11px] shadow-sm resize-none bg-white
+                  className="w-full min-h-[60px] p-[10px] rounded-[5px] text-[11px] resize-none bg-white
                   md:text-[16px] md:h-[130px] lg:h-[179px] lg:text-[18px]"
                   value={formData.topic}
                   onChange={(e) => handleChange(e, "topic")}
@@ -226,7 +236,7 @@ function Configurar() {
               <div className="relative w-full">
                 <textarea
                   maxLength={200}
-                  className="w-full min-h-[60px] p-[10px] rounded-[5px] text-[11px] shadow-sm resize-none bg-white
+                  className="w-full min-h-[60px] p-[10px] rounded-[5px] text-[11px] resize-none bg-white
                   md:text-[16px] md:h-[130px] lg:h-[179px] lg:text-[18px]"
                   value={formData.constraints}
                   onChange={(e) => handleChange(e, "constraints")}
