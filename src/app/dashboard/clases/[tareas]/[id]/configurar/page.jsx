@@ -36,7 +36,7 @@ function Configurar() {
   //Mapeo de extensiones de lenguaje a sus respectivas extensiones
   const languageExtensions = {
     "C++": ".cpp",
-    Java: ".java",
+    "Java": ".java",
     "C#": ".cs",
   };
 
@@ -100,8 +100,6 @@ function Configurar() {
     }
   };
 
-  console.log(formData);
-
   const goToRepositories = () => {
     const parts = pathname.split("/");
     parts.pop(); // elimina "configurar"
@@ -145,10 +143,11 @@ function Configurar() {
               <div className="relative mt-2">
                 <select
                   className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
-             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
+             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
                   value={formData.language}
                   onChange={handleLanguageChange}
                 >
+                  <option value="">Selecciona el lenguaje</option>
                   <option value="C++">C++</option>
                   <option value="Java">Java</option>
                   <option value="C#">C#</option>
@@ -164,7 +163,7 @@ function Configurar() {
               <div className="relative mt-2">
                 <select
                   className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
-             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
+             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
                   value={formData.modelIA}
                   onChange={(e) => handleModelChange(e)}
                 >
@@ -186,7 +185,7 @@ function Configurar() {
               <div className="relative mt-2">
                 <select
                   className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
-             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
+             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
                   value={formData.studentLevel}
                   onChange={(e) => handleChange(e, "studentLevel")}
                 >
@@ -204,7 +203,7 @@ function Configurar() {
                 Reglas de estilo
               </label>
               <input
-                className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] bg-white md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
+                className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] bg-white md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
                 placeholder="Google Style"
                 value={formData.style}
                 onChange={(e) => handleChange(e, "style")}
