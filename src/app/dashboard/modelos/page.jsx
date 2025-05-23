@@ -103,17 +103,12 @@ function ModelsPage() {
     <div className="bg-background flex flex-col w-full h-full p-5 py-8 md:p-10 ">
       <div className="w-full flex flex-col items-center text-primary px-4">
         <h1
-          className="font-[Bitter] font-semibold text-[20px] leading-[24px] text-center 
-                 md:text-[26px] md:leading-[30px] 
-                 lg:text-[32px] lg:leading-[32px] max-w-[700px]"
-        >
-          Gestión de modelos de IA de la organización
-        </h1>
-
+          className="font-[Bitter] font-semibold text-[20px] leading-[24px] text-center md:text-[26px] md:leading-[30px] 
+          lg:text-[32px] lg:leading-[32px] max-w-[700px]"
+        >Gestión de modelos de IA de la organización</h1>
         <p
-          className="font-[Bitter] font-light text-[11px] leading-[13px] text-center text-gray-500 mt-2 
-                md:text-[16px] md:leading-[18px] 
-                lg:text-[20px] lg:leading-[20px] max-w-[700px]"
+          className="font-[Bitter] font-light text-[11px] leading-[13px] text-center text-gray-500 mt-2 md:text-[16px] md:leading-[18px] 
+          lg:text-[20px] lg:leading-[20px] max-w-[700px]"
         >
           Agregar o elimina modelos de IA para la Organización
         </p>
@@ -260,22 +255,28 @@ function ModelsPage() {
                     {modelos.map((modelo) => (
                       <div
                         key={modelo._id}
-                        className="w-full max-w-[550px] bg-white rounded-[5px] shadow flex items-center justify-between px-[10px] py-[10px]"
+                        className="w-full max-w-[550px] bg-white rounded-[5px] shadow px-[10px] py-[10px] flex justify-between items-start"
                       >
-                        <div className="flex items-center gap-3">
-                          {getProviderIcon(modelo.modelType.name)}
-                          <div className="flex flex-col text-sm leading-[14px] md:text-[20px] md:leading-[24px]">
-                            <span className="font-bold text-primary">
+                        {/* Contenedor ícono + texto */}
+                        <div className="flex items-start gap-3 w-full overflow-hidden">
+                          <div className="shrink-0">
+                            {getProviderIcon(modelo.modelType.name)}
+                          </div>
+
+                          <div className="flex flex-col text-sm leading-[14px] md:text-[20px] md:leading-[24px] w-full break-words">
+                            <span className="font-bold text-primary break-words">
                               {modelo.name}
                             </span>
-                            <span className="text-primary text-[10px] md:text-[16px]">
+                            <span className="text-primary text-[10px] md:text-[16px] break-words">
                               {modelo.version}
                             </span>
                           </div>
                         </div>
+
+                        {/* Botón eliminar */}
                         <button
                           onClick={() => deleteModel(modelo._id)}
-                          className="text-black text-xl hover:text-red-600 md:h-[32px] md:w-[32px]"
+                          className="text-black text-xl hover:text-red-600 md:h-[32px] md:w-[32px] ml-2 shrink-0"
                         >
                           <ImCancelCircle />
                         </button>
