@@ -75,8 +75,8 @@ const ExcelButton = ({ data }) => {
   return (
     <button
       onClick={exportToExcel}
-      className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
-    >
+      className="flex w-4/5 lg:w-full items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+      >
       <IoMdDownload className="text-xl" />
       Exportar a Excel
     </button>

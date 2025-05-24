@@ -144,11 +144,11 @@ function AssignmentCard({
           </span>
           <span className="flex text-sm items-center gap-1">
             <FaCheck />
-            <p className="text-xs md:text-sm lg:text-sm">{accepted} Aceptados </p>
+            <p className="text-xs md:text-sm lg:text-sm flex gap-1">{accepted} <p className="hidden md:block lg:block">Aceptados</p> </p>
           </span>
           <span className="flex text-sm items-center gap-1">
             <FaCheckDouble />
-            <p className="text-xs md:text-sm lg:text-sm">{submissions} Entregados</p>
+            <p className="text-xs md:text-sm lg:text-sm flex gap-1">{submissions}  <p className="hidden md:block lg:block">Entregados</p> </p>
           </span>
         </div>
 

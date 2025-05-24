@@ -1,6 +1,7 @@
 "use client";
 import ExcelButton from "@/components/buttons/ExcelButon";
 import Loading from "@/components/loader/Loading";
+import AssignmentTableCard from "@/components/tableCards/AssignmentTableCard";
 import AssignmentsTable from "@/components/tables/AssignmentsTable";
 import {
   getRepoData,
@@ -18,10 +19,16 @@ function tarea() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState();
-  const [org, setOrg] = useState()
+  const [org, setOrg] = useState();
   const router = useRouter();
   const { id } = useParams();
-    const { data: session, status } = useSession();
+  const { data: session, status } = useSession();
+
+  const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
+    // Filtrar submissions
+  const filteredSubmissions = submissions.filter(submission => 
+    submission.students[0].name.toLowerCase().startsWith(globalFilter.toLowerCase())
+  );
 
   const getData = async () => {
     try {
@@ -77,35 +84,45 @@ function tarea() {
   };
 
   useEffect(() => {
-    if (status === "authenticated" ) {
-
-      setOrg(session.user.selectedOrg)
+    if (status === "authenticated") {
+      setOrg(session.user.selectedOrg);
       getData();
     } else if (status === "loading") {
       // Sesión aún cargando
       setLoading(true);
     }
-  }, [status]); 
+  }, [status]);
   return (
-    <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-5 py-8 overflow-clip">
-      <div className="w-full flex flex-col items-center  text-primary">
+    <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8 overflow-clip">
+      <div className="w-full flex flex-col items-center gap-2  text-primary">
         <div>
-          <h1 className="text-2xl font-bold">Tarea de programación</h1>
-          <p className="font-semibold">
+          <h1 className="text-2xl font-bold text-center">
+            Tarea de programación
+          </h1>
+          <p className="font-semibold text-center">
             Vista general de los repositorios de los alumnos incritos en el
             curso
           </p>
         </div>
-        {/* <div className="flex gap-3">
-          <button
-            onClick={() => generateFeedback()}
-            className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
-          >
-            <RiAiGenerate2 className="text-xl" />
-            Generar retroalimentacion
-          </button>
-          <ExcelButton data={submissions} />
-        </div> */}
+        <div className="flex flex-col lg:flex-row w-full  gap-2">
+          <input
+            type="text"
+            placeholder="Buscar nombre de repositorio..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className=" px-3 py-1 border-2 border-gray-300 rounded w-full lg:w-1/2"
+          />
+          <div className="flex flex-col lg:w-1/2 md:flex-row lg:flex-row justify-center items-center  gap-2">
+            <button
+              onClick={() => generateFeedback()}
+              className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+            >
+              <RiAiGenerate2 className="text-xl" />
+              Generar retroalimentaciones
+            </button>
+            <ExcelButton data={submissions} />
+          </div>
+        </div>
       </div>
 
       <div
@@ -116,15 +133,32 @@ function tarea() {
         {loading ? (
           <Loading />
         ) : submissions.length === 0 ? (
-          <h1 className="text-center text-xl font-semibold">No se encontraron entregas</h1>
+          <h1 className="text-center text-xl font-semibold">
+            No se encontraron entregas
+          </h1>
         ) : (
-          <AssignmentsTable
-            submissions={submissions}
-            id={id}
-            getFeedbacks={getData}
-            config={config}
-            org={org}
-          />
+          <div className="w-full h-full flex flex-col gap-5">
+            <AssignmentsTable
+              submissions={filteredSubmissions}
+              id={id}
+              getFeedbacks={getData}
+              config={config}
+              org={org}
+              globalFilter={globalFilter}
+              setGlobalFilter={() => setGlobalFilter()}
+            />
+
+            {filteredSubmissions.map((submission) => (
+              <AssignmentTableCard
+                key={submission.id}
+                submission={submission}
+                id={id}
+                getFeedbacks={getData}
+                config={config}
+                org={org}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>

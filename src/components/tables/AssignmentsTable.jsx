@@ -79,19 +79,20 @@ const generateAll = (repos) => {
 };
 
 //Componente-------------------------------------------------------------------------------------------
-function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
+function AssignmentsTable({ submissions, id, getFeedbacks, config, org, globalFilter, setGlobalFilter }) {
   const pathname = usePathname(); //Pathname para guardar la ruta actual
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [sorting, setSorting] = useState([]); //Estado que guarda el sroting de la tabla
   const columnHelper = createColumnHelper(); //Creador de columnas de tanstack
-  const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
+  // const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
 
   //Columnas tanstack---------------------------------------------------------
   const columns = [
     columnHelper.display({
       id: "usuarioYCorreo",
       header: () => "Usuario",
+      enableGlobalFilter: false,
       cell: ({ row }) => {
         const login = row.original.students?.[0]?.login;
         const avatar = row.original.students?.[0]?.avatar_url;
@@ -111,7 +112,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
     columnHelper.accessor((row) => row.repository.name, {
       id: "repo",
       header: () => "Repositorio",
-
+      enableGlobalFilter: false,
       cell: (info) => {
         const row = info.row.original;
         return (
@@ -145,11 +146,11 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
       cell: (info) => (
         <div className="flex gap-1 justify-center items-center">
           <div
-            className={`w-3 h-3 rounded-full ${getFeedbackColor(
+            className={`w-3 h-3 rounded-full  ${getFeedbackColor(
               info.getValue()
             )}`}
           ></div>
-          <span>{info.getValue()}</span>
+          <span className="text-center">{info.getValue()}</span>
         </div>
       ),
     }),
@@ -226,7 +227,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
 
   //Componente-----------------------------------------------------------------------
   return (
-    <div className="relative p-4 overflow-x-auto">
+    <div className="relative p-4 overflow-x-auto lg:block hidden">
       {/* Modal loader */}
       {loading && (
         <div className="absolute inset-0 bg-black/40 flex justify-center items-center z-10">
@@ -247,13 +248,6 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
           </div>
         </div>
       )}
-      <input
-        type="text"
-        placeholder="Buscar nombre de repositorio..."
-        value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-        className="mb-4 px-3 py-2 border border-gray-300 rounded w-full max-w-sm"
-      />
       {/* Tabla */}
       <table className="min-w-full text-sm border border-gray-300 rounded-md shadow-md">
         <thead className="bg-[#dcdcdc] text-left">
