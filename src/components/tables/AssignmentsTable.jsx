@@ -275,7 +275,7 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org, globalFi
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-t border-[#dcdcdc]">
+            <tr key={row.id} className="border-t bg-white border-[#dcdcdc]">
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-3 py-2 text-center">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -15,6 +15,7 @@ import { useRouter, useParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
 import { RiAiGenerate2 } from "react-icons/ri";
+import AssignmentTableCard from "@/components/tableCards/AssignmentTableCard";
 
 function repositorios() {
   const [submissions, setSubmissions] = useState([]);
@@ -26,6 +27,11 @@ function repositorios() {
   const router = useRouter();
   const { id } = useParams();
   const { data: session, status } = useSession();
+   const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
+      // Filtrar submissions
+    const filteredSubmissions = submissions.filter(submission => 
+      submission.students[0].name.toLowerCase().startsWith(globalFilter.toLowerCase())
+    );
 
   const token =
     typeof window !== "undefined"
@@ -110,20 +116,31 @@ function repositorios() {
   }, [token, status]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-screen p-8 overflow-clip">
-      <div className="w-full text-primary flex items-center justify-between ">
+    <div className="bg-background font-primary font-bold h-screen flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8 overflow-clip">
+      <div className="w-full flex flex-col items-center gap-2  text-primary">
         <div>
-          <h1 className="text-2xl font-bold">Tarea de programación</h1>
-          <p className="font-semibold">
+          <h1 className="text-2xl font-bold text-center">
+            Tarea de programación
+          </h1>
+          <p className="font-semibold text-center">
             Vista general de los repositorios de los alumnos incritos en el
             curso
           </p>
         </div>
+        <div className="flex flex-col lg:flex-row w-full  gap-2">
+          <input
+            type="text"
+            placeholder="Buscar nombre de repositorio..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className=" px-3 py-1 border-2 border-gray-300 rounded w-full lg:w-1/2"
+          />
+          <div className="w-full lg:w-1/2">
         {status === "unauthenticated" ? (
-          <div className="flex gap-3">
+          <div className="flex gap-3 w-full justify-center lg:justify-end">
             <button
               onClick={handleSignIn}
-              className="font-mono font-normal bg-black text-[13px] text-white flex items-center justify-center px-4 py-2 rounded-md 
+              className="font-mono font-normal w-4/5 lg:w-1/2 bg-black text-[13px] text-white flex items-center justify-center px-4 py-2 rounded-md 
                                       shadow hover:bg-gray-800 transition"
             >
               <FaGithub className="mr-2" />
@@ -131,22 +148,22 @@ function repositorios() {
             </button>
           </div>
         ) : (
-          <div className="flex gap-3">
+          <div className="flex flex-col lg:w-full md:flex-row lg:flex-row justify-center items-center  gap-2">
             {submissions.every(
               (submission) => submission.feedback_status === "Enviado"
             ) && !loading ? (
               <button
                 onClick={() => setSendModal(true)}
-                className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
-              >
+                className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+           >
                 <RiAiGenerate2 className="text-xl" />
                 Enviar notas
               </button>
             ) : (
               <button
                 onClick={() => generateFeedback()}
-                className="flex items-center justify-center gap-2 font-semibold bg-secondary text-primary hover:text-white px-5 hover:bg-primary py-1 rounded shadow-lg"
-              >
+                className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+           >
                 <RiAiGenerate2 className="text-xl" />
                 Generar retroalimentacion
               </button>
@@ -155,55 +172,51 @@ function repositorios() {
             <ExcelButton data={submissions} />
           </div>
         )}
+          </div>
+        </div>
       </div>
+
       <div
-        className="w-full h-[90%] bg-white shadow-xl px-3 py-5 gap-3 overflow-y-scroll [&::-webkit-scrollbar]:w-1
-        [&::-webkit-scrollbar-track]:bg-white
+        className="w-full h-[90%] gap-3 overflow-y-scroll [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-background
         [&::-webkit-scrollbar-thumb]:bg-primary rounded-md"
       >
         {loading ? (
           <Loading />
-        ) : submissions.length === 0 && status === "authenticated" ? (
-          <h1>No se encontraron entregas</h1>
-        ) : status === "authenticated" ? (
-          <AssignmentsTable
-            submissions={submissions}
-            id={data.idtaskgithub}
-            getFeedbacks={getData}
-            config={config}
-            org={data.orgName}
-          />
-        ) : status === "unauthenticated" ? (
-          <p>Debes iniciar sesion para ver los repositorios</p>
+        ) : submissions.length === 0 ? (
+          <h1 className="text-center text-xl font-semibold">
+            {status == 'unauthenticated'? 'Inicie sesion para visualizar las tareas' : 'No se encontraron entregas'}
+            
+          </h1>
         ) : (
-          ""
-        )}
-      </div>
-              {sendModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded shadow-lg text-center">
-              <p className="text-primary text-lg font-semibold mb-2">
-                Sera redirigido al moodle, seleccione nuevamente esta tarea para enviar las notas
-              </p>
-              <div className="flex gap-5 w-full justify-center">
-                <button
-                  onClick={() => setShowConfirmModal(false)}
-                  className="mt-2 px-4 py-1 bg-primary text-white rounded"
-                >
-                  Cancelar
-                </button>
-                <a
-                href={data.url_return}
-                  className="mt-2 px-4 py-1 bg-primary text-white rounded"
-                >
-                  Confirmar
-                </a>
-              </div>
-            </div>
+          <div className="w-full h-full flex flex-col gap-5">
+            <AssignmentsTable
+              submissions={filteredSubmissions}
+              id={data.idtaskgithub}
+              getFeedbacks={getData}
+              config={config}
+              org={data.orgName}
+              globalFilter={globalFilter}
+              setGlobalFilter={() => setGlobalFilter()}
+            />
+
+            {filteredSubmissions.map((submission) => (
+              <AssignmentTableCard
+                key={submission.id}
+                submission={submission}
+                id={data.idtaskgithub}
+                getFeedbacks={getData}
+                config={config}
+                org={data.orgName}
+              />
+            ))}
           </div>
         )}
+      </div>
     </div>
   );
 }
 
 export default repositorios;
+
+
