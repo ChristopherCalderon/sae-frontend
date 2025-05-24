@@ -11,6 +11,9 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ImCancelCircle, ImLock } from "react-icons/im";
+import { PiOpenAiLogoLight } from "react-icons/pi";
+import { GiSpermWhale } from "react-icons/gi";
+import { RiGeminiLine } from "react-icons/ri";
 import { IoMdAddCircleOutline } from "react-icons/io";
 
 function SubjectPage() {
@@ -25,22 +28,11 @@ function SubjectPage() {
   const [loading, setLoading] = useState(true);
   const [llave, setLlave] = useState("");
   const { data: session, status } = useSession();
+  const [tab, setTab] = useState(1);
 
   const eliminarModelo = (index) => {
     const nuevosModelos = modelos.filter((_, i) => i !== index);
     setModelos(nuevosModelos);
-  };
-
-  const agregarModelo = () => {
-    if (nuevoModelo.trim() === "") return;
-    const nombreCompleto = proveedor
-      ? `${proveedor} - ${nuevoModelo}`
-      : nuevoModelo;
-    setModelos([...modelos, nombreCompleto]);
-    setProveedor("");
-    setNuevoModelo("");
-    setNombreLlave("");
-    setLlave("");
   };
 
   const addOrgModel = async (model) => {
@@ -60,6 +52,25 @@ function SubjectPage() {
       getData(session.user.selectedOrgId);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const getProviderIcon = (name) => {
+    switch (name.toLowerCase()) {
+      case "openai":
+        return (
+          <PiOpenAiLogoLight className="text-secondary h-[32px] w-[32px] md:h-[56px] md:w-[56px]" />
+        );
+      case "deepseek":
+        return (
+          <GiSpermWhale className="text-secondary h-[32px] w-[32px] md:h-[56px] md:w-[56px]" />
+        );
+      case "gemini":
+        return (
+          <RiGeminiLine className="text-secondary h-[32px] w-[32px] md:h-[56px] md:w-[56px]" />
+        );
+      default:
+        return <div className="w-5 h-5" />;
     }
   };
 
@@ -90,36 +101,140 @@ function SubjectPage() {
   }, [status]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-4 md:p-6 lg:p-8">
-      <div className="w-full text-primary font-mono">
-        <h1 className="text-2xl font-bold">Nombre de catedratico</h1>
-        <p>Asigna modelos de IA por secciones</p>
+    <div className="bg-background flex flex-col w-full h-full p-5 py-8 md:p-10 ">
+      <div className="w-full flex flex-col items-center text-primary px-4">
+        <h1
+          className="font-[Bitter] font-semibold text-[20px] leading-[24px] text-center md:text-[26px] md:leading-[30px] 
+          lg:text-[32px] lg:leading-[32px] max-w-[700px]"
+        >
+          USUARIO
+        </h1>
+        <p
+          className="font-[Bitter] font-light text-[11px] leading-[13px] text-center text-gray-500 mt-2 md:text-[16px] md:leading-[18px] 
+          lg:text-[20px] lg:leading-[20px] max-w-[700px]"
+        >
+          Asigna un modelo de IA a USUARIO
+        </p>
       </div>
 
-      <div className="w-full h-full bg-white shadow-xl p-4 md:p-6 lg:p-8 rounded-md">
+      {/* Tabs solo en mobile/tablet */}
+      <div className="flex justify-center mt-4 border-b border-gray-300 w-full max-w-[280px] md:max-w-[600px] mx-auto lg:hidden">
+        <button
+          onClick={() => setTab(1)}
+          className={`flex flex-col items-center justify-center flex-1 text-center py-2 font-bold text-[14px] md:text-[18px] relative ${
+            tab === 1 ? "text-secondary" : "text-black"
+          }`}
+        >
+          <span>Asignar Modelo</span>
+          {tab === 1 && (
+            <div className="absolute bottom-0 left-0 w-full h-[3px] bg-secondary" />
+          )}
+        </button>
+
+        <button
+          onClick={() => setTab(2)}
+          className={`flex flex-col items-center justify-center flex-1 text-center py-2 font-bold text-[14px] md:text-[18px] relative ${
+            tab === 2 ? "text-secondary" : "text-black"
+          }`}
+        >
+          <span>Modelos Actuales</span>
+          {tab === 2 && (
+            <div className="absolute bottom-0 left-0 w-full h-[3px] bg-secondary" />
+          )}
+        </button>
+      </div>
+
+      <div className="w-full h-full p-4 md:p-6 lg:p-8">
         {loading ? (
           <Loading />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 h-full">
-            <div className="font-mono text-primary space-y-6 lg:border-r-2 border-gray-300 lg:pr-10">
-              <h2 className="text-center text-xl font-bold">
-                Modelos actuales
+          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">
+            <div className="hidden lg:block absolute left-1/2 top-0 h-full border-l-[1.5px] border-gray-300 transform -translate-x-1/2" />
+            {/* Asignar Modelo (Izquierda en desktop) */}
+            <div
+              className={`${
+                tab === 1 ? "flex" : "hidden"
+              } lg:flex font-mono text-primary space-y-4 flex-col items-center w-full md:max-w-[600px] mx-auto`}
+            >
+              <h2 className="hidden lg:block text-[18px] md:text-[22px] font-bold text-secondary pb-1 border-b-2 border-secondary w-fit mb-4 ml-4">
+                Asignar Modelo
               </h2>
 
-              <div>
-                <div className="ml-4 md:ml-10 space-y-2">
-                  {modelos.length === 0 ? (
-                    <p className="text-gray-500 italic">
-                      No hay modelos asignados.
-                    </p>
-                  ) : (
-                    modelos.map((modelo, index) => (
+              <div className="flex flex-col gap-4 items-center justify-center w-full">
+                {orgmodels
+                  .filter(
+                    (modelo) => !modelos.some((m) => m._id === modelo._id)
+                  )
+                  .map((modelo) => (
+                    <div
+                      key={modelo._id}
+                      className="w-full max-w-[550px] bg-white rounded-[5px] shadow px-[10px] py-[10px] flex justify-between items-start"
+                    >
+                      {/* Contenedor ícono + texto */}
+                      <div className="flex items-start gap-3 w-full overflow-hidden">
+                        <div className="shrink-0">
+                          {getProviderIcon(modelo.modelType.name)}
+                        </div>
+
+                        <div className="flex flex-col text-sm leading-[14px] md:text-[20px] md:leading-[24px] w-full break-words">
+                          <span className="font-bold text-primary break-words">
+                            {modelo.name}
+                          </span>
+                          <span className="text-primary text-[10px] md:text-[16px] break-words">
+                            {modelo.version}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Botón asignar */}
+                      <button
+                        onClick={() => addOrgModel(modelo._id)}
+                        className="text-primary hover:text-secondary text-lg"
+                      >
+                        <IoMdAddCircleOutline />
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* Sección para mostrar los modelos actuales*/}
+            <div
+              className={`${
+                tab === 2 ? "block" : "hidden"
+              } lg:block font-mono text-primary space-y-6 `}
+            >
+              <h2 className="hidden lg:block text-[18px] md:text-[22px] font-bold text-secondary pb-1 border-b-2 border-secondary w-fit mb-4 ml-4">
+                Modelos Actuales
+              </h2>
+
+              <div className="ml-4 md:ml-10 space-y-2">
+                {modelos.length === 0 ? (
+                  <p className="text-gray-500 italic">
+                    No hay modelos asignados.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-4 items-center justify-center w-full">
+                    {modelos.map((modelo, index) => (
                       <div
                         key={index}
-                        className="bg-blue-100 px-4 py-2 max-w-full mr-10 rounded shadow-md flex justify-between items-center"
+                        className="w-full max-w-[550px] bg-white rounded-[5px] shadow px-[10px] py-[10px] flex justify-between items-start"
                       >
-                        {modelo.modelType.name} - {modelo.version} |{" "}
-                        {modelo.name}
+                        {/* Contenedor ícono + texto */}
+                        <div className="flex items-start gap-3 w-full overflow-hidden">
+                          <div className="shrink-0">
+                            {getProviderIcon(modelo.modelType.name)}
+                          </div>
+
+                          <div className="flex flex-col text-sm leading-[14px] md:text-[20px] md:leading-[24px] w-full break-words">
+                            <span className="font-bold text-primary break-words">
+                              {modelo.name}
+                            </span>
+                            <span className="text-primary text-[10px] md:text-[16px] break-words">
+                              {modelo.version}
+                            </span>
+                          </div>
+                        </div>
+
                         {modelo.orgId ? (
                           <button
                             onClick={() => deleteModel(modelo._id)}
@@ -133,94 +248,9 @@ function SubjectPage() {
                           </button>
                         )}
                       </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="font-mono text-primary space-y-4 flex flex-col h-full items-center overflow-y-clip">
-              <h2 className="text-xl font-bold">Agregar modelo</h2>
-              <div className="w-full flex flex-col gap-2 px-10 h-[80%] max-h-[80%]overflow-y-scroll ">
-                {orgmodels
-                  .filter(
-                    (modelo) => !modelos.some((m) => m._id === modelo._id)
-                  )
-                  .map((modelo) => (
-                    <div
-                      key={modelo._id}
-                      className="bg-blue-100 px-4 py-2 w-full rounded shadow-md flex justify-between items-center"
-                    >
-                      <span>
-                        {modelo.modelType.name} - {modelo.version} |{" "}
-                        {modelo.name}
-                      </span>
-                      <button
-                        onClick={() => addOrgModel(modelo._id)}
-                        className="text-primary hover:text-accent text-lg"
-                      >
-                        <IoMdAddCircleOutline />
-                      </button>
-                    </div>
-                  ))}
-              </div>
-              {/* <div className="w-full">
-              <div className="w-full max-w-sm">
-                <label className="font-bold">Proveedor</label>
-                <div className="relative mt-2">
-                  <select
-                    value={proveedor}
-                    onChange={(e) => setProveedor(e.target.value)}
-                    className="w-full px-3 py-2 bg-background rounded appearance-none focus:outline-none shadow-md"
-                  >
-                    <option value="">Seleccionar proveedor</option>
-                    <option value="OpenIA">OpenIA</option>
-                    <option value="Deepseek">Deepseek</option>
-                    <option value="Gemini">Gemini</option>
-                  </select>
-                  <IoIosArrowDown className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-lg text-gray-600" />
-                </div>
-              </div>
-
-              <div className="w-full max-w-sm">
-                <label className="font-bold">Modelo:</label>
-                <input
-                  type="text"
-                  value={nuevoModelo}
-                  onChange={(e) => setNuevoModelo(e.target.value)}
-                  className="w-full mt-2 px-3 py-2 rounded-md bg-background shadow-md focus:outline-none"
-                />
-              </div>
-
-              <div className="w-full max-w-sm">
-                <label className="font-bold">Nombre de la llave:</label>
-                <input
-                  type="text"
-                  value={nombreLlave}
-                  onChange={(e) => setNombreLlave(e.target.value)}
-                  className="w-full mt-2 px-3 py-2 rounded-md bg-background shadow-md focus:outline-none"
-                />
-              </div>
-
-              <div className="w-full max-w-sm">
-                <label className="font-bold">Llave:</label>
-                <input
-                  type="text"
-                  value={llave}
-                  onChange={(e) => setLlave(e.target.value)}
-                  className="w-full mt-2 px-3 py-2 rounded-md bg-background shadow-md focus:outline-none"
-                />
-              </div>
-              </div>
-   */}
-
-              <div className="pt-4">
-                <button
-                  onClick={agregarModelo}
-                  className="w-40 md:w-48 mx-auto bg-primary text-white font-bold py-2 rounded shadow hover:bg-primary-hover"
-                >
-                  Agregar
-                </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
