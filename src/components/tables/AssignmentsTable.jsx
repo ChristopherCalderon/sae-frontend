@@ -54,13 +54,14 @@ const generateOne = async (
   setSuccessMessage,
   getFeedbacks,
   config,
-  org
+  org,
+  teacher
 ) => {
   setLoading(true);
   try {
     console.log(config);
     const repoData = await getData(repo.repository.name, org, config.extension);
-    await postFeedback(repo, repoData, config);
+    await postFeedback(repo, repoData, config, teacher);
     setSuccessMessage("Generado correctamente");
   } catch (error) {
     console.log("Error al generar retroalimentación", error);
@@ -79,7 +80,16 @@ const generateAll = (repos) => {
 };
 
 //Componente-------------------------------------------------------------------------------------------
-function AssignmentsTable({ submissions, id, getFeedbacks, config, org, globalFilter, setGlobalFilter }) {
+function AssignmentsTable({
+  submissions,
+  id,
+  getFeedbacks,
+  config,
+  org,
+  globalFilter,
+  setGlobalFilter,
+  teacher
+}) {
   const pathname = usePathname(); //Pathname para guardar la ruta actual
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -170,7 +180,8 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org, globalFi
                   setSuccessMessage,
                   getFeedbacks,
                   config,
-                  org
+                  org,
+                  teacher
                 )
               }
               className=" border-secondary border-2 text-secondary hover:bg-secondary hover:text-white font-bold text-xs px-3 py-1 rounded"
@@ -192,6 +203,8 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org, globalFi
                       email: u.email,
                       repo: u.assignment.id,
                       org: org,
+                      assignment: u.assignment.title,
+                      name: u.students[0].name,
                     })
                   ),
                 },

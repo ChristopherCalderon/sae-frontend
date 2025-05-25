@@ -25,6 +25,7 @@ function tarea() {
   const [loading, setLoading] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [teacher, setTeacher] = useState();
   const [config, setConfig] = useState();
   const [org, setOrg] = useState();
   const router = useRouter();
@@ -82,7 +83,7 @@ function tarea() {
               submission.repository.name
             );
             console.log(repoData);
-            await postFeedback(submission, repoData, config);
+            await postFeedback(submission, repoData, config, teacher);
           }
         })
       );
@@ -97,6 +98,7 @@ function tarea() {
   useEffect(() => {
     if (status === "authenticated") {
       setOrg(session.user.selectedOrg);
+      setTeacher(session.user.name)
       getData();
     } else if (status === "loading") {
       // Sesión aún cargando
@@ -161,6 +163,7 @@ function tarea() {
               org={org}
               globalFilter={globalFilter}
               setGlobalFilter={() => setGlobalFilter()}
+              teacher={teacher}
             />
 
             {filteredSubmissions.map((submission) => (
@@ -171,6 +174,7 @@ function tarea() {
                 getFeedbacks={getData}
                 config={config}
                 org={org}
+                teacher={teacher}
               />
             ))}
           </div>

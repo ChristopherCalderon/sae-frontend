@@ -218,7 +218,7 @@ export const getRepoData = async (repo, org, extension) => {
   }
 };
 
-export const postFeedback = async (repo, repoData, config) => {
+export const postFeedback = async (repo, repoData, config, teacher) => {
   const client = await apiClient();
   const [value, total] = repo.grade.split("/").map(Number);
   const payload = {
@@ -234,7 +234,10 @@ export const postFeedback = async (repo, repoData, config) => {
     constraints: config.constraints,
     style: config.style,
     modelId: config.modelIA,
+    reviewedBy: teacher
   };
+
+  console.log(payload)
 
   const modelProvider = config.providerNameIA?.toLowerCase();
   try {

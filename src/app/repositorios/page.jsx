@@ -28,7 +28,7 @@ function repositorios() {
   const [data, setData] = useState();
   const [sendModal, setSendModal] = useState(false);
   const [generated, setGenerated] = useState(false);
-
+  const [teacher, setTeacher] = useState();
   const [showSuccessModal, setShowSuccessModal] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -100,7 +100,7 @@ function repositorios() {
               submission.repository.name
             );
             console.log(repoData);
-            await postFeedback(submission, repoData, config);
+            await postFeedback(submission, repoData, config, teacher);
           }
         })
       );
@@ -121,6 +121,8 @@ function repositorios() {
     if (!token) {
       router.push("/");
     } else if (token && status === "authenticated") {
+      
+      setTeacher(session.user.name)
       getData();
     } else {
       setLoading(false);
@@ -214,6 +216,7 @@ function repositorios() {
               org={data.orgName}
               globalFilter={globalFilter}
               setGlobalFilter={() => setGlobalFilter()}
+              teacher={teacher}
             />
 
             {filteredSubmissions.map((submission) => (
@@ -224,6 +227,7 @@ function repositorios() {
                 getFeedbacks={getData}
                 config={config}
                 org={data.orgName}
+                teacher={teacher}
               />
             ))}
           </div>

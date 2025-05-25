@@ -18,13 +18,14 @@ const generateOne = async (
   setSuccessMessage,
   getFeedbacks,
   config,
-  org
+  org,
+  teacher
 ) => {
   setLoading(true);
   try {
     console.log(config);
     const repoData = await getData(repo.repository.name, org, config.extension);
-    await postFeedback(repo, repoData, config);
+    await postFeedback(repo, repoData, config, teacher);
     setSuccessMessage("Generado correctamente");
   } catch (error) {
     console.log("Error al generar retroalimentación", error);
@@ -46,7 +47,14 @@ const getData = async (repoName, org, extension) => {
   }
 };
 
-function AssignmentTableCard({ submission, id, getFeedbacks, config, org }) {
+function AssignmentTableCard({
+  submission,
+  id,
+  getFeedbacks,
+  config,
+  org,
+  teacher,
+}) {
   const pathname = usePathname(); //Pathname para guardar la ruta actual
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -132,12 +140,13 @@ function AssignmentTableCard({ submission, id, getFeedbacks, config, org }) {
               setSuccessMessage,
               getFeedbacks,
               config,
-              org
+              org,
+              teacher
             )
           }
           className=" w-full text-center border-secondary border-2 text-secondary hover:bg-secondary hover:text-white  font-bold  px-3 py-2 rounded"
         >
-          {loading ? 'Generando...' : 'Generar'}
+          {loading ? "Generando..." : "Generar"}
         </button>
       ) : submission.feedback_status === "Generado" ||
         submission.feedback_status === "Enviado" ? (
@@ -151,7 +160,7 @@ function AssignmentTableCard({ submission, id, getFeedbacks, config, org }) {
                   repo: submission.assignment.id,
                   org: org,
                   assignment: submission.assignment.title,
-                  name: submission.students[0].name
+                  name: submission.students[0].name,
                 })
               ),
             },
