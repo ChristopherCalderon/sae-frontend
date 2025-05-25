@@ -112,7 +112,7 @@ function tarea() {
           <h1 className="text-2xl font-bold text-center">
             Tarea de programación
           </h1>
-          <p className="font-semibold text-center">
+          <p className="font-light text-center">
             Vista general de los repositorios de los alumnos incritos en el
             curso
           </p>
@@ -123,7 +123,7 @@ function tarea() {
             placeholder="Buscar nombre de repositorio..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className=" px-3 py-1 border-2 border-gray-300 rounded w-full lg:w-1/2"
+            className=" px-3 py-2 border-2 border-none bg-[#dcdcdc] rounded w-full lg:w-1/2 font-normal "
           />
           <div className="flex flex-col lg:w-1/2 md:flex-row lg:flex-row justify-center items-center  gap-2">
           {submissions.some((submission) => submission.feedback_status == 'Pendiente') && !loading && (
@@ -154,7 +154,7 @@ function tarea() {
             No se encontraron entregas
           </h1>
         ) : (
-          <div className="w-full h-full flex flex-col gap-5">
+          <div className="w-full h-full flex flex-col gap-5 lg:overflow-y-auto">
             <AssignmentsTable
               submissions={filteredSubmissions}
               id={id}
