@@ -11,9 +11,9 @@ function ClassCard({ id, name, url, status }) {
     const getFontSize = (text) => {
     const length = text?.length || 0;
 
-    if (length > 50) return "text-sm"; 
-    if (length > 40) return "text-base"; 
-    if (length > 30) return "text-lg"; 
+    if (length > 40) return "text-sm"; 
+    if (length > 30) return "text-base"; 
+    if (length > 20) return "text-lg"; 
     return "text-xl"; 
   };
   const fontSizeClass = getFontSize(name);
@@ -43,7 +43,7 @@ function ClassCard({ id, name, url, status }) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-semibold hover:font-bold hover:underline flex justify-center items-center gap-1 text-secondary justify-end" 
+        className="font-semibold hover:font-bold hover:underline flex  items-center gap-1 text-secondary justify-end" 
       >
         Ver Classroom
         <FaExternalLinkAlt className="text-md" />

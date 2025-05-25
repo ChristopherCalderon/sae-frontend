@@ -5,17 +5,29 @@ import {
   getRepoData,
   postFeedback,
 } from "@/services/githubService";
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Loading from "../loader/Loading";
+import { createColumnHelper } from "@tanstack/react-table";
+import { getSortedRowModel } from "@tanstack/react-table";
+import { getFilteredRowModel } from "@tanstack/react-table";
+import { FaSort } from "react-icons/fa";
 
+//Funciones-------------------------------------------------------------------------------------------------
+//Define el color del estado
 function getFeedbackColor(status) {
-  if (status === "Enviado") return "text-accent";
-  if (status === "Pendiente") return "text-[#710000]";
-  return "text-primary";
+  if (status === "Enviado") return "bg-secondary";
+  if (status === "Pendiente") return "bg-[#710000]";
+  return "bg-primary";
 }
 
+//Funcion para recoger la informacion de repositorios
 const getData = async (repoName, org, extension) => {
   try {
     const response = await getRepoData(repoName, org, extension);
@@ -34,6 +46,7 @@ const getConfig = async (id) => {
   }
 };
 
+//Funcion que genera feedback de la tarea seleccionada
 const generateOne = async (
   repo,
   id,
@@ -65,18 +78,156 @@ const generateAll = (repos) => {
   });
 };
 
-function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
-  const pathname = usePathname();
+//Componente-------------------------------------------------------------------------------------------
+function AssignmentsTable({ submissions, id, getFeedbacks, config, org, globalFilter, setGlobalFilter }) {
+  const pathname = usePathname(); //Pathname para guardar la ruta actual
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [sorting, setSorting] = useState([]); //Estado que guarda el sroting de la tabla
+  const columnHelper = createColumnHelper(); //Creador de columnas de tanstack
+  // const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
 
-  console.log(submissions);
-  console.log(id);
-  console.log(config);
-  console.log(org);
+  //Columnas tanstack---------------------------------------------------------
+  const columns = [
+    columnHelper.display({
+      id: "usuarioYCorreo",
+      header: () => "Usuario",
+      enableGlobalFilter: false,
+      cell: ({ row }) => {
+        const login = row.original.students?.[0]?.login;
+        const avatar = row.original.students?.[0]?.avatar_url;
+        const email = row.original.email;
+        return (
+          <div className="flex items-center gap-2">
+            <img src={avatar} alt={login} className="w-8 rounded-full" />
+            <div className="flex flex-col">
+              <span className="font-medium text-sm">{login}</span>
+              <span className="text-xs text-gray-500">{email}</span>
+            </div>
+          </div>
+        );
+      },
+    }),
 
+    columnHelper.accessor((row) => row.repository.name, {
+      id: "repo",
+      header: () => "Repositorio",
+      enableGlobalFilter: false,
+      cell: (info) => {
+        const row = info.row.original;
+        return (
+          <a
+            className="text-secondary text-xs underline hover:font-semibold"
+            href={row.repository.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {info.getValue()}
+          </a>
+        );
+      },
+    }),
+    columnHelper.accessor("grade_test", {
+      header: () => "Nota de Test",
+
+      enableGlobalFilter: false,
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("grade_feedback", {
+      header: () => "Nota de Retroalimentacion",
+
+      enableGlobalFilter: false,
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("feedback_status", {
+      header: () => "Retroalimentación",
+
+      enableGlobalFilter: false,
+      cell: (info) => (
+        <div className="flex gap-1 justify-center items-center">
+          <div
+            className={`w-3 h-3 rounded-full  ${getFeedbackColor(
+              info.getValue()
+            )}`}
+          ></div>
+          <span className="text-center">{info.getValue()}</span>
+        </div>
+      ),
+    }),
+    columnHelper.display({
+      id: "actions",
+      header: "Acción",
+      cell: (info) => {
+        const u = info.row.original;
+        if (u.feedback_status === "Pendiente") {
+          return (
+            <button
+              onClick={() =>
+                generateOne(
+                  u,
+                  id,
+                  setLoading,
+                  setSuccessMessage,
+                  getFeedbacks,
+                  config,
+                  org
+                )
+              }
+              className=" border-secondary border-2 text-secondary hover:bg-secondary hover:text-white font-bold text-xs px-3 py-1 rounded"
+            >
+              Generar
+            </button>
+          );
+        } else if (
+          u.feedback_status === "Generado" ||
+          u.feedback_status === "Enviado"
+        ) {
+          return (
+            <Link
+              href={{
+                pathname: `${pathname}/${u.id}`,
+                query: {
+                  data: btoa(
+                    JSON.stringify({
+                      email: u.email,
+                      repo: u.assignment.id,
+                      org: org,
+                    })
+                  ),
+                },
+              }}
+              className=" border-secondary border-2 text-secondary hover:bg-secondary hover:text-white  font-bold text-xs px-3 py-1 rounded"
+            >
+              Ver
+            </Link>
+          );
+        } else {
+          return null;
+        }
+      },
+
+      enableGlobalFilter: false,
+    }),
+  ];
+
+  //Envio de datos a la tabla------------
+  const table = useReactTable({
+    data: submissions,
+    columns,
+    state: {
+      sorting,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+
+  //Componente-----------------------------------------------------------------------
   return (
-    <div className="relative p-4 overflow-x-auto">
+    <div className="relative p-4 overflow-x-auto lg:block hidden">
       {/* Modal loader */}
       {loading && (
         <div className="absolute inset-0 bg-black/40 flex justify-center items-center z-10">
@@ -97,86 +248,39 @@ function AssignmentsTable({ submissions, id, getFeedbacks, config, org }) {
           </div>
         </div>
       )}
-
+      {/* Tabla */}
       <table className="min-w-full text-sm border border-gray-300 rounded-md shadow-md">
-        <thead className="bg-secondary text-left">
-          <tr>
-            <th className="px-4 py-2">Usuario</th>
-            <th className="px-4 py-2">Correo Electrónico</th>
-            <th className="px-4 py-2">Commits</th>
-            <th className="px-4 py-2">Nota de Test</th>
-            <th className="px-4 py-2">Nota de Retroalimentacion</th>
-            <th className="px-4 py-2">Retroalimentación</th>
-            <th className="px-4 py-2">Repositorio</th>
-            <th className="px-4 py-2">Acción</th>
-          </tr>
+        <thead className="bg-[#dcdcdc] text-left">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  className="px-4 py-2 cursor-pointer select-none text-center "
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  <div className="flex items-center text-center justify-center">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    <FaSort />
+                  </div>
+                </th>
+              ))}
+            </tr>
+          ))}
         </thead>
         <tbody>
-          {submissions.map((u, i) => (
-            <tr key={i} className="border-t">
-              <td className="px-3 py-2">@{u.students[0].login}</td>
-              <td className="px-2 py-2">{u.email}</td>
-              <td className="px-2 py-2 text-center">{u.commit_count}</td>
-              <td className="px-2 py-2 text-center">{u.grade_test}</td>
-              <td className="px-2 py-2 text-center">{u.grade_feedback}</td>
-              <td
-                className={`px-2 py-2 font-semibold text-center ${getFeedbackColor(
-                  u.feedback_status
-                )}`}
-              >
-                <p>{u.feedback_status}</p>
-              </td>
-              <td className="px-1 py-2 text-blue-500 text-xs">
-                <a
-                  className="flex gap-1 items-center underline hover:font-semibold"
-                  href={u.repository.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {u.repository.name}
-                </a>
-              </td>
-              <td className="px-2 py-2">
-                {u.feedback_status === "Pendiente" ? (
-                  <button
-                    onClick={() =>
-                      generateOne(
-                        u,
-                        id,
-                        setLoading,
-                        setSuccessMessage,
-                        getFeedbacks,
-                        config,
-                        org
-                      )
-                    }
-                    className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded"
-                  >
-                    Generar
-                  </button>
-                ) : u.feedback_status === "Generado" ||
-                  u.feedback_status === "Enviado" ? (
-                  <Link
-                    href={{
-                      pathname: `${pathname}/${u.id}`,
-                      query: {
-                        data: btoa(
-                          JSON.stringify({
-                            email: u.email,
-                            repo: u.assignment.id,
-                            org: org,
-                          })
-                        ),
-                      },
-                    }}
-                    className="bg-secondary hover:bg-primary hover:text-white text-primary font-bold text-xs px-3 py-1 rounded"
-                  >
-                    Ver
-                  </Link>
-                ) : (
-                  ""
-                )}
-              </td>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="border-t bg-white border-[#dcdcdc]">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="px-3 py-2 text-center">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>

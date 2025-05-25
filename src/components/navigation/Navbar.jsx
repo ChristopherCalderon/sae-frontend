@@ -9,6 +9,9 @@ import {
   FaSignOutAlt,
   FaBars,
   FaTimes,
+  FaChalkboardTeacher,
+  FaBuilding,
+  FaLayerGroup,
 } from "react-icons/fa";
 import { GiBrain } from "react-icons/gi";
 import { HiAcademicCap } from "react-icons/hi";
@@ -66,7 +69,7 @@ function Navbar() {
             className="flex lg:flex-col  justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
             onClick={() => isMobile && setIsOpen(false)}
           >
-            <HiAcademicCap className="text-2xl" />
+            <FaChalkboardTeacher className="text-2xl" />
             <span>Mis clases</span>
           </Link>
           <Link
@@ -74,7 +77,7 @@ function Navbar() {
             className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
             onClick={() => isMobile && setIsOpen(false)}
           >
-            <GiBrain className="text-2xl" />
+            <FaBrain className="text-2xl" />
             <span>Mis modelos</span>
           </Link>
 
@@ -84,7 +87,7 @@ function Navbar() {
               className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
               onClick={() => isMobile && setIsOpen(false)}
             >
-              <GiBrain className="text-2xl" />
+              <FaBuilding className="text-2xl" />
               <span>Modelos de Org</span>
             </Link>
           )}
@@ -95,7 +98,7 @@ function Navbar() {
               className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
               onClick={() => isMobile && setIsOpen(false)}
             >
-              <FaCog className="text-2xl" />
+              <FaLayerGroup className="text-2xl" />
               <span>Secciones</span>
             </Link>
           )}

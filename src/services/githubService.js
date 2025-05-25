@@ -151,7 +151,8 @@ export const getSubmissions = async (id) => {
 
           let gradeFeedback = 0;
           
-          let grade_test = parseInt(submission.grade.split("/")[0]);
+          
+          let grade_test = parseInt(submission?.grade?.split("/")[0] || '0');
           try {
             // Petición para obtener nota de feedback
             const gradeRes = await client.get(

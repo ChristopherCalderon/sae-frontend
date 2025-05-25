@@ -20,7 +20,7 @@ import { useSession } from "next-auth/react";
 function entrega() {
   const searchParams = useSearchParams();
   const encodedData = searchParams.get("data");
-  const { email, repo, org } = JSON.parse(atob(encodedData));
+  const { email, repo, org, assignment, name } = JSON.parse(atob(encodedData));
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState();
   const [generating, setGenerating] = useState(false);
@@ -30,6 +30,10 @@ function entrega() {
   const getData = async () => {
     try {
       setLoading(true);
+      console.log('nombre')
+      console.log(name)
+      console.log('assignment')
+      console.log(assignment)
       const response = await getFeedback(email, repo, org);
       
 
