@@ -70,12 +70,12 @@ function SysNavbar() {
             <span>Usuarios</span>
           </Link>
           <Link
-            href={"/dashboard/modelo"}
+            href={"/system/organizaciones"}
             className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
             onClick={() => isMobile && setIsOpen(false)}
           >
             <FaBuilding className="text-2xl" />
-            <span>Mis modelos</span>
+            <span>Organizaciones</span>
           </Link>
 
         </div>
