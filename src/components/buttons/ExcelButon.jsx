@@ -2,7 +2,7 @@ import { useState } from "react";
 import ExcelJS from "exceljs";
 import { IoMdDownload } from "react-icons/io";
 
-const ExcelButton = ({ data }) => {
+const ExcelButton = ({ data, setModal }) => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Tareas Estudiantes");
@@ -70,13 +70,15 @@ const ExcelButton = ({ data }) => {
     a.download = "tareas_estudiantes.xlsx";
     a.click();
     URL.revokeObjectURL(url);
+
+    setModal('Excel exportado');
   };
 
   return (
     <button
       onClick={exportToExcel}
       className="flex w-4/5 lg:w-full items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-      >
+    >
       <IoMdDownload className="text-xl" />
       Exportar a Excel
     </button>

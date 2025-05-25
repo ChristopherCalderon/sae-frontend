@@ -39,6 +39,7 @@ function AssignmentsTable({classes, teachers}) {
                         data: btoa(
                           JSON.stringify({
                             email: u.email,
+                            name: u.name
                           })
                         ),
                       },

@@ -150,6 +150,8 @@ function AssignmentTableCard({ submission, id, getFeedbacks, config, org }) {
                   email: submission.email,
                   repo: submission.assignment.id,
                   org: org,
+                  assignment: submission.assignment.title,
+                  name: submission.students[0].name
                 })
               ),
             },

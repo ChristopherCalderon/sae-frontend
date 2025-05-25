@@ -16,7 +16,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 function SubjectPage() {
   const searchParams = useSearchParams();
   const encodedData = searchParams.get("data");
-  const { email } = JSON.parse(atob(encodedData));
+  const { email, name } = JSON.parse(atob(encodedData));
   const [modelos, setModelos] = useState([]);
   const [orgmodels, setOrgModels] = useState([]);
   const [proveedor, setProveedor] = useState("");

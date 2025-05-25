@@ -12,12 +12,19 @@ import {
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
+import {
+  FaCheckCircle,
+  FaRegCheckCircle,
+  FaRegQuestionCircle,
+} from "react-icons/fa";
 import { IoMdDownload } from "react-icons/io";
 import { RiAiGenerate2 } from "react-icons/ri";
 
 function tarea() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [config, setConfig] = useState();
   const [org, setOrg] = useState();
   const router = useRouter();
@@ -25,9 +32,11 @@ function tarea() {
   const { data: session, status } = useSession();
 
   const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
-    // Filtrar submissions
-  const filteredSubmissions = submissions.filter(submission => 
-    submission.students[0].name.toLowerCase().startsWith(globalFilter.toLowerCase())
+  // Filtrar submissions
+  const filteredSubmissions = submissions.filter((submission) =>
+    submission.students[0].name
+      .toLowerCase()
+      .startsWith(globalFilter.toLowerCase())
   );
 
   const getData = async () => {
@@ -62,6 +71,7 @@ function tarea() {
   };
 
   const generateFeedback = async () => {
+    setShowConfirmModal(false);
     setLoading(true);
     try {
       await Promise.all(
@@ -80,6 +90,7 @@ function tarea() {
       console.log("Error al generar retroalimentación", error);
     } finally {
       getData();
+      setShowSuccessModal('Generar retroalimentación')
     }
   };
 
@@ -104,7 +115,7 @@ function tarea() {
             curso
           </p>
         </div>
-        <div className="flex flex-col lg:flex-row w-full  gap-2">
+        {!loading &&         <div className="flex flex-col lg:flex-row w-full  gap-2">
           <input
             type="text"
             placeholder="Buscar nombre de repositorio..."
@@ -113,16 +124,20 @@ function tarea() {
             className=" px-3 py-1 border-2 border-gray-300 rounded w-full lg:w-1/2"
           />
           <div className="flex flex-col lg:w-1/2 md:flex-row lg:flex-row justify-center items-center  gap-2">
+          {submissions.some((submission) => submission.feedback_status == 'Pendiente') && !loading && (
+
             <button
-              onClick={() => generateFeedback()}
+              onClick={() => setShowConfirmModal(true)}
               className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
             >
               <RiAiGenerate2 className="text-xl" />
               Generar retroalimentaciones
             </button>
-            <ExcelButton data={submissions} />
+          )}
+            <ExcelButton data={submissions} setModal={setShowSuccessModal} />
           </div>
-        </div>
+        </div>}
+
       </div>
 
       <div
@@ -161,6 +176,55 @@ function tarea() {
           </div>
         )}
       </div>
+      {/* Modal de confirmacion-------------------------- */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegQuestionCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              Generar retroalimentación
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¿Está seguro de generar retroalimentación para 
+              todos los estudiantes?
+            </p>
+            <div className="w-full flex gap-2 justify-center items-center">
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={() => generateFeedback()}
+              >
+                Si
+              </button>
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de exito-------------------------- */}
+      {showSuccessModal != "" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegCheckCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              {showSuccessModal}
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¡Accion realizada con exito!
+            </p>
+            <button
+              className="flex w-1/2 lg:w-1/2   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+              onClick={() => setShowSuccessModal("")}
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
