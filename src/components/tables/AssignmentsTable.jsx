@@ -262,7 +262,7 @@ function AssignmentsTable({
         </div>
       )}
       {/* Tabla */}
-      <table className="min-w-full text-sm border border-gray-300 rounded-md shadow-md">
+      <table className="min-w-full text-sm border border-gray-300 rounded-xs shadow-md">
         <thead className="bg-[#dcdcdc] text-left">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
