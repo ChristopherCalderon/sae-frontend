@@ -1,5 +1,6 @@
 "use client";
 import Loading from "@/components/loader/Loading";
+import UsersTableCard from "@/components/tableCards/UsersTableCard";
 import UsersTable from "@/components/tables/UsersTable";
 import {
   getOrgUsers,
@@ -97,7 +98,7 @@ function usuarios() {
   }, [selectedOrg, organizations]);
 
   return (
-    <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8 overflow-clip">
+    <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8  lg:overflow-clip">
       <div className="w-full flex flex-col items-center gap-2  text-primary">
         <h1 className="text-2xl font-bold text-center">Administrar usuarios</h1>
         <p className="font-light text-center">
@@ -146,7 +147,7 @@ function usuarios() {
           </h1>
         </div>
       ) : (
-        <div className="w-full   h-full lg:overflow-y-auto">
+        <div className="w-full  h-[70%] lg:h-full  flex flex-col gap-5 lg:overflow-y-auto overflow-y-scroll">
           {!loading && (
             <UsersTable
               users={filteredUsers}
@@ -155,10 +156,22 @@ function usuarios() {
               handleAdminChange={handleAdminChange}
             />
           )}
+
+          {!loading
+            ? filteredUsers.map((user) => (
+                <UsersTableCard
+                  key={user._id}
+                  user={user}
+                  orgId={selectedOrg}
+                  handleStatusChange={handleStatusChange}
+                  handleAdminChange={handleAdminChange}
+                />
+              ))
+            : ""}
         </div>
       )}
       {showConfirmModal && (
- <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
           <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
             <FaRegQuestionCircle className="text-5xl" />
             <h1 className="text-2xl text-primary font-bold">
@@ -170,7 +183,7 @@ function usuarios() {
             <div className="w-full flex gap-2 justify-center items-center">
               <button
                 className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-                 onClick={() => confirmAdminChange()}
+                onClick={() => confirmAdminChange()}
               >
                 Si
               </button>

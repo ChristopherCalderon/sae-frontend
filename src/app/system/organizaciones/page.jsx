@@ -1,5 +1,6 @@
 "use client";
 import Loading from "@/components/loader/Loading";
+import OrgTableCard from "@/components/tableCards/OrgTableCard";
 import OrgTable from "@/components/tables/OrgTable";
 import OrgUsersTable from "@/components/tables/OrgUsersTable";
 import UsersTable from "@/components/tables/UsersTable";
@@ -55,7 +56,7 @@ function organizaciones() {
 
   const confirmStatusChange = async () => {
     try {
-      
+      setLoading(true)
       setShowConfirmModal(false);
       const res = await toggleOrganization(pendingAction.orgId, pendingAction.status);
       await getData();
@@ -103,13 +104,20 @@ function organizaciones() {
           </h1>
         </div>
       ) : (
-        <div className="w-full   h-full lg:overflow-y-auto">
+        <div className="w-full  h-[70%] lg:h-full  flex flex-col gap-5 lg:overflow-y-auto overflow-y-scroll">
           {!loading && (
             <OrgTable
               organizations={filteredOrg}
               handleStatusChange={handleStatusChange}
             />
           )}
+
+          {!loading ? filteredOrg.map((org) =>(
+            <OrgTableCard 
+            key={org.orgId}
+              organization={org}
+              handleStatusChange={handleStatusChange}/>
+          )) : ''}
         </div>
       )}
       {showConfirmModal && (

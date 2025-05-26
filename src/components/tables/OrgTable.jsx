@@ -24,9 +24,24 @@ function OrgTable({ organizations, handleStatusChange }) {
       header: () => "Organizacion",
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("isActive", {
+       columnHelper.display({
+      id: "Estado",
       header: () => "Estado",
-      cell: (info) => (info.getValue() ? "Habilitada" : "Inhabilitada"),
+      enableGlobalFilter: false,
+      cell: ({ row }) => {
+        const status = row.original.isActive;
+        return (
+          <div className="flex items-center gap-2 justify-center">
+            <div
+              className={`w-4 h-4 rounded-full ${
+                status ? "bg-secondary" : "bg-red-500"
+              }`}
+            >
+            </div>
+            <p>{status ? "Organización habilitada" : "Organización inhabilitada"}</p>
+          </div>
+        );
+      },
     }),
     columnHelper.display({
       id: "accion",
@@ -61,7 +76,7 @@ function OrgTable({ organizations, handleStatusChange }) {
   });
 
   return (
-    <div className="p-4 font-primary h-full">
+    <div className="p-4 font-primary h-full lg:block hidden">
       <div className="max-h-full overflow-y-auto overflow-x-auto border border-gray-300 rounded-md shadow-md">
         <table className="min-w-full border border-gray-300 rounded-xs shadow-md">
           <thead className="bg-[#dcdcdc] text-left ">

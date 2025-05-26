@@ -91,7 +91,7 @@ function UsersTable({ users, orgId, handleStatusChange, handleAdminChange }) {
       };
     }, []);
 
-    if (!(user.role === "Teacher")) return null;
+    if (user.role === "ORG_Admin" ) return null;
 
     return (
       <div className="relative flex items-center justify-center" ref={dropdownRef}>
@@ -103,7 +103,7 @@ function UsersTable({ users, orgId, handleStatusChange, handleAdminChange }) {
 
         {showActions && (
           <div className="absolute right-30 mr-2 bottom-0 w-40 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-10">
-            {user.isActive && 
+            {user.isActive && user.role === 'Teacher' &&
             <button
               onClick={() => {
                 setShowActions(false);
@@ -145,7 +145,7 @@ function UsersTable({ users, orgId, handleStatusChange, handleAdminChange }) {
   });
 
   return (
-    <div className="p-4 font-primary h-full w-full">
+    <div className="p-4 font-primary h-full w-full lg:block hidden">
       <div className="max-h-full overflow-y-auto overflow-x-auto border border-gray-300 rounded-xs shadow-md">
         <table className="min-w-full border border-gray-300 rounded-xs shadow-md">
           <thead className="bg-[#dcdcdc] text-left ">

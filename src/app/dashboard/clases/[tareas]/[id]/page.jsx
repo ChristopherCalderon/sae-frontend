@@ -154,7 +154,7 @@ function tarea() {
             No se encontraron entregas
           </h1>
         ) : (
-          <div className="w-full h-full flex flex-col gap-5 lg:overflow-y-auto">
+          <div className="w-fullh-[70%] lg:h-full  flex flex-col gap-5 lg:overflow-y-auto overflow-y-scroll">
             <AssignmentsTable
               submissions={filteredSubmissions}
               id={id}
