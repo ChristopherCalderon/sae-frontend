@@ -29,7 +29,7 @@ function UsersTable({ users, orgId, handleStatusChange, handleAdminChange }) {
       enableGlobalFilter: false,
       cell: ({ row }) => {
         const login = row.original.name;
-        const avatar = "https://avatars.githubusercontent.com/u/149279708?v=4";
+        const avatar = row.original.urlAvatar;
         const email = row.original.email;
         return (
           <div className="flex items-center gap-2 justify-center">

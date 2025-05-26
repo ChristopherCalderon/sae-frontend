@@ -62,10 +62,10 @@ function AssignmentTableCard({
   return (
     <div className="bg-white flex w-full  rounded-md flex-col   text-primary  justify-center  shadow-[0px_8px_8px_rgba(0,0,0,0.25)] lg:hidden ">
       <div className="w-full flex">
-        <div className="bg-[#dcdcdc] h-full rounded-tl-md  w-2/5 p-2 flex items-center justify-center text-center text-sm ">
+        <div className="bg-[#dcdcdc] h-full rounded-tl-md  w-2/5 py-5 p-2 flex items-center justify-center text-center text-sm ">
           <h1>Usuario</h1>
         </div>
-        <div className="bg-white h-full py-3    w-3/5 flex items-center justify-center  gap-1 ">
+        <div className="bg-white h-full py-3   w-3/5 flex items-center justify-center  gap-1 ">
           <img
             src={submission.students?.[0]?.avatar_url}
             alt="avatar"
