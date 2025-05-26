@@ -152,7 +152,7 @@ function Configurar() {
   }, [pathname, status, taskId]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full min-h-screen p-5 py-8">
+    <div className="bg-background flex flex-col gap-5 w-full min-h-screen p-2 py-8">
       {/* Header */}
       <div className="w-full flex flex-col items-center text-primary">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] text-center max-w-[250px] md:max-w-[382px] font-[Bitter]">
