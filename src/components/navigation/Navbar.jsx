@@ -12,6 +12,7 @@ import {
   FaChalkboardTeacher,
   FaBuilding,
   FaLayerGroup,
+  FaUsers,
 } from "react-icons/fa";
 import { GiBrain } from "react-icons/gi";
 import { HiAcademicCap } from "react-icons/hi";
@@ -88,7 +89,7 @@ function Navbar() {
               onClick={() => isMobile && setIsOpen(false)}
             >
               <FaBuilding className="text-2xl" />
-              <span>Modelos de Org</span>
+              <span>Modelos de organizacion</span>
             </Link>
           )}
 
@@ -98,19 +99,8 @@ function Navbar() {
               className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
               onClick={() => isMobile && setIsOpen(false)}
             >
-              <FaLayerGroup className="text-2xl" />
-              <span>Secciones</span>
-            </Link>
-          )}
-
-          {isAdmin && (
-            <Link
-              href={"/dashboard/configurar"}
-              className="flex lg:flex-col justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-              onClick={() => isMobile && setIsOpen(false)}
-            >
-              <FaCog className="text-2xl" />
-              <span>Configuración</span>
+              <FaUsers className="text-2xl" />
+              <span>Administrar usuarios</span>
             </Link>
           )}
         </div>
