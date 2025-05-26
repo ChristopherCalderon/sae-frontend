@@ -36,8 +36,8 @@ function tarea() {
   // Filtrar submissions
   const filteredSubmissions = submissions.filter((submission) =>
     submission.students[0].name
-      .toLowerCase()
-      .startsWith(globalFilter.toLowerCase())
+      //.toLowerCase()
+      //.startsWith(globalFilter.toLowerCase())
   );
 
   const getData = async () => {

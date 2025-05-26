@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FaTimes } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -11,15 +10,18 @@ import {
 } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
 import { useSession } from "next-auth/react";
+import { RiErrorWarningLine } from "react-icons/ri";
+import { FaRegCheckCircle } from "react-icons/fa";
 
 function Configurar() {
   const router = useRouter();
   const pathname = usePathname();
   const [taskId, setTaskId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [models, setModels] = useState();
   const [first, setFirst] = useState(true);
+  const [showEmptyData, setShowEmptyData] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState({
     constraints: "",
     extension: "",
@@ -67,13 +69,42 @@ function Configurar() {
     }
   };
 
+  const emptyData = () => {
+    const { language, modelIA, studentLevel, style, topic, constraints } =
+      formData;
+
+    return (
+      language.trim() === "" ||
+      modelIA.trim() === "" ||
+      studentLevel.trim() === "" ||
+      style.trim() === "" ||
+      topic.trim() === "" ||
+      constraints.trim() === ""
+    );
+  };
+
   const saveData = async () => {
+    if (emptyData()) {
+      setShowEmptyData(true);
+      setTimeout(() => {
+        setShowEmptyData(false);
+      }, 2000);
+      return;
+    }
+
     try {
       if (first) {
         await createTaskConfig(taskId, formData);
       } else {
         await updateTaskConfig(taskId, formData);
       }
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
+
+      // Redirigir a la página de repositorios
+      goToRepositories();
 
       setShowModal(true);
     } catch (error) {
@@ -266,18 +297,29 @@ function Configurar() {
       )}
 
       {/* Modal de confirmación */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg text-center">
-            <p className="text-primary text-lg font-semibold mb-2">
-              Configuración guardada exitosamente
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegCheckCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              Configuración de la tarea
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¡Accion realizada con exito!
             </p>
-            <button
-              className="mt-2 px-4 py-1 bg-primary text-white rounded"
-              onClick={goToRepositories}
-            >
-              Continuar
-            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de datos vacios*/}
+      {showEmptyData && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <RiErrorWarningLine className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">Campos vacios</h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              Por favor, complete todos los campos requeridos.
+            </p>
           </div>
         </div>
       )}

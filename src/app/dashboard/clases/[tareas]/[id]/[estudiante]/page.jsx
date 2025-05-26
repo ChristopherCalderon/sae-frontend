@@ -15,6 +15,7 @@ import {
 } from "@/services/githubService";
 import { useEffect, useState } from "react";
 import Loading from "@/components/loader/Loading";
+import { FaRegQuestionCircle, FaRegCheckCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 
 function entrega() {
@@ -26,14 +27,14 @@ function entrega() {
   const [generating, setGenerating] = useState(false);
   const [adding, setAdding] = useState(false);
   const [taskConfig, setTaskConfig] = useState();
+  const [showSuccessModal, setShowSuccessModal] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showPullRequestModal, setShowPullRequestModal] = useState(false);
+  const { data: session } = useSession();
 
   const getData = async () => {
     try {
       setLoading(true);
-      console.log('nombre')
-      console.log(name)
-      console.log('assignment')
-      console.log(assignment)
       const response = await getFeedback(email, repo, org);
 
       const configResponse = await getTaskConfig(
@@ -58,11 +59,17 @@ function entrega() {
   };
 
   const createPullRequest = async () => {
+    setShowPullRequestModal(false);
     try {
       setAdding(true);
       await postPullRequest(feedback.repo, feedback.feedback, org);
       getData();
       setAdding(false);
+
+      setShowSuccessModal("Pull request agregado correctamente");
+      setTimeout(() => {
+        setShowSuccessModal("");
+      }, 2000);
     } catch (error) {
       console.log(error);
     }
@@ -82,12 +89,14 @@ function entrega() {
   };
 
   const generateFeedback = async () => {
+    setShowConfirmModal(false);
     try {
       setGenerating(true);
       const repoData = await getSubmissionData();
       const payload = {
         grade: `${feedback.gradeValue}/${feedback.gradeTotal}`,
         email: feedback.email,
+        reviewedBy: feedback.reviewedBy || session?.user?.name,
         assignment: {
           id: feedback.idTaskGithubClassroom,
         },
@@ -95,9 +104,7 @@ function entrega() {
           name: feedback.repo,
         },
       };
-      console.log("feedback");
-      console.log(feedback);
-      console.log(feedback.idTaskGithubClassroom);
+
       await deleteFeedback(feedback.email, feedback.idTaskGithubClassroom);
       const res = await postFeedback(payload, repoData, taskConfig);
       const newFeedback = res.feedback;
@@ -108,6 +115,10 @@ function entrega() {
       );
       getData();
       setGenerating(false);
+      setShowSuccessModal("Retroalimentación generada correctamente");
+      setTimeout(() => {
+        setShowSuccessModal("");
+      }, 2000);
     } catch (error) {
       console.log(error);
     }
@@ -122,20 +133,29 @@ function entrega() {
     return `${dia}/${mes}/${año}`;
   }
 
+  //Calcular promedio de calificaciones
+  const calculateAverage = (grade1, grade2) => {
+    const total = grade1 + grade2;
+    return parseFloat((total / 2).toFixed(2));
+  };
+
   useEffect(() => {
     getData();
   }, []);
 
   const pathname = usePathname();
   return (
-    <div className="bg-background p-5 flex flex-col gap-2 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] md:gap-4 max-w-[1200px] mx-auto">
+    <div
+      className="bg-background w-full min-h-screen p-5 py-8 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
+    md:gap-4  mx-auto "
+    >
       {/* Div 1: Cabecera */}
       <div className="order-1 md:col-span-2 p-4 text-center">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] max-w-[250px] md:max-w-[382px] mx-auto font-[Bitter]">
-          @UserGitHub
+          {name || "@UserGitHub"}
         </h1>
         <p className="text-[11px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
-          Nombre de la tarea
+          {assignment || "Nombre de la tarea"}
         </p>
       </div>
 
@@ -153,15 +173,23 @@ function entrega() {
             </h1>
 
             <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-[11px]">
-              {/* Calificación */}
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-[11px] lg:text-[14px]">
-                  Calificación:
-                </span>
-                <span className="text-red-600 lg:text-[13px]">
-                  {feedback.gradeValue}/10
-                </span>
-              </div>
+              {(() => {
+                const grade1 = feedback.gradeValue ?? 0;
+                const grade2 = feedback.gradeFeedback ?? 0;
+                const average = calculateAverage(grade1, grade2);
+                const colorClass =
+                  average < 5.9 ? "text-red-600" : "text-green-600";
+                return (
+                  <div className="flex items-center gap-1">
+                    <span className="font-semibold text-[11px] lg:text-[14px]">
+                      Calificación:
+                    </span>
+                    <span className={`${colorClass} lg:text-[13px]`}>
+                      {average}/10
+                    </span>
+                  </div>
+                );
+              })()}
 
               <div className="flex items-center">
                 <a
@@ -209,7 +237,10 @@ function entrega() {
                 <span className="font-semibold text-[11px] lg:text-[14px]">
                   Revisado por:
                 </span>{" "}
-                <span className="lg:text-[13px]"> Christopher Calderon Q</span>
+                <span className="lg:text-[13px]">
+                  {" "}
+                  {feedback.reviewedBy || "Sistema"}
+                </span>
               </div>
             </div>
           </div>
@@ -227,6 +258,7 @@ function entrega() {
                         email: email,
                         repo: repo,
                         org: org,
+                        name: name,
                       })
                     ),
                   },
@@ -239,7 +271,7 @@ function entrega() {
               {/* Botón 2: Agregar pull request */}
               {feedback.feedback_status === "Generado" && (
                 <button
-                  onClick={createPullRequest}
+                  onClick={() => setShowPullRequestModal(true)}
                   disabled={adding}
                   className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
@@ -249,7 +281,7 @@ function entrega() {
 
               {/* Botón 3: Volver a generar */}
               <button
-                onClick={generateFeedback}
+                onClick={() => setShowConfirmModal(true)}
                 disabled={generating}
                 className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
@@ -259,9 +291,9 @@ function entrega() {
           </div>
 
           {/* Div 4 Retroalimentacion*/}
-          <div className="order-4 p-4 md:col-span-2 md:order-4">
+          <div className="order-4 md:col-span-2 md:order-4">
             <div
-              className="w-full h-3/4 p-5 rounded-md shadow-md overflow-y-scroll bg-white [&::-webkit-scrollbar]:w-1
+              className="w-full  p-5 rounded-md shadow-md overflow-y-auto max-h-[400px] lg:max-h-[300px] bg-white [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-background
         [&::-webkit-scrollbar-thumb]:bg-primary"
             >
@@ -269,6 +301,78 @@ function entrega() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Modal de confirmacion-------------------------- */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegQuestionCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              Retroalimentación
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¿Está seguro de volver a generar la retroalimentación a {name}?
+            </p>
+            <div className="w-full flex gap-2 justify-center items-center">
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={generateFeedback}
+              >
+                Si
+              </button>
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de exito-------------------------- */}
+      {showSuccessModal != "" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegCheckCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              {showSuccessModal}
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¡Accion realizada con exito!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Pull request */} 
+      {showPullRequestModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegQuestionCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              Pull Request
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¿Está seguro de agregar un pull request a {name}?
+            </p>
+            <div className="w-full flex gap-2 justify-center items-center">
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={createPullRequest}
+              >
+                Si
+              </button>
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={() => setShowPullRequestModal(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
