@@ -13,33 +13,29 @@ export default function AuthCard() {
     await signIn("github", { callbackUrl: "/organizations" });
   };
 
-
-
   return (
-    <div className="text-center space-y-6  bg-white/80 px-10 py-20 rounded-lg">
-      <img src="/logo-uca.png" alt="Logo UCA" className="mx-auto h-30" />
-      <h3 className="font-mono font-bold text-[24px] text-primary">
-        Sistema Automatizado de Evaluación
-      </h3>
-      <p className="font-mono font-normal text-[13px] text-primary">
+    <div className="text-center font-primary space-y-6 w-full md:w-1/2 lg:w-1/3 flex flex-col items-center justify-center  bg-inherit px-10 py-20 rounded-lg">
+      <img
+        src="/logo.jpg"
+        alt="logo"
+        className="rounded-full w-56 md:w-72 lg:w-80"
+      />
+      <h1 className="font-bold text-[24px] text-primary">RetroCode</h1>
+      <div className="w-full flex flex-col gap-2">
+        
+      <p className="font-semibold text-[13px] text-primary">
         Ingrese con su cuenta de GitHub
       </p>
       <div className="flex justify-center">
         <button
           onClick={handleSignIn}
-          className="font-mono font-normal bg-black text-[13px] text-white flex items-center justify-center px-4 py-2 rounded-md 
+          className="font-primary font-normal bg-black text-[13px] text-white flex items-center justify-center px-4 py-2 rounded-md 
                             shadow hover:bg-gray-800 transition"
         >
           <FaGithub className="mr-2" />
           Login with GitHub
         </button>
-
       </div>
-      <div className="flex justify-center mt-20">
-        <FaRegCopyright className="mr-2" />
-        <p className="font-mono text-[13px] text-black">
-          2025 - Todos los derechos reservados
-        </p>
       </div>
     </div>
   );
