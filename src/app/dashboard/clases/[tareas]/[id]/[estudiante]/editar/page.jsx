@@ -10,7 +10,7 @@ function editar() {
   const searchParams = useSearchParams();
   const encodedData = searchParams.get("data");
   const [loading, setLoading] = useState(true);
-  const { email, repo, org } = JSON.parse(atob(encodedData));
+  const { email, repo, org, name } = JSON.parse(atob(encodedData));
   const router = useRouter();
   const [feedback, setFeedback] = useState();
   const [feedbackText, setFeedbackText] = useState("");
@@ -49,6 +49,12 @@ function editar() {
     return `${dia}/${mes}/${año}`;
   }
 
+  //Calcular promedio de calificaciones
+  const calculateAverage = (grade1, grade2) => {
+    const total = grade1 + grade2;
+    return parseFloat((total / 2).toFixed(2));
+  };
+
   useEffect(() => {
     getData();
   }, []);
@@ -59,11 +65,14 @@ function editar() {
   };
 
   return (
-    <div className="bg-background p-5 flex flex-col gap-2 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] md:gap-4 max-w-[1200px] mx-auto">
+    <div
+      className="bg-background w-full min-h-screen p-5 py-8 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
+    md:gap-4  mx-auto "
+    >
       {/* Div 1: Cabecera */}
       <div className="order-1 md:col-span-2 p-4 text-center">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] max-w-[250px] md:max-w-[382px] mx-auto font-[Bitter]">
-          @UserGitHub
+          {name || "@UserGitHub"}
         </h1>
         <p className="text-[11px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
           Edita la retroalimentación aqui
@@ -84,15 +93,23 @@ function editar() {
             </h1>
 
             <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-[11px]">
-              {/* Calificación */}
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-[11px] lg:text-[14px]">
-                  Calificación:
-                </span>
-                <span className="text-red-600 lg:text-[13px]">
-                  {feedback.gradeValue}/10
-                </span>
-              </div>
+              {(() => {
+                const grade1 = feedback.gradeValue ?? 0;
+                const grade2 = feedback.gradeFeedback ?? 0;
+                const average = calculateAverage(grade1, grade2);
+                const colorClass =
+                  average < 5.9 ? "text-red-600" : "text-green-600";
+                return (
+                  <div className="flex items-center gap-1">
+                    <span className="font-semibold text-[11px] lg:text-[14px]">
+                      Calificación:
+                    </span>
+                    <span className={`${colorClass} lg:text-[13px]`}>
+                      {average}/10
+                    </span>
+                  </div>
+                );
+              })()}
 
               <div className="flex items-center">
                 <a
@@ -140,7 +157,10 @@ function editar() {
                 <span className="font-semibold text-[11px] lg:text-[14px]">
                   Revisado por:
                 </span>{" "}
-                <span className="lg:text-[13px]"> Christopher Calderon Q</span>
+                <span className="lg:text-[13px]">
+                  {" "}
+                  {feedback.reviewedBy || "Sistema"}
+                </span>
               </div>
             </div>
           </div>
@@ -164,14 +184,17 @@ function editar() {
           </div>
 
           {/* Div 4 Retroalimentación */}
-          <div className="order-4 p-4 md:col-span-2 md:order-4">
+          <div className="order-4 md:col-span-2 md:order-4">
             <textarea
-              className="w-full min-h-[450px] p-4 rounded-md shadow-md resize-y bg-white text-[14px]
-      overflow-auto
-      [&::-webkit-scrollbar]:w-1
-      [&::-webkit-scrollbar-track]:bg-background
-      [&::-webkit-scrollbar-thumb]:bg-primary
-    "
+              className="w-full  min-h-[300px] p-4  shadow-md resize-y bg-white 
+  text-[14px]  font-[Bitter] 
+  overflow-auto
+  border border-gray-300
+  mx-auto
+  [&::-webkit-scrollbar]:w-1
+  [&::-webkit-scrollbar-track]:bg-background
+  [&::-webkit-scrollbar-thumb]:bg-primary
+  "
               value={feedbackText}
               onChange={(e) => setFeedbackText(e.target.value)}
             />
