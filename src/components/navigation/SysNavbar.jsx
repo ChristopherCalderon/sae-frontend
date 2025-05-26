@@ -109,7 +109,7 @@ function SysNavbar() {
         {/* Botón hamburguesa */}
         <div
           className={`${
-            isOpen ? "bg-[#2d3145]" : "bg-background "
+            isOpen ? "bg-[#2d3145] w-64" : "bg-background "
           } h-14 p-4 flex justify-between items-center`}
         >
           <button
