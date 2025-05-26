@@ -34,11 +34,13 @@ function tarea() {
 
   const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
   // Filtrar submissions
-  const filteredSubmissions = submissions.filter((submission) =>
-    submission.students[0].name
-      //.toLowerCase()
-      //.startsWith(globalFilter.toLowerCase())
+const filteredSubmissions = submissions.filter((submission) => {
+  const studentName = submission.students?.[0]?.login;
+  return (
+    typeof studentName === "string" &&
+    studentName.toLowerCase().startsWith(globalFilter.toLowerCase())
   );
+});
 
   const getData = async () => {
     try {

@@ -38,7 +38,7 @@ function repositorios() {
   const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
   // Filtrar submissions
   const filteredSubmissions = submissions.filter((submission) =>
-    submission.students[0].name
+    submission.students[0].login
       .toLowerCase()
       .startsWith(globalFilter.toLowerCase())
   );

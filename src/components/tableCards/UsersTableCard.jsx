@@ -34,7 +34,7 @@ function UsersTableCard({
         </div>
         <div className="bg-white h-full py-3    w-3/5 flex items-center justify-center  gap-1 ">
           <img
-            src="https://avatars.githubusercontent.com/u/149279708?v=4"
+            src={user.urlAvatar}
             alt="avatar"
             className="w-8 h-8  md:w-10 md:h-10 rounded-full"
           />

@@ -106,7 +106,7 @@ function entrega() {
       };
 
       await deleteFeedback(feedback.email, feedback.idTaskGithubClassroom);
-      const res = await postFeedback(payload, repoData, taskConfig);
+      const res = await postFeedback(payload, repoData, taskConfig, session.user.name);
       const newFeedback = res.feedback;
       const newData = await updateFeedback(
         feedback.email,
@@ -293,7 +293,7 @@ function entrega() {
           {/* Div 4 Retroalimentacion*/}
           <div className="order-4 md:col-span-2 md:order-4">
             <div
-              className="w-full  p-5 rounded-md shadow-md overflow-y-auto max-h-[400px] lg:max-h-[300px] bg-white [&::-webkit-scrollbar]:w-1
+              className="w-full  p-5 rounded-md shadow-md overflow-y-auto max-h-[400px] lg:max-h-[350px] bg-white [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-background
         [&::-webkit-scrollbar-thumb]:bg-primary"
             >

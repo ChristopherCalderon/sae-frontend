@@ -186,7 +186,7 @@ function editar() {
           {/* Div 4 Retroalimentación */}
           <div className="order-4 md:col-span-2 md:order-4">
             <textarea
-              className="w-full  min-h-[300px] p-4  shadow-md resize-y bg-white 
+              className="w-full  min-h-[400px] p-4  shadow-md resize-y bg-white 
   text-[14px]  font-[Bitter] 
   overflow-auto
   border border-gray-300
