@@ -106,7 +106,12 @@ function entrega() {
       };
 
       await deleteFeedback(feedback.email, feedback.idTaskGithubClassroom);
-      const res = await postFeedback(payload, repoData, taskConfig, session.user.name);
+      const res = await postFeedback(
+        payload,
+        repoData,
+        taskConfig,
+        session.user.name
+      );
       const newFeedback = res.feedback;
       const newData = await updateFeedback(
         feedback.email,
@@ -146,11 +151,11 @@ function entrega() {
   const pathname = usePathname();
   return (
     <div
-      className="bg-background w-full min-h-screen p-5 py-8 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
-    md:gap-4  mx-auto "
+      className="bg-background w-full min-h-screen lg:px-20 py-8 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
+    md:gap-4 mx-auto "
     >
       {/* Div 1: Cabecera */}
-      <div className="order-1 md:col-span-2 p-4 text-center">
+      <div className="order-1 md:col-span-2 text-center">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] max-w-[250px] md:max-w-[382px] mx-auto font-[Bitter]">
           {name || "@UserGitHub"}
         </h1>
@@ -166,88 +171,102 @@ function entrega() {
       ) : (
         <>
           {/* Div 2 Info general de resultados*/}
-          <div className="order-2  p-4 text-left md:order-2 font-[Bitter] text-[11px] leading-[13px] md:text-[16px] md:leading-[18px]">
+          <div className="order-2 p-4 lg:p-0 text-left md:order-2 font-[Bitter] text-[11px] leading-[13px] md:text-[16px] md:leading-[18px]">
             {/* Título del repo */}
             <h1 className="font-bold text-[14px] md:text-[18px] lg:text-[20px] mb-3 break-all">
               {feedback.repo}
             </h1>
 
-            <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-[11px]">
-              {(() => {
-                const grade1 = feedback.gradeValue ?? 0;
-                const grade2 = feedback.gradeFeedback ?? 0;
-                const average = calculateAverage(grade1, grade2);
-                const colorClass =
-                  average < 5.9 ? "text-red-600" : "text-green-600";
-                return (
-                  <div className="flex items-center gap-1">
-                    <span className="font-semibold text-[11px] lg:text-[14px]">
-                      Calificación:
-                    </span>
-                    <span className={`${colorClass} lg:text-[13px]`}>
-                      {average}/10
-                    </span>
-                  </div>
-                );
-              })()}
+            <div className="flex flex-row flex-wrap gap-4 justify-between w-full text-[11px]">
+              {/* Columna izquierda */}
+              <div className="flex flex-col gap-2 w-[calc(50%-8px)]">
+                {/* Calificación */}
+                {(() => {
+                  const grade1 = feedback.gradeValue ?? 0;
+                  const grade2 = feedback.gradeFeedback ?? 0;
+                  const average = calculateAverage(grade1, grade2);
+                  const colorClass =
+                    average < 5.9 ? "text-red-600" : "text-green-600";
+                  return (
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold text-[11px] lg:text-[14px]">
+                        Calificación:
+                      </span>
+                      <span className={`${colorClass} lg:text-[13px]`}>
+                        {average}/10
+                      </span>
+                    </div>
+                  );
+                })()}
 
-              <div className="flex items-center">
-                <a
-                  className="flex items-center gap-1 underline hover:font-semibold text-[11px] lg:text-[14px]"
-                  href={feedback.workflow_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaGithub className="text-[11px] lg:text-[14px]" /> Ver
-                  ejecución en GitHub
-                </a>
+                {/* Generado con */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Generado con:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">{feedback.modelIA}</span>
+                </div>
+
+                {/* Nota del test */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Nota del test:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">{feedback.gradeValue}</span>
+                </div>
+
+                {/* Revisado por */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Revisado por:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">
+                    {feedback.reviewedBy || "Sistema"}
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <span className="font-semibold text-[11px] lg:text-[14px]">
-                  Generado con:
-                </span>{" "}
-                <span className="lg:text-[13px]">{feedback.modelIA}</span>
-              </div>
+              {/* Columna derecha */}
+              <div className="flex flex-col gap-2 w-[calc(50%-8px)] items-end text-right">
+                {/* Ver en GitHub */}
+                <div className="flex items-center">
+                  <a
+                    className="flex items-center gap-1 hover:font-semibold text-[11px] lg:text-[14px]"
+                    href={feedback.workflow_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaGithub className="text-[11px] lg:text-[14px]" />
+                    Ver ejecución en GitHub
+                  </a>
+                </div>
 
-              <div>
-                <span className="font-semibold text-[11px] lg:text-[14px]">
-                  Fecha de creación:
-                </span>{" "}
-                <span className=" lg:text-[14px]">
-                  {formatFecha(feedback.createdAt)}
-                </span>
-              </div>
+                {/* Fecha de creación */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Fecha de creación:
+                  </span>{" "}
+                  <span className="lg:text-[14px]">
+                    {formatFecha(feedback.createdAt)}
+                  </span>
+                </div>
 
-              <div>
-                <span className="font-semibold text-[11px] lg:text-[14px]">
-                  Nota del test:
-                </span>{" "}
-                <span className="lg:text-[13px]">{feedback.gradeValue}</span>
-              </div>
-
-              <div>
-                <span className="font-semibold text-[11px] lg:text-[14px]">
-                  Nota de retroalimentación:
-                </span>{" "}
-                <span className="lg:text-[13px]">{feedback.gradeFeedback}</span>
-              </div>
-
-              <div className="col-span-2">
-                <span className="font-semibold text-[11px] lg:text-[14px]">
-                  Revisado por:
-                </span>{" "}
-                <span className="lg:text-[13px]">
-                  {" "}
-                  {feedback.reviewedBy || "Sistema"}
-                </span>
+                {/* Nota retroalimentación */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Nota de retroalimentación:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">
+                    {feedback.gradeFeedback}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Div 3 Botones*/}
-          <div className="order-3 p-4 text-center md:order-3">
-            <div className="flex flex-col items-center space-y-[10px]">
+          <div className="order-3 md:order-3 flex justify-center md:justify-end items-center h-full p-4 lg:p-0">
+            <div className="flex flex-col md:items-end space-y-[10px]">
               {/* Botón 1: Editar retroalimentación */}
               <Link
                 href={{
@@ -263,7 +282,7 @@ function entrega() {
                     ),
                   },
                 }}
-                className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all"
+                className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all"
               >
                 Editar retroalimentación
               </Link>
@@ -273,7 +292,7 @@ function entrega() {
                 <button
                   onClick={() => setShowPullRequestModal(true)}
                   disabled={adding}
-                  className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {!adding ? "Agregar Pull Request" : "Agregando..."}
                 </button>
@@ -283,7 +302,7 @@ function entrega() {
               <button
                 onClick={() => setShowConfirmModal(true)}
                 disabled={generating}
-                className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {!generating ? "Volver a generar" : "Generando..."}
               </button>
@@ -291,7 +310,7 @@ function entrega() {
           </div>
 
           {/* Div 4 Retroalimentacion*/}
-          <div className="order-4 md:col-span-2 md:order-4">
+          <div className="order-4 md:col-span-2 md:order-4 p-4 lg:p-0">
             <div
               className="w-full  p-5 rounded-md shadow-md overflow-y-auto max-h-[400px] lg:max-h-[350px] bg-white [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-background
@@ -346,14 +365,12 @@ function entrega() {
         </div>
       )}
 
-      {/* Modal de Pull request */} 
+      {/* Modal de Pull request */}
       {showPullRequestModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
           <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
             <FaRegQuestionCircle className="text-5xl" />
-            <h1 className="text-2xl text-primary font-bold">
-              Pull Request
-            </h1>
+            <h1 className="text-2xl text-primary font-bold">Pull Request</h1>
             <p className="text-primary text-lg font-medium mb-2">
               ¿Está seguro de agregar un pull request a {name}?
             </p>
