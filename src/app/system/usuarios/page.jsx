@@ -109,7 +109,7 @@ function usuarios() {
       {loading ? (
         <Loading message={"Cargando..."} />
       ) : (
-        <div className="w-4/5 flex flex-col lg:flex-row lg:w-full lg:justify-between  gap-2 mt-2 ">
+        <div className="w-4/5 px-8 flex flex-col lg:flex-row lg:w-full lg:justify-between  gap-2 mt-2 ">
           <input
             type="text"
             placeholder="Buscar usuarios..."
@@ -147,7 +147,7 @@ function usuarios() {
           </h1>
         </div>
       ) : (
-        <div className="w-full  h-[70%] lg:h-full  flex flex-col gap-5 lg:overflow-y-auto overflow-y-scroll">
+        <div className="w-full  h-[70%] lg:h-full  flex flex-col lg:items-center gap-5 lg:overflow-y-auto overflow-y-scroll">
           {!loading && (
             <UsersTable
               users={filteredUsers}

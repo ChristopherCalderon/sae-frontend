@@ -108,9 +108,9 @@ function AssignmentsTable({
         const avatar = row.original.students?.[0]?.avatar_url;
         const email = row.original.email;
         return (
-          <div className="flex items-center gap-2">
-            <img src={avatar} alt={login} className="w-8 rounded-full" />
-            <div className="flex flex-col">
+          <div className="flex items-center gap-2 pl-2">
+            <img src={avatar} alt={login} className="w-8 rounded-full " />
+            <div className="flex flex-col items-start ">
               <span className="font-medium text-sm">{login}</span>
               <span className="text-xs text-gray-500">{email}</span>
             </div>

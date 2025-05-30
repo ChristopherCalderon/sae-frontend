@@ -104,7 +104,7 @@ function organizaciones() {
           </h1>
         </div>
       ) : (
-        <div className="w-full  h-[70%] lg:h-full  flex flex-col gap-5 lg:overflow-y-auto overflow-y-scroll">
+        <div className="w-full  h-[70%] lg:h-full  flex flex-col lg:items-center gap-5 lg:overflow-y-auto overflow-y-scroll">
           {!loading && (
             <OrgTable
               organizations={filteredOrg}

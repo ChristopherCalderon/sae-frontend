@@ -23,7 +23,7 @@ function UsersTable({ users, orgId, handleStatusChange, handleAdminChange }) {
 
   //Columnas tanstack---------------------------------------------------------
   const columns = [
-    columnHelper.display({
+     columnHelper.display({
       id: "usuarioYCorreo",
       header: () => "Usuario",
       enableGlobalFilter: false,
@@ -32,11 +32,13 @@ function UsersTable({ users, orgId, handleStatusChange, handleAdminChange }) {
         const avatar = row.original.urlAvatar;
         const email = row.original.email;
         return (
-          <div className="flex items-center gap-2 justify-center">
-            <img src={avatar} alt={login} className="w-10 rounded-full" />
-            <div className="flex flex-col">
-              <span className="font-medium text-left ">{login}</span>
-              <span className="text-sm text-gray-500">{email}</span>
+          <div className="flex items-center  justify-center">
+            <div className="flex justify-start w-1/2 gap-5">
+              <img src={avatar} alt={login} className="w-10 rounded-full" />
+              <div className="flex flex-col">
+                <span className="font-medium text-left ">{login}</span>
+                <span className="text-sm text-gray-500">{email}</span>
+              </div>
             </div>
           </div>
         );
@@ -145,7 +147,7 @@ function UsersTable({ users, orgId, handleStatusChange, handleAdminChange }) {
   });
 
   return (
-    <div className="p-4 font-primary h-full w-full lg:block hidden">
+    <div className="p-4 font-primary h-full w-11/12 lg:block hidden">
       <div className="max-h-full overflow-y-auto overflow-x-auto border border-gray-300 rounded-xs shadow-md">
         <table className="min-w-full border border-gray-300 rounded-xs shadow-md">
           <thead className="bg-[#dcdcdc] text-left ">

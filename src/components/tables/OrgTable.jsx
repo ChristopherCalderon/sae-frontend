@@ -76,7 +76,7 @@ function OrgTable({ organizations, handleStatusChange }) {
   });
 
   return (
-    <div className="p-4 font-primary h-full lg:block hidden">
+    <div className="p-4 font-primary h-full w-11/12 lg:block hidden">
       <div className="max-h-full overflow-y-auto overflow-x-auto border border-gray-300 rounded-md shadow-md">
         <table className="min-w-full border border-gray-300 rounded-xs shadow-md">
           <thead className="bg-[#dcdcdc] text-left ">
