@@ -202,8 +202,9 @@ function ModelsPage() {
                   <select
                     value={proveedor}
                     onChange={(e) => setProveedor(e.target.value)}
-                    className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
-                     md:h-[51px] md:max-w-[600px] md:p-[16px] md:text-[15px] lg:h-[70px] lg:text-[18px]"
+                    className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
+  md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
+  lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
                   >
                     <option value="">Seleccionar proveedor</option>
                     {providerArray.map((provider) => (
@@ -225,8 +226,9 @@ function ModelsPage() {
                   value={nuevoModelo}
                   placeholder="Ej: gpt-3.5-turbo"
                   onChange={(e) => setNuevoModelo(e.target.value)}
-                  className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] bg-white
-                  md:h-[51px] md:p-[16px] md:text-[15px] lg:h-[70px] lg:text-[18px]"
+                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
+  md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
+  lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
                 />
               </div>
 
@@ -239,8 +241,9 @@ function ModelsPage() {
                   value={nombreLlave}
                   placeholder="Ej: Llave principal"
                   onChange={(e) => setNombreLlave(e.target.value)}
-                  className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] bg-white
-                  md:h-[51px] md:p-[16px] md:text-[15px] lg:h-[70px] lg:text-[18px]"
+                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
+  md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
+  lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
                 />
               </div>
 
@@ -253,18 +256,14 @@ function ModelsPage() {
                   value={llave}
                   onChange={(e) => setLlave(e.target.value)}
                   placeholder="Ej: sk-abc123xyz..."
-                  className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] bg-white
-                  md:h-[51px] md:p-[15px] md:text-[16px] lg:h-[70px] lg:text-[18px]"
+                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
+  md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
+  lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
                 />
               </div>
 
               <div className="w-full max-w-[271px] md:max-w-[647px] mx-auto flex justify-center gap-[13px] md:gap-[22px] mt-[10px]">
-                <button
-                  onClick={() => router.back()}
-                  className="w-[80px] h-[36px] md:w-[200px] md:h-[42px] p-[10px] border-[2px] border-secondary text-secondary rounded-[5px] text-[14px] font-[Bitter] font-semibold bg-white"
-                >
-                  Cancelar
-                </button>
+
                 <button
                   onClick={() => addModel()}
                   className="w-[80px] h-[36px] md:w-[200px] md:h-[42px] p-[10px] bg-secondary text-white rounded-[5px] text-[14px] font-[Bitter] font-semibold"

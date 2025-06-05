@@ -11,6 +11,8 @@
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
     "@tippyjs/react": "^4.2.6",
+    "@tiptap/react": "^2.12.0",
+    "@tiptap/starter-kit": "^2.12.0",
     "axios": "^1.8.4",
     "exceljs": "^4.4.0",
     "next": "15.3.0",

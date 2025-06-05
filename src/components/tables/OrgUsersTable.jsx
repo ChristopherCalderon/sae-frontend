@@ -100,8 +100,6 @@ function OrgUsersTable({
           };
         }, []);
 
-        if (user.organizations[0].role === "ORG_Admin") return null;
-
         return (
           <div
             className="relative flex items-center justify-center"
@@ -126,19 +124,22 @@ function OrgUsersTable({
                       Asignar Admin
                     </button>
                   )}
-                <button
-                  onClick={() => {
-                    setShowActions(false);
-                    handleStatusChange(
-                      orgId,
-                      user._id,
-                      !user.organizations[0].isActive
-                    );
-                  }}
-                  className="block w-full text-left text-sm text-primary px-4 py-2 hover:bg-gray-100"
-                >
-                  Cambiar estado
-                </button>
+                {user.organizations[0].role != "ORG_Admin" && (
+                  <button
+                    onClick={() => {
+                      setShowActions(false);
+                      handleStatusChange(
+                        orgId,
+                        user._id,
+                        !user.organizations[0].isActive
+                      );
+                    }}
+                    className="block w-full text-left text-sm text-primary px-4 py-2 hover:bg-gray-100"
+                  >
+                    Cambiar estado
+                  </button>
+                )}
+
                 <Link
                   href={{
                     pathname: `${pathname}/${user._id}`,

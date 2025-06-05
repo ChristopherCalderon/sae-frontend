@@ -4,23 +4,18 @@ import { PiOpenAiLogoLight } from "react-icons/pi";
 import { GiSpermWhale } from "react-icons/gi";
 import { RiGeminiLine, RiErrorWarningLine } from "react-icons/ri";
 import React, { useEffect, useState } from "react";
-import { CiLock } from "react-icons/ci";
 import { FaTimes, FaRegQuestionCircle, FaRegCheckCircle } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
-import Tippy from "@tippyjs/react";
-import "tippy.js/dist/tippy.css";
 import {
   createOrgModel,
-  createTeacherModel,
   deleteOrgModel,
   getModelProviders,
   getOrgModels,
-  getTeacherModels,
 } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
 import { useSession } from "next-auth/react";
 
-function TeacherModelsPage() {
+function ProvidersPage() {
   const [modelos, setModelos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [proveedor, setProveedor] = useState("");
@@ -35,17 +30,17 @@ function TeacherModelsPage() {
   const [showEmptyData, setShowEmptyData] = useState(false);
   const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
 
-  const getData = async (email, org) => {
+  const getData = async (id) => {
     try {
       setLoading(true);
       const responseProviders = await getModelProviders();
       if (responseProviders) {
         setProviderArray(responseProviders);
       }
-      const responseModels = await getTeacherModels(email, org);
+      const responseModels = await getOrgModels(id);
       if (responseModels) {
-        console.log(responseModels.models);
-        setModelos(responseModels.models);
+        console.log(responseModels);
+        setModelos(responseModels);
       }
       setLoading(false);
     } catch (error) {
@@ -96,12 +91,12 @@ function TeacherModelsPage() {
       return;
     }
     try {
-      await createTeacherModel(
+      await createOrgModel(
         proveedor,
         nuevoModelo,
         nombreLlave,
         llave,
-        session.user.email
+        session.user.selectedOrgId
       );
       setProveedor("");
       setNuevoModelo("");
@@ -113,7 +108,7 @@ function TeacherModelsPage() {
         setShowSuccessModal("");
       }, 2000);
 
-      getData(session.user.email, session.user.selectedOrgId);
+      getData(session.user.selectedOrgId);
     } catch (error) {}
   };
 
@@ -121,7 +116,7 @@ function TeacherModelsPage() {
     setShowConfirmModal(false);
     try {
       await deleteOrgModel(id);
-      getData(session.user.email, session.user.selectedOrgId);
+      getData(session.user.selectedOrgId);
       setShowSuccessModal("Modelo de IA");
       setTimeout(() => {
         setShowSuccessModal("");
@@ -133,7 +128,7 @@ function TeacherModelsPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      getData(session.user.email, session.user.selectedOrgId);
+      getData(session.user.selectedOrgId);
     } else if (status === "loading") {
       // Sesión aún cargando
       setLoading(true);
@@ -147,13 +142,13 @@ function TeacherModelsPage() {
           className="font-[Bitter] font-semibold text-[20px] leading-[24px] text-center md:text-[26px] md:leading-[30px] 
           lg:text-[32px] lg:leading-[32px] max-w-[700px]"
         >
-          Mis modelos de IA
+          Gestión de modelos
         </h1>
         <p
           className="font-[Bitter] font-light text-[11px] leading-[13px] text-center text-gray-500 mt-2 md:text-[16px] md:leading-[18px] 
           lg:text-[20px] lg:leading-[20px] max-w-[700px]"
         >
-          Agrega o elimina tus modelos personalizados
+          Agrega o elimina modelos de IA segun el proveedor
         </p>
       </div>
 
@@ -207,7 +202,7 @@ function TeacherModelsPage() {
                   <select
                     value={proveedor}
                     onChange={(e) => setProveedor(e.target.value)}
-                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
+                    className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
   md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
   lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
                   >
@@ -229,47 +224,15 @@ function TeacherModelsPage() {
                 <input
                   type="text"
                   value={nuevoModelo}
-                  
-                  onChange={(e) => setNuevoModelo(e.target.value)}
                   placeholder="Ej: gpt-3.5-turbo"
+                  onChange={(e) => setNuevoModelo(e.target.value)}
                   className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
   md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
   lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
                 />
               </div>
 
-              <div className="w-full md:max-w-[500px] mx-auto">
-                <label className="text-[14px] font-bold md:text-[20px]">
-                  Nombre de la clave
-                </label>
-                <input
-                  type="text"
-                  value={nombreLlave}
-                  placeholder="Ej: Llave principal"
-                  onChange={(e) => setNombreLlave(e.target.value)}
-                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
-  md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
-  lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
-                />
-              </div>
-
-              <div className="w-full md:max-w-[500px] mx-auto">
-                <label className="text-[14px] font-bold md:text-[20px]">
-                  Clave
-                </label>
-                <input
-                  type="text"
-                  value={llave}
-                  onChange={(e) => setLlave(e.target.value)}
-                  placeholder="Ej: sk-abc123xyz..."
-                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
-  md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
-  lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
-                />
-              </div>
-
-              <div className="w-full max-w-[271px] md:max-w-[647px] mx-auto flex justify-center gap-[13px] md:gap-[22px] mt-[10px]">
-
+              <div className="w-full mt-64 max-w-[271px] md:max-w-[647px] mx-auto flex justify-center gap-[13px] md:gap-[22px]">
                 <button
                   onClick={() => addModel()}
                   className="w-[80px] h-[36px] md:w-[200px] md:h-[42px] p-[10px] bg-secondary text-white rounded-[5px] text-[14px] font-[Bitter] font-semibold"
@@ -283,7 +246,7 @@ function TeacherModelsPage() {
             <div
               className={`${
                 tab === 2 ? "block" : "hidden"
-              } lg:block font-mono text-primary space-y-6`}
+              } lg:block font-mono text-primary space-y-6 `}
             >
               <h2 className="hidden lg:block text-[18px] md:text-[22px] font-bold text-secondary pb-1 border-b-2 border-secondary w-fit mb-4 ml-4">
                 Modelos
@@ -316,25 +279,13 @@ function TeacherModelsPage() {
                           </div>
                         </div>
 
-                        {/* Botón eliminar o candado con tooltip */}
-                        {!modelo.orgId ? (
-                          <button
-                            onClick={() => selectModelo(modelo._id)}
-                            className="text-primary hover:text-red-800 text-xl md:text-3xl"
-                          >
-                            <FaTimes />
-                          </button>
-                        ) : (
-                          <Tippy
-                            content="Es un Modelo de Organización, no puedes eliminarlo"
-                            trigger="mouseenter focus click"
-                            touch={["hold", 0]}
-                          >
-                            <button className="text-primary text-xl md:text-3xl">
-                              <CiLock />
-                            </button>
-                          </Tippy>
-                        )}
+                        {/* Botón eliminar */}
+                        <button
+                          onClick={() => selectModelo(modelo._id)}
+                          className="text-primary hover:text-red-800 text-xl md:text-3xl"
+                        >
+                          <FaTimes />
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -344,6 +295,7 @@ function TeacherModelsPage() {
           </div>
         )}
       </div>
+
       {/* Modal de confirmacion-------------------------- */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
@@ -401,4 +353,4 @@ function TeacherModelsPage() {
   );
 }
 
-export default TeacherModelsPage;
+export default ProvidersPage;

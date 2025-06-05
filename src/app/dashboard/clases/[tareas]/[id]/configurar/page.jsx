@@ -38,7 +38,7 @@ function Configurar() {
   //Mapeo de extensiones de lenguaje a sus respectivas extensiones
   const languageExtensions = {
     "C++": ".cpp",
-    "Java": ".java",
+    Java: ".java",
     "C#": ".cs",
   };
 
@@ -152,7 +152,7 @@ function Configurar() {
   }, [pathname, status, taskId]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full min-h-screen p-2 py-8">
+    <div className="bg-background flex flex-col gap-5 w-full h-screen p-2 py-8">
       {/* Header */}
       <div className="w-full flex flex-col items-center text-primary">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] text-center max-w-[250px] md:max-w-[382px] font-[Bitter]">
@@ -173,8 +173,9 @@ function Configurar() {
               </label>
               <div className="relative mt-2">
                 <select
-                  className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
-             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
+                  className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
+  md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
+  lg:h-[42px] lg:text-[14px] lg:leading-[18px]"
                   value={formData.language}
                   onChange={handleLanguageChange}
                 >
@@ -193,8 +194,9 @@ function Configurar() {
               </label>
               <div className="relative mt-2">
                 <select
-                  className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
-             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
+               className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
+  md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
+  lg:h-[42px] lg:text-[14px] lg:leading-[18px]"
                   value={formData.modelIA}
                   onChange={(e) => handleModelChange(e)}
                 >
@@ -215,8 +217,9 @@ function Configurar() {
               </label>
               <div className="relative mt-2">
                 <select
-                  className="w-full appearance-none h-[32px] p-[10px] text-[10px] leading-[12px] rounded-[5px] bg-white
-             md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
+               className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
+  md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
+  lg:h-[42px] lg:text-[14px] lg:leading-[18px]"
                   value={formData.studentLevel}
                   onChange={(e) => handleChange(e, "studentLevel")}
                 >
@@ -234,13 +237,13 @@ function Configurar() {
                 Reglas de estilo
               </label>
               <input
-                className="w-full h-[32px] p-[10px] rounded-[5px] text-[11px] bg-white md:w-[308px] md:h-[51px] md:p-[16px] md:text-[16px] lg:h-[70px] lg:text-[16px]"
-                placeholder="Google Style"
+                             className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
+  md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
+  lg:h-[42px] lg:text-[14px] lg:leading-[18px]" placeholder="Google Style"
                 value={formData.style}
                 onChange={(e) => handleChange(e, "style")}
               />
             </div>
-
             <div className="col-span-2 flex flex-col">
               <label className="text-[14px] font-bold md:text-[20px]">
                 Temas a evaluar
@@ -249,11 +252,11 @@ function Configurar() {
                 <textarea
                   maxLength={200}
                   className="w-full min-h-[60px] p-[10px] rounded-[5px] text-[11px] resize-none bg-white
-                  md:text-[16px] md:h-[130px] lg:h-[179px] lg:text-[18px]"
+                  md:text-[16px] md:h-[130px] lg:h-[150px] lg:text-[14px]"
                   value={formData.topic}
                   onChange={(e) => handleChange(e, "topic")}
                 />
-                <div className="absolute bottom-1 right-2 text-[10px] text-black/70 md:text-[16px] lg:text-[18px]">
+                <div className="absolute bottom-1 right-2 text-[10px] text-black/70 md:text-[14px] lg:text-[12px]">
                   {formData.topic.length}/200
                 </div>
               </div>
@@ -266,12 +269,12 @@ function Configurar() {
               <div className="relative w-full">
                 <textarea
                   maxLength={200}
-                  className="w-full min-h-[60px] p-[10px] rounded-[5px] text-[11px] resize-none bg-white
-                  md:text-[16px] md:h-[130px] lg:h-[179px] lg:text-[18px]"
+                  className="w-full h-[60px] p-[10px] rounded-[5px] text-[11px] resize-none bg-white
+                  md:text-[16px] md:h-[130px] lg:h-[150px] lg:text-[14px]"
                   value={formData.constraints}
                   onChange={(e) => handleChange(e, "constraints")}
                 />
-                <div className="absolute bottom-1 right-2 text-[10px] text-black/70 md:text-[16px] lg:text-[18px]">
+                <div className="absolute bottom-1 right-2 text-[10px] text-black/70 md:text-[14px] lg:text-[12px]">
                   {formData.constraints.length}/200
                 </div>
               </div>
