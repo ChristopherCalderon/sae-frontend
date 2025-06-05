@@ -261,7 +261,47 @@ export const postFeedback = async (repo, repoData, config, teacher) => {
     console.log(error);
   }
 };
+export const generateFeedback = async (repo, repoData, config, teacher) => {
+  const client = await apiClient();
+  const [value, total] = repo.grade.split("/").map(Number);
+  const payload = {
+    readme: repoData.readme,
+    code: repoData.code,
+    gradeValue: value,
+    gradeTotal: total,
+    email: repo.email,
+    idTaskGithubClassroom: repo.assignment.id,
+    language: config.language,
+    topics: config.topic,
+    studentLevel: config.studentLevel,
+    constraints: config.constraints,
+    style: config.style,
+    modelId: config.modelIA
+  };
 
+  console.log(payload)
+
+  try {
+    const res = await client.post(
+      `feedback/generate/${repo.name}`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (res.status === 201) {
+      console.log(res);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const patchFeedback = async (email, id, feedback) => {
   const client = await apiClient();
   try {
@@ -681,6 +721,45 @@ export const updateUserStatus = async (org, user, status) => {
     const res = await client.patch(
       `/user/status?userId=${user}&orgId=${org}&activate=${status}`
     );
+
+    if ((res.status = 200)) {
+      return res;
+    }
+    return [];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//Proveedores------------------------------------------------------
+
+export const getModelByProvider = async (id) => {
+  const client = await apiClient();
+  try {
+    const res = await client.get(`/model-types/providers/${id}/models`);
+    if ((res.status = 200)) {
+      console.log(res.data);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const addModelProvider = async (id, name) => {
+  const client = await apiClient();
+  const payload = {
+    modelName: name,
+  };
+  try {
+    const res = await client.post(`/model-types/providers/${id}/add-model`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if ((res.status = 200)) {
       return res;

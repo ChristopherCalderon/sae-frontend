@@ -7,8 +7,10 @@ import React, { useEffect, useState } from "react";
 import { FaTimes, FaRegQuestionCircle, FaRegCheckCircle } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import {
+  addModelProvider,
   createOrgModel,
   deleteOrgModel,
+  getModelByProvider,
   getModelProviders,
   getOrgModels,
 } from "@/services/githubService";
@@ -19,6 +21,7 @@ function ProvidersPage() {
   const [modelos, setModelos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [proveedor, setProveedor] = useState("");
+  const [getProveedor, setGetProveedor] = useState("");
   const [nuevoModelo, setNuevoModelo] = useState("");
   const [nombreLlave, setNombreLlave] = useState("");
   const [llave, setLlave] = useState("");
@@ -30,17 +33,12 @@ function ProvidersPage() {
   const [showEmptyData, setShowEmptyData] = useState(false);
   const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
 
-  const getData = async (id) => {
+  const getData = async () => {
     try {
       setLoading(true);
       const responseProviders = await getModelProviders();
       if (responseProviders) {
         setProviderArray(responseProviders);
-      }
-      const responseModels = await getOrgModels(id);
-      if (responseModels) {
-        console.log(responseModels);
-        setModelos(responseModels);
       }
       setLoading(false);
     } catch (error) {
@@ -48,6 +46,18 @@ function ProvidersPage() {
     }
   };
 
+  const getModels = async (id) => {
+    try {
+      setLoading(true);
+      const responseModels = await getModelByProvider(id);
+      if (responseModels) {
+        setModelos(responseModels.models);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const selectModelo = (id) => {
     setShowConfirmModal(true);
     setModeloSeleccionado(id);
@@ -75,9 +85,7 @@ function ProvidersPage() {
   const emptyData = () => {
     return (
       proveedor.trim() === "" ||
-      nuevoModelo.trim() === "" ||
-      nombreLlave.trim() === "" ||
-      llave.trim() === ""
+      nuevoModelo.trim() === "" 
     );
   };
 
@@ -91,24 +99,19 @@ function ProvidersPage() {
       return;
     }
     try {
-      await createOrgModel(
+      await addModelProvider(
         proveedor,
-        nuevoModelo,
-        nombreLlave,
-        llave,
-        session.user.selectedOrgId
+        nuevoModelo
       );
       setProveedor("");
       setNuevoModelo("");
-      setNombreLlave("");
-      setLlave("");
 
       setShowSuccessModal("Modelo de IA agregado");
       setTimeout(() => {
         setShowSuccessModal("");
       }, 2000);
 
-      getData(session.user.selectedOrgId);
+      getData();
     } catch (error) {}
   };
 
@@ -127,13 +130,19 @@ function ProvidersPage() {
   };
 
   useEffect(() => {
-    if (status === "authenticated") {
-      getData(session.user.selectedOrgId);
-    } else if (status === "loading") {
-      // Sesión aún cargando
+    getData();
+  }, []);
+
+  //Observa el cambio de la org seleccionada
+  useEffect(() => {
+    if (getProveedor) {
       setLoading(true);
+      console.log(getProveedor)
+      getModels(getProveedor._id);
+    } else {
+      setModelos([]);
     }
-  }, [status]);
+  }, [getProveedor]);
 
   return (
     <div className="bg-background flex flex-col w-full h-full px-1 py-8 md:p-10 ">
@@ -251,6 +260,23 @@ function ProvidersPage() {
               <h2 className="hidden lg:block text-[18px] md:text-[22px] font-bold text-secondary pb-1 border-b-2 border-secondary w-fit mb-4 ml-4">
                 Modelos
               </h2>
+              <div className="relative mt-2">
+                <select
+                  value={getProveedor}
+                  onChange={(e) => setGetProveedor(JSON.parse(e.target.value))}
+                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
+                md:w-full md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
+                lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
+                >
+                  <option value="">Seleccionar proveedor</option>
+                  {providerArray.map((provider) => (
+                    <option key={provider._id} value={JSON.stringify(provider)}>
+                      {provider.name}
+                    </option>
+                  ))}
+                </select>
+                <IoIosArrowDown className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-lg text-secondary" />
+              </div>
               <div className="w-full md:max-w-[500px] mx-auto space-y-2 lg:mt-14">
                 {modelos.length === 0 ? (
                   <p className="text-gray-500 italic">
@@ -260,21 +286,18 @@ function ProvidersPage() {
                   <div className="flex flex-col gap-4 items-center justify-center w-full">
                     {modelos.map((modelo) => (
                       <div
-                        key={modelo._id}
-                        className="w-full max-w-[550px] bg-white rounded-[5px] shadow px-[10px] py-[10px] flex justify-between items-center"
+                        key={modelo}
+                        className="w-full max-w-[550px] bg-white rounded-[5px] shadow px-[10px] py-[10px] lg:py-1 flex justify-between items-center"
                       >
                         {/* Contenedor ícono + texto */}
                         <div className="flex items-center gap-4 w-full overflow-hidden">
-                          <div className="shrink-0 text-[30px] md:text-[36px] flex items-center justify-center">
-                            {getProviderIcon(modelo.modelType.name)}
+                          <div className="shrink-0 text-[30px] md:text-[36px]  flex items-center justify-center">
+                            {getProviderIcon(getProveedor.name)}
                           </div>
 
                           <div className="flex flex-col text-sm leading-[14px] md:text-[20px] md:leading-[24px] w-full break-words">
                             <span className="font-bold text-primary break-words">
-                              {modelo.name}
-                            </span>
-                            <span className="text-primary text-[10px] md:text-[16px] break-words">
-                              {modelo.version}
+                              {modelo}
                             </span>
                           </div>
                         </div>

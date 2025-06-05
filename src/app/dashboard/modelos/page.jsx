@@ -9,6 +9,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import {
   createOrgModel,
   deleteOrgModel,
+  getModelByProvider,
   getModelProviders,
   getOrgModels,
 } from "@/services/githubService";
@@ -17,6 +18,8 @@ import { useSession } from "next-auth/react";
 
 function ModelsPage() {
   const [modelos, setModelos] = useState([]);
+
+  const [selectModels, setSelectModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [proveedor, setProveedor] = useState("");
   const [nuevoModelo, setNuevoModelo] = useState("");
@@ -53,6 +56,18 @@ function ModelsPage() {
     setModeloSeleccionado(id);
   };
 
+  const getProviderModels = async (id) => {
+    try {
+      const responseModels = await getModelByProvider(id);
+      if (responseModels) {
+        setSelectModels(responseModels.models);
+        console.log(responseModels.models);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getProviderIcon = (name) => {
     switch (name.toLowerCase()) {
       case "openai":
@@ -135,6 +150,15 @@ function ModelsPage() {
     }
   }, [status]);
 
+  //Observa el cambio del proveedor seleccionado
+  useEffect(() => {
+    if (proveedor) {
+      console.log(proveedor);
+      getProviderModels(proveedor);
+    } else {
+      setModelos([]);
+    }
+  }, [proveedor]);
   return (
     <div className="bg-background flex flex-col w-full h-full px-1 py-8 md:p-10 ">
       <div className="w-full flex flex-col items-center text-primary px-4">
@@ -221,15 +245,23 @@ function ModelsPage() {
                 <label className="text-[14px] font-bold md:text-[20px]">
                   Modelo
                 </label>
-                <input
-                  type="text"
-                  value={nuevoModelo}
-                  placeholder="Ej: gpt-3.5-turbo"
-                  onChange={(e) => setNuevoModelo(e.target.value)}
-                  className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
+                <div className="relative mt-2">
+                  <select
+                    value={nuevoModelo}
+                    onChange={(e) => setNuevoModelo(e.target.value)}
+                    className="w-full appearance-none px-[10px] py-[12px] text-[14px] leading-[14px] rounded-[5px] bg-white
   md:max-w-[600px] md:px-[16px] md:py-[12px] md:text-[15px] md:leading-[20px]
   lg:py-[12px] lg:text-[14px] lg:leading-[18px]"
-                />
+                  >
+                    <option value="">Seleccionar modelo</option>
+                    {selectModels.map((model) => (
+                      <option key={model} value={model}>
+                        {model}
+                      </option>
+                    ))}
+                  </select>
+                  <IoIosArrowDown className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none text-lg text-secondary" />
+                </div>
               </div>
 
               <div className="w-full md:max-w-[500px] mx-auto">
@@ -263,7 +295,6 @@ function ModelsPage() {
               </div>
 
               <div className="w-full max-w-[271px] md:max-w-[647px] mx-auto flex justify-center gap-[13px] md:gap-[22px] mt-[10px]">
-
                 <button
                   onClick={() => addModel()}
                   className="w-[80px] h-[36px] md:w-[200px] md:h-[42px] p-[10px] bg-secondary text-white rounded-[5px] text-[14px] font-[Bitter] font-semibold"
@@ -282,7 +313,7 @@ function ModelsPage() {
               <h2 className="hidden lg:block text-[18px] md:text-[22px] font-bold text-secondary pb-1 border-b-2 border-secondary w-fit mb-4 ml-4">
                 Modelos
               </h2>
-              <div className="w-full md:max-w-[500px] mx-auto space-y-2 lg:mt-14">
+              <div className="w-full md:max-w-[500px] mx-auto space-y-2 lg:mt-14 max-h-[28rem] lg:max-h-[26rem] overflow-y-auto ">
                 {modelos.length === 0 ? (
                   <p className="text-gray-500 italic">
                     No hay modelos asignados.

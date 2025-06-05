@@ -95,16 +95,6 @@ function Navbar() {
 
           {isAdmin && (
             <Link
-              href={"/dashboard/proveedores"}
-             className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-            onClick={() => isMobile && setIsOpen(false)}
-            >
-              <FaBrain className="text-2xl" />
-              <span>Proveedores IA</span>
-            </Link>
-          )}
-          {isAdmin && (
-            <Link
               href={"/dashboard/admin"}
               className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
              onClick={() => isMobile && setIsOpen(false)}

@@ -19,7 +19,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 function SysNavbar() {
-   const { data: session, status } = useSession();
+  const { data: session, status } = useSession();
   const isAdmin = session?.user.activeRole === "ORG_Admin";
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -62,7 +62,7 @@ function SysNavbar() {
       <div className="flex h-3/5  lg:h-3/4 flex-col justify-between p-2 text-xl font-semibold">
         <div className="h-full flex flex-col gap-4">
           <Link
-           href={"/system/usuarios"}
+            href={"/system/usuarios"}
             className="flex lg:flex-col  justify-center text-center items-center gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
             onClick={() => isMobile && setIsOpen(false)}
           >
@@ -78,6 +78,14 @@ function SysNavbar() {
             <span>Organizaciones</span>
           </Link>
 
+          <Link
+            href={"/system/proveedores"}
+            className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+            onClick={() => isMobile && setIsOpen(false)}
+          >
+            <FaBrain className="text-2xl" />
+            <span>Proveedores IA</span>
+          </Link>
         </div>
 
         <div>
@@ -100,8 +108,7 @@ function SysNavbar() {
     <>
       {/* Versión desktop  */}
       <div className="hidden lg:block w-[9%] h-screen bg-[#2d3145] text-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-        {status === 'loading' ?  '' : menuContent}
-
+        {status === "loading" ? "" : menuContent}
       </div>
 
       {/* Versión mobile/tablet */}
@@ -120,8 +127,6 @@ function SysNavbar() {
           >
             {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
-
- 
         </div>
 
         {/* Menú desplegable */}

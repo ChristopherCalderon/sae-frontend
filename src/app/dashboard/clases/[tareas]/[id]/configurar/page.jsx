@@ -239,7 +239,7 @@ function Configurar() {
               <input
                              className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
   md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
-  lg:h-[42px] lg:text-[14px] lg:leading-[18px]" placeholder="Google Style"
+  lg:h-[42px] lg:text-[14px] lg:leading-[18px] lg:mt-2" placeholder="Google Style"
                 value={formData.style}
                 onChange={(e) => handleChange(e, "style")}
               />
@@ -252,7 +252,7 @@ function Configurar() {
                 <textarea
                   maxLength={200}
                   className="w-full min-h-[60px] p-[10px] rounded-[5px] text-[11px] resize-none bg-white
-                  md:text-[16px] md:h-[130px] lg:h-[150px] lg:text-[14px]"
+                  md:text-[16px] md:h-[130px] lg:h-[130px] lg:text-[14px]"
                   value={formData.topic}
                   onChange={(e) => handleChange(e, "topic")}
                 />
@@ -270,7 +270,7 @@ function Configurar() {
                 <textarea
                   maxLength={200}
                   className="w-full h-[60px] p-[10px] rounded-[5px] text-[11px] resize-none bg-white
-                  md:text-[16px] md:h-[130px] lg:h-[150px] lg:text-[14px]"
+                  md:text-[16px] md:h-[130px] lg:h-[130px] lg:text-[14px]"
                   value={formData.constraints}
                   onChange={(e) => handleChange(e, "constraints")}
                 />
