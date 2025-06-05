@@ -28,13 +28,22 @@ function AdminPage() {
   });
 
   const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
-  // Filtrar submissions
+  // Filtrar usuarios
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().startsWith(globalFilter.toLowerCase())
   );
 
+  const testUsers = filteredUsers.flatMap((subm, index) =>
+    Array.from({ length: 5 }, (_, i) => ({
+      // Clonamos todo el objeto para evitar mutar el original
+      ...subm,
+      // Le damos un id “nuevo” para no tener keys duplicadas en la tabla
+      id: `${subm.id}-${i}-${index}`,
+    }))
+  );
+
   console.log(users);
-  const { data: session, status } = useSession(); 
+  const { data: session, status } = useSession();
 
   const getData = async (orgId) => {
     try {
@@ -79,20 +88,18 @@ function AdminPage() {
   };
 
   useEffect(() => {
-    if (status === "authenticated" ) {
-      setSelectedOrg(session.user.selectedOrgId)
-      getData(session.user.selectedOrgId)
+    if (status === "authenticated") {
+      setSelectedOrg(session.user.selectedOrgId);
+      getData(session.user.selectedOrgId);
     } else if (status === "loading") {
       // Sesión aún cargando
       setLoading(true);
     }
-  }, [status]); 
-
-
+  }, [status]);
 
   return (
-     <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8  lg:overflow-clip">
-      <div className="w-full flex flex-col items-center gap-2  text-primary">
+    <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-2 w-full p-2 lg:p-5 py-8  lg:overflow-clip">
+      <div className="w-full flex flex-col items-center  text-primary">
         <h1 className="text-2xl font-bold text-center">Administrar usuarios</h1>
         <p className="font-light text-center">
           Administra los usuarios de tu organización
@@ -102,7 +109,7 @@ function AdminPage() {
       {loading ? (
         <Loading message={"Cargando..."} />
       ) : (
-        <div className="w-4/5 flex flex-col lg:flex-row lg:w-full lg:justify-center  gap-2 mt-2 ">
+        <div className="w-4/5 flex flex-col lg:flex-row lg:w-full lg:justify-center  gap-2  ">
           <input
             type="text"
             placeholder="Buscar usuarios..."
@@ -128,7 +135,7 @@ function AdminPage() {
         <div className="w-full  h-[70%] lg:h-full  flex flex-col lg:items-center gap-5 lg:overflow-y-auto overflow-y-scroll">
           {!loading && (
             <OrgUsersTable
-              users={filteredUsers}
+              users={testUsers}
               orgId={selectedOrg}
               handleStatusChange={handleStatusChange}
               handleAdminChange={handleAdminChange}

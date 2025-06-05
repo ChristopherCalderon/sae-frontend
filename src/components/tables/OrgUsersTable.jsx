@@ -6,6 +6,7 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -29,21 +30,34 @@ function OrgUsersTable({
   const [sorting, setSorting] = useState([]); //Estado que guarda el sroting de la tabla
   const columnHelper = createColumnHelper(); //Creador de columnas de tanstack
   const pathname = usePathname();
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 9,
+  });
 
   //Icono de proveedor------------------------------------------------------------
   const getProviderIcon = (name, index) => {
     switch (name.toLowerCase()) {
       case "openai":
         return (
-          <PiOpenAiLogoLight key={index} className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]" />
+          <PiOpenAiLogoLight
+            key={index}
+            className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]"
+          />
         );
       case "deepseek":
         return (
-          <GiSpermWhale key={index} className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]"  />
+          <GiSpermWhale
+            key={index}
+            className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]"
+          />
         );
       case "gemini":
         return (
-          <RiGeminiLine key={index} className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]"  />
+          <RiGeminiLine
+            key={index}
+            className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]"
+          />
         );
       default:
         return <div className="w-5 h-5" />;
@@ -60,35 +74,34 @@ function OrgUsersTable({
         const avatar = row.original.urlAvatar;
         const email = row.original.email;
         return (
-          <div className="flex items-center  justify-center">
-            <div className="flex justify-start w-1/2 gap-5">
-              <img src={avatar} alt={login} className="w-10 rounded-full" />
-              <div className="flex flex-col">
-                <span className="font-medium text-left ">{login}</span>
-                <span className="text-sm text-gray-500">{email}</span>
-              </div>
+          <div className="flex items-center gap-2">
+            <img src={avatar} alt={login} className="w-8 rounded-full " />
+            <div className="flex flex-col items-start ">
+              <span className="font-medium text-sm">{login}</span>
+              <span className="text-xs text-gray-500">{email}</span>
             </div>
           </div>
         );
       },
     }),
-        columnHelper.display({
+    columnHelper.display({
       id: "modelos",
       header: () => "Modelos",
       enableGlobalFilter: false,
       cell: ({ row }) => {
         const providers = row.original.providers;
-        console.log(providers)
+        console.log(providers);
         return (
           <div className="flex items-center  justify-center gap-1">
             {providers.length > 0 ? (
               <div className="w-full flex items-center justify-center gap-1">
-          {providers.map((provider, index) => (
-            getProviderIcon(provider, index)
-        ))}
+                {providers.map((provider, index) =>
+                  getProviderIcon(provider, index)
+                )}
               </div>
-            ) : <p className="text-sm font-medium">No hay modelos asignados</p>}
-
+            ) : (
+              <p className="text-sm font-medium">No hay modelos asignados</p>
+            )}
           </div>
         );
       },
@@ -150,7 +163,7 @@ function OrgUsersTable({
           >
             <FaUserCog
               onClick={() => setShowActions((prev) => !prev)}
-              className="text-primary hover:text-secondary  font-bold text-6xl px-3 py-1 "
+              className="text-primary hover:text-secondary  font-bold text-[3.3rem] px-3  "
             />
 
             {showActions && (
@@ -213,15 +226,18 @@ function OrgUsersTable({
     columns,
     state: {
       sorting,
+      pagination,
     },
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
-    <div className="p-4 font-primary h-full w-11/12 lg:block hidden">
+    <div className="p-4 font-primary h-full w-11/12 lg:block hidden ">
       <div className="max-h-full overflow-y-auto overflow-x-auto border border-gray-300 rounded-xs shadow-md">
         <table className="min-w-full border border-gray-300 rounded-xs shadow-md">
           <thead className="bg-[#dcdcdc] text-left ">
@@ -230,7 +246,7 @@ function OrgUsersTable({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-4  cursor-pointer select-none text-center "
+                    className="px-4 py-2 text-sm  cursor-pointer select-none text-center "
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center text-center justify-center">
@@ -254,7 +270,7 @@ function OrgUsersTable({
                 className="border-t bg-white border-[#dcdcdc] font-medium"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-3 py-2 text-center">
+                  <td key={cell.id} className="px-3  text-center">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -263,6 +279,36 @@ function OrgUsersTable({
           </tbody>
         </table>
       </div>
+      {table.getPageCount() > 1 ? (
+        <div className="flex items-center justify-between mt-2 absolute bottom-4 w-4/5 pr-5 overflow-hidden">
+          {/* Botón “Anterior” */}
+          <div className="flex gap-1">
+            <button
+              className=" items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-2 hover:bg-secondary  rounded shadow-lg"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Anterior
+            </button>
+            {/* Botón “Siguiente” */}
+            <button
+              className=" items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-2 hover:bg-secondary py-1 rounded shadow-lg"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Siguiente
+            </button>
+          </div>
+
+          {/* Texto “Página X de Y” */}
+          <span>
+            Página {table.getState().pagination.pageIndex + 1} de{" "}
+            {table.getPageCount()}
+          </span>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

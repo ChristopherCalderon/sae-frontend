@@ -42,6 +42,15 @@ const filteredSubmissions = submissions.filter((submission) => {
   );
 });
 
+  const testSubmissions = filteredSubmissions.flatMap((subm, index) =>
+    Array.from({ length: 5 }, (_, i) => ({
+      // Clonamos todo el objeto para evitar mutar el original
+      ...subm,
+      // Le damos un id “nuevo” para no tener keys duplicadas en la tabla
+      id: `${subm.id}-${i}-${index}`,
+    }))
+  );
+
   const getData = async () => {
     try {
       setLoading(true);
@@ -158,7 +167,7 @@ const filteredSubmissions = submissions.filter((submission) => {
         ) : (
           <div className="w-fullh-[70%] lg:h-full  flex flex-col gap-5 lg:overflow-y-auto overflow-y-scroll">
             <AssignmentsTable
-              submissions={filteredSubmissions}
+              submissions={testSubmissions}
               id={id}
               getFeedbacks={getData}
               config={config}
