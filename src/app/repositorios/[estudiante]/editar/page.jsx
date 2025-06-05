@@ -5,64 +5,85 @@ import ReactMarkdown from "react-markdown";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getFeedback, patchFeedback } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
+import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
+import { useMemo } from "react";
 
 function editar() {
   const searchParams = useSearchParams();
-    const encodedData = searchParams.get("data");
-    const [loading, setLoading] = useState(true);
-    const { email, repo, org, name } = JSON.parse(atob(encodedData));
-    const router = useRouter();
-    const [feedback, setFeedback] = useState();
-    const [feedbackText, setFeedbackText] = useState("");
-  
-    const getData = async () => {
-      try {
-        setLoading(true);
-        const response = await getFeedback(email, repo, org);
-        console.log(response);
-        setFeedback(response);
-        setFeedbackText(response.feedback);
-      } catch (error) {
-        console.error("Error:", error);
-        setFeedback([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    const updateFeedback = async () => {
-      try {
-        setLoading(true);
-        const res = await patchFeedback(email, repo, feedbackText);
-        console.log(res);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
-    //Formatear fecha
-    function formatFecha(fechaMongo) {
-      const fecha = new Date(fechaMongo);
-      const dia = String(fecha.getDate()).padStart(2, "0");
-      const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-      const año = fecha.getFullYear();
-      return `${dia}/${mes}/${año}`;
+  const encodedData = searchParams.get("data");
+  const [loading, setLoading] = useState(true);
+  const { email, repo, org, name } = JSON.parse(atob(encodedData));
+  const router = useRouter();
+  const [feedback, setFeedback] = useState();
+  const [feedbackText, setFeedbackText] = useState("");
+
+  const getData = async () => {
+    try {
+      setLoading(true);
+      const response = await getFeedback(email, repo, org);
+      console.log(response);
+      setFeedback(response);
+      setFeedbackText(response.feedback);
+    } catch (error) {
+      console.error("Error:", error);
+      setFeedback([]);
+    } finally {
+      setLoading(false);
     }
-  
-    //Calcular promedio de calificaciones
-    const calculateAverage = (grade1, grade2) => {
-      const total = grade1 + grade2;
-      return parseFloat((total / 2).toFixed(2));
-    };
-  
-    useEffect(() => {
-      getData();
-    }, []);
-  
-    const handleSave = () => {
-      updateFeedback();
-      router.back();
-    };
+  };
+
+  const updateFeedback = async () => {
+    try {
+      setLoading(true);
+      const res = await patchFeedback(email, repo, feedbackText);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Formatear fecha
+  function formatFecha(fechaMongo) {
+    const fecha = new Date(fechaMongo);
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+  }
+
+  //Calcular promedio de calificaciones
+  const calculateAverage = (grade1, grade2) => {
+    const total = grade1 + grade2;
+    return parseFloat((total / 2).toFixed(2));
+  };
+
+  const options = useMemo(
+    () => ({
+      spellChecker: false,
+      placeholder: "Escribe la retroalimentación en Markdown...",
+      minHeight: "200px",
+      maxHeight: "300px", // Aplica solo al editor
+      autosave: {
+        enabled: true,
+        delay: 1000,
+        uniqueId: "editor_feedback",
+      },
+    }),
+    []
+  );
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const handleSave = () => {
+    updateFeedback();
+    router.back();
+  };
 
   return (
     <div
@@ -185,18 +206,10 @@ function editar() {
 
           {/* Div 4 Retroalimentación */}
           <div className="order-4 md:col-span-2 md:order-4">
-            <textarea
-              className="w-full  min-h-[400px] p-4  shadow-md resize-y bg-white 
-  text-[14px]  font-[Bitter] 
-  overflow-auto
-  border border-gray-300
-  mx-auto
-  [&::-webkit-scrollbar]:w-1
-  [&::-webkit-scrollbar-track]:bg-background
-  [&::-webkit-scrollbar-thumb]:bg-primary
-  "
+            <SimpleMDE
               value={feedbackText}
-              onChange={(e) => setFeedbackText(e.target.value)}
+              onChange={(value) => setFeedbackText(value)}
+              options={options}
             />
           </div>
         </>
