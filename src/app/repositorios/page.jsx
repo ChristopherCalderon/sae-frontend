@@ -100,7 +100,7 @@ function repositorios() {
               submission.repository.name
             );
             console.log(repoData);
-            await postFeedback(submission, repoData, config, teacher);
+            await generateFeedback(submission, repoData, config, teacher);
           }
         })
       );

@@ -150,9 +150,8 @@ export const getSubmissions = async (id) => {
           );
 
           let gradeFeedback = 0;
-          
-          
-          let grade_test = parseInt(submission?.grade?.split("/")[0] || '0');
+
+          let grade_test = parseInt(submission?.grade?.split("/")[0] || "0");
           try {
             // Petición para obtener nota de feedback
             const gradeRes = await client.get(
@@ -176,7 +175,7 @@ export const getSubmissions = async (id) => {
             feedback_status: statusRes.data.status || null,
             grade_feedback: gradeFeedback,
 
-            grade_test: grade_test
+            grade_test: grade_test,
           };
         } catch (error) {
           console.error(
@@ -188,7 +187,7 @@ export const getSubmissions = async (id) => {
             email: null,
             feedback_status: null,
             grade_feedback: 0,
-            grade_test: grade_test
+            grade_test: grade_test,
           };
         }
       })
@@ -234,10 +233,10 @@ export const postFeedback = async (repo, repoData, config, teacher) => {
     constraints: config.constraints,
     style: config.style,
     modelId: config.modelIA,
-    reviewedBy: teacher
+    reviewedBy: teacher,
   };
 
-  console.log(payload)
+  console.log(payload);
 
   const modelProvider = config.providerNameIA?.toLowerCase();
   try {
@@ -261,6 +260,7 @@ export const postFeedback = async (repo, repoData, config, teacher) => {
     console.log(error);
   }
 };
+
 export const generateFeedback = async (repo, repoData, config, teacher) => {
   const client = await apiClient();
   const [value, total] = repo.grade.split("/").map(Number);
@@ -276,14 +276,15 @@ export const generateFeedback = async (repo, repoData, config, teacher) => {
     studentLevel: config.studentLevel,
     constraints: config.constraints,
     style: config.style,
-    modelId: config.modelIA
+    modelId: config.modelIA,
+    reviewedBy: teacher,
   };
 
-  console.log(payload)
+  console.log(payload);
 
   try {
     const res = await client.post(
-      `feedback/generate/${repo.name}`,
+      `feedback/generate/${repo.repository.name}`,
       payload,
       {
         headers: {
@@ -302,6 +303,7 @@ export const generateFeedback = async (repo, repoData, config, teacher) => {
     console.log(error);
   }
 };
+
 export const patchFeedback = async (email, id, feedback) => {
   const client = await apiClient();
   try {
@@ -748,18 +750,21 @@ export const getModelByProvider = async (id) => {
   }
 };
 
-
 export const addModelProvider = async (id, name) => {
   const client = await apiClient();
   const payload = {
     modelName: name,
   };
   try {
-    const res = await client.post(`/model-types/providers/${id}/add-model`, payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await client.post(
+      `/model-types/providers/${id}/add-model`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if ((res.status = 200)) {
       return res;

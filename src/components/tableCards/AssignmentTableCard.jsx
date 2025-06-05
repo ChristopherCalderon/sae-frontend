@@ -1,5 +1,5 @@
 "use client";
-import { getRepoData, postFeedback } from "@/services/githubService";
+import { generateFeedback, getRepoData, postFeedback } from "@/services/githubService";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -25,7 +25,7 @@ const generateOne = async (
   try {
     console.log(config);
     const repoData = await getData(repo.repository.name, org, config.extension);
-    await postFeedback(repo, repoData, config, teacher);
+    await generateFeedback(repo, repoData, config, teacher);
     setSuccessMessage("Generado correctamente");
   } catch (error) {
     console.log("Error al generar retroalimentación", error);
@@ -62,7 +62,7 @@ function AssignmentTableCard({
   return (
     <div className="bg-white flex w-full  rounded-md flex-col   text-primary  justify-center  shadow-[0px_8px_8px_rgba(0,0,0,0.25)] lg:hidden ">
       <div className="w-full flex">
-        <div className="bg-[#dcdcdc] h-full rounded-tl-md  w-2/5 py-5 p-2 flex items-center justify-center text-center text-sm ">
+        <div className="bg-[#dcdcdc] h-full rounded-tl-md  w-2/5 py-6 p-2 flex items-center justify-center text-center text-sm ">
           <h1>Usuario</h1>
         </div>
         <div className="bg-white h-full py-3   w-3/5 flex items-center justify-center  gap-1 ">

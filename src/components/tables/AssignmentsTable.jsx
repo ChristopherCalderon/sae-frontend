@@ -1,5 +1,6 @@
 "use client";
 import {
+  generateFeedback,
   getAssignmentConfig,
   getFeedback,
   getRepoData,
@@ -61,7 +62,7 @@ const generateOne = async (
   try {
     console.log(config);
     const repoData = await getData(repo.repository.name, org, config.extension);
-    await postFeedback(repo, repoData, config, teacher);
+    await generateFeedback(repo, repoData, config, teacher);
     setSuccessMessage("Generado correctamente");
   } catch (error) {
     console.log("Error al generar retroalimentación", error);

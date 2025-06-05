@@ -66,7 +66,7 @@ function editar() {
 
   return (
     <div
-      className="bg-background w-full min-h-screen lg:px-20 py-8 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
+      className="bg-background w-full min-h-screen lg:px-20 py-6 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
     md:gap-4 mx-auto "
     >
       {/* Div 1: Cabecera */}

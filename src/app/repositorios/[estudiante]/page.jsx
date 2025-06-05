@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   deleteFeedback,
+  generateFeedback,
   getFeedback,
   getRepoData,
   getTaskConfig,
@@ -88,7 +89,7 @@ function entrega() {
     }
   };
 
-  const generateFeedback = async () => {
+  const generateNewFeedback = async () => {
     setShowConfirmModal(false);
     try {
       setGenerating(true);
@@ -106,7 +107,7 @@ function entrega() {
       };
 
       await deleteFeedback(feedback.email, feedback.idTaskGithubClassroom);
-      const res = await postFeedback(payload, repoData, taskConfig,session.user.name);
+      const res = await generateFeedback(payload, repoData, taskConfig,session.user.name);
       const newFeedback = res.feedback;
       const newData = await updateFeedback(
         feedback.email,
@@ -146,8 +147,8 @@ function entrega() {
   const pathname = usePathname();
   return (
        <div
-      className="bg-background w-full min-h-screen p-5 py-8 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
-    md:gap-4  mx-auto "
+      className="bg-background w-full min-h-screen lg:px-20 py-10 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
+    md:gap-4 mx-auto "
     >
       {/* Div 1: Cabecera */}
       <div className="order-1 md:col-span-2 p-4 text-center">
@@ -293,7 +294,7 @@ function entrega() {
           {/* Div 4 Retroalimentacion*/}
           <div className="order-4 md:col-span-2 md:order-4">
             <div
-              className="w-full  p-5 rounded-md shadow-md overflow-y-auto max-h-[400px] lg:max-h-[350px] bg-white [&::-webkit-scrollbar]:w-1
+              className="w-full  p-5 rounded-md shadow-md overflow-y-auto max-h-[400px] lg:h-[550px] bg-white [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-background
         [&::-webkit-scrollbar-thumb]:bg-primary"
             >
@@ -317,7 +318,7 @@ function entrega() {
             <div className="w-full flex gap-2 justify-center items-center">
               <button
                 className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-                onClick={generateFeedback}
+                onClick={generateNewFeedback}
               >
                 Si
               </button>
