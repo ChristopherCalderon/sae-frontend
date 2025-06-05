@@ -95,7 +95,7 @@ function AdminPage() {
       <div className="w-full flex flex-col items-center gap-2  text-primary">
         <h1 className="text-2xl font-bold text-center">Administrar usuarios</h1>
         <p className="font-light text-center">
-          Selecciona una organización y administra sus usuarios
+          Administra los usuarios de tu organización
         </p>
       </div>
 

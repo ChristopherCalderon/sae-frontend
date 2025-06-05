@@ -152,7 +152,7 @@ function Configurar() {
   }, [pathname, status, taskId]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-screen p-2 py-8">
+    <div className="bg-background flex flex-col gap-5 w-full h-screen py-8">
       {/* Header */}
       <div className="w-full flex flex-col items-center text-primary">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] text-center max-w-[250px] md:max-w-[382px] font-[Bitter]">
@@ -166,7 +166,7 @@ function Configurar() {
         <Loading />
       ) : (
         <>
-          <div className="w-full max-w-[271px] md:max-w-[647px] flex flex-col gap-[9px] md:grid md:grid-cols-2 md:gap-x-[32px] md:gap-y-[16px] text-primary font-[Bitter] mx-auto">
+          <div className="w-full p-2 md:max-w-[647px] flex flex-col gap-[9px] md:grid md:grid-cols-2 md:gap-x-[32px] md:gap-y-[16px] text-primary font-[Bitter] mx-auto">
             <div className="flex flex-col">
               <label className="text-[14px] font-bold md:text-[20px]">
                 Lenguaje de programación
