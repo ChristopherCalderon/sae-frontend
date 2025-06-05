@@ -14,6 +14,9 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { getSortedRowModel } from "@tanstack/react-table";
 import { getFilteredRowModel } from "@tanstack/react-table";
 import { FaSort, FaUserCog } from "react-icons/fa";
+import { RiGeminiLine } from "react-icons/ri";
+import { GiSpermWhale } from "react-icons/gi";
+import { PiOpenAiLogoLight } from "react-icons/pi";
 
 function OrgUsersTable({
   users,
@@ -27,6 +30,25 @@ function OrgUsersTable({
   const columnHelper = createColumnHelper(); //Creador de columnas de tanstack
   const pathname = usePathname();
 
+  //Icono de proveedor------------------------------------------------------------
+  const getProviderIcon = (name, index) => {
+    switch (name.toLowerCase()) {
+      case "openai":
+        return (
+          <PiOpenAiLogoLight key={index} className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]" />
+        );
+      case "deepseek":
+        return (
+          <GiSpermWhale key={index} className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]"  />
+        );
+      case "gemini":
+        return (
+          <RiGeminiLine key={index} className="text-secondary h-[24px] w-[24px] md:h-[32px] md:w-[32px]"  />
+        );
+      default:
+        return <div className="w-5 h-5" />;
+    }
+  };
   //Columnas tanstack---------------------------------------------------------
   const columns = [
     columnHelper.display({
@@ -46,6 +68,27 @@ function OrgUsersTable({
                 <span className="text-sm text-gray-500">{email}</span>
               </div>
             </div>
+          </div>
+        );
+      },
+    }),
+        columnHelper.display({
+      id: "modelos",
+      header: () => "Modelos",
+      enableGlobalFilter: false,
+      cell: ({ row }) => {
+        const providers = row.original.providers;
+        console.log(providers)
+        return (
+          <div className="flex items-center  justify-center gap-1">
+            {providers.length > 0 ? (
+              <div className="w-full flex items-center justify-center gap-1">
+          {providers.map((provider, index) => (
+            getProviderIcon(provider, index)
+        ))}
+              </div>
+            ) : <p className="text-sm font-medium">No hay modelos asignados</p>}
+
           </div>
         );
       },
