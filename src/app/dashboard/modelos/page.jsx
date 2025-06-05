@@ -72,15 +72,15 @@ function ModelsPage() {
     switch (name.toLowerCase()) {
       case "openai":
         return (
-          <PiOpenAiLogoLight className="text-secondary h-[32px] w-[32px] md:h-[56px] md:w-[56px]" />
+          <PiOpenAiLogoLight className="text-secondary h-[32px] w-[32px] md:h-[40px] md:w-[40px]" />
         );
       case "deepseek":
         return (
-          <GiSpermWhale className="text-secondary h-[32px] w-[32px] md:h-[56px] md:w-[56px]" />
+          <GiSpermWhale className="text-secondary h-[32px] w-[32px] md:h-[40px] md:w-[40px]" />
         );
       case "gemini":
         return (
-          <RiGeminiLine className="text-secondary h-[32px] w-[32px] md:h-[56px] md:w-[56px]" />
+          <RiGeminiLine className="text-secondary h-[32px] w-[32px] md:h-[40px] md:w-[40px]" />
         );
       default:
         return <div className="w-5 h-5" />;
