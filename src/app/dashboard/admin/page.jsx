@@ -33,14 +33,7 @@ function AdminPage() {
     user.name.toLowerCase().startsWith(globalFilter.toLowerCase())
   );
 
-  const testUsers = filteredUsers.flatMap((subm, index) =>
-    Array.from({ length: 5 }, (_, i) => ({
-      // Clonamos todo el objeto para evitar mutar el original
-      ...subm,
-      // Le damos un id “nuevo” para no tener keys duplicadas en la tabla
-      id: `${subm.id}-${i}-${index}`,
-    }))
-  );
+  
 
   console.log(users);
   const { data: session, status } = useSession();
@@ -135,7 +128,7 @@ function AdminPage() {
         <div className="w-full  h-[70%] lg:h-full  flex flex-col lg:items-center gap-5 lg:overflow-y-auto overflow-y-scroll">
           {!loading && (
             <OrgUsersTable
-              users={testUsers}
+              users={filteredUsers}
               orgId={selectedOrg}
               handleStatusChange={handleStatusChange}
               handleAdminChange={handleAdminChange}

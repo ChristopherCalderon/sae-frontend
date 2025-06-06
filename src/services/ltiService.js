@@ -1,14 +1,16 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
 
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL; 
+
 export const apiClient = async () => {
   const session = await getSession();
   const token = session?.accessToken;
 
   if (!token) throw new Error("No hay accessToken disponible");
-
+  if (!baseURL) throw new Error("API base URL no definida");
   const instance = axios.create({
-    baseURL: "https://sae-backend-n9d3.onrender.com",
+    baseURL,
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -20,7 +22,7 @@ export const apiClient = async () => {
 export const decodeToken = async (token) => {
   try {
     const res = await axios.get(
-      `https://sae-backend-n9d3.onrender.com/jwt/decode`,
+      `${baseURL}jwt/decode`,
       {
         headers: {
             Authorization: `Bearer ${token}`,

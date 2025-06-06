@@ -9,6 +9,7 @@ import {
   FaRegQuestionCircle,
 } from "react-icons/fa";
 import {
+  generateFeedback,
   getRepoData,
   getSubmissions,
   getTaskConfig,
@@ -89,7 +90,7 @@ function repositorios() {
     }
   };
 
-  const generateFeedback = async () => {
+  const generateNewFeedback = async () => {
     setLoading(true);
     try {
       await Promise.all(
@@ -248,7 +249,7 @@ function repositorios() {
             <div className="w-full flex gap-2 justify-center items-center">
               <button
                 className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-                onClick={() => generateFeedback()}
+                onClick={() => generateNewFeedback()}
               >
                 Si
               </button>

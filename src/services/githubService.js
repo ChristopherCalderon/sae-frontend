@@ -1,14 +1,16 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
 
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL; 
+
 export const apiClient = async () => {
   const session = await getSession();
   const token = session?.accessToken;
 
   if (!token) throw new Error("No hay accessToken disponible");
-
+  if (!baseURL) throw new Error("API base URL no definida");
   const instance = axios.create({
-    baseURL: "https://sae-backend-n9d3.onrender.com",
+    baseURL,
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -106,10 +108,11 @@ export const getFeedback = async (email, repo, org) => {
 };
 
 export const getStudentFeedback = async (email, repo) => {
+  const client = await apiClient();
   try {
     // Peticion inicial para obtener el feedback y repositorio
-    const res = await axios.get(
-      `https://sae-backend-n9d3.onrender.com/feedback/search?email=${email}&idTaskGithubClassroom=${repo}`
+    const res = await client.get(
+      `/feedback/search?email=${email}&idTaskGithubClassroom=${repo}`
     );
 
     if (res.status !== 200) {

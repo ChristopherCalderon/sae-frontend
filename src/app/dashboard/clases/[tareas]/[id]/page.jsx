@@ -4,6 +4,7 @@ import Loading from "@/components/loader/Loading";
 import AssignmentTableCard from "@/components/tableCards/AssignmentTableCard";
 import AssignmentsTable from "@/components/tables/AssignmentsTable";
 import {
+  generateFeedback,
   getRepoData,
   getSubmissions,
   getTaskConfig,
@@ -42,14 +43,6 @@ const filteredSubmissions = submissions.filter((submission) => {
   );
 });
 
-  const testSubmissions = filteredSubmissions.flatMap((subm, index) =>
-    Array.from({ length: 5 }, (_, i) => ({
-      // Clonamos todo el objeto para evitar mutar el original
-      ...subm,
-      // Le damos un id “nuevo” para no tener keys duplicadas en la tabla
-      id: `${subm.id}-${i}-${index}`,
-    }))
-  );
 
   const getData = async () => {
     try {
@@ -82,7 +75,7 @@ const filteredSubmissions = submissions.filter((submission) => {
     }
   };
 
-  const generateFeedback = async () => {
+  const generateNewFeedback = async () => {
     setShowConfirmModal(false);
     setLoading(true);
     try {
@@ -167,7 +160,7 @@ const filteredSubmissions = submissions.filter((submission) => {
         ) : (
           <div className="w-fullh-[70%] lg:h-full  flex flex-col gap-5 lg:overflow-y-auto overflow-y-scroll">
             <AssignmentsTable
-              submissions={testSubmissions}
+              submissions={filteredSubmissions}
               id={id}
               getFeedbacks={getData}
               config={config}
@@ -206,7 +199,7 @@ const filteredSubmissions = submissions.filter((submission) => {
             <div className="w-full flex gap-2 justify-center items-center">
               <button
                 className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-                onClick={() => generateFeedback()}
+                onClick={() => generateNewFeedback()}
               >
                 Si
               </button>
