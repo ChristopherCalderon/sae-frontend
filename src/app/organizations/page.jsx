@@ -67,7 +67,10 @@ function OrganizationSelect() {
           <p>No se encontraron organizaciones</p>
         </div>
       ) : (
-        <div className="w-full grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="w-full max-h-[90%] py-5 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 overflow-y-scroll  rounded-md
+      [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-background
+        [&::-webkit-scrollbar-thumb]:bg-primary`">
           {localSession.user.organizations.map(
             (org) =>
               org.role !== "Student" &&

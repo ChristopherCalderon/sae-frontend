@@ -69,7 +69,7 @@ function tareas() {
         )}
       </div>
       <div
-        className={`w-full  h-[90%] py-5  ${
+        className={`w-full  max-h-[90%] py-5  ${
           loading ? " " : "grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3"
         } gap-5 overflow-y-scroll  rounded-md
       [&::-webkit-scrollbar]:w-1
