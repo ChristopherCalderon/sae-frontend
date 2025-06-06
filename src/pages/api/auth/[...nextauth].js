@@ -22,7 +22,7 @@ export default NextAuth({
         
         console.log(token.name)
         try {
-          const res = await axios.post((`https://sae-backend-n9d3.onrender.com/user/first-login`),{}
+          const res = await axios.post((`https://api.saeplatform.xyz/user/first-login`),{}
             ,
             {
               headers: {
