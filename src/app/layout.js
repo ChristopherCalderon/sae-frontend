@@ -1,19 +1,16 @@
-'use client';
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { SessionProvider } from "next-auth/react";
+import SessionWrapper from '@/components/session/SessionWrapper';
+import './globals.css';
 
-
+export const metadata = {
+  title: 'AssessCode',
+   description: "",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={` antialiased`}
-      >
-        <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
-          {children}
-        </SessionProvider>
+      <body className="antialiased">
+        <SessionWrapper>{children}</SessionWrapper>
       </body>
     </html>
   );
