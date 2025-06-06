@@ -1,124 +1,235 @@
-'use client'
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getFeedback, patchFeedback } from "@/services/githubService";
+import Loading from "@/components/loader/Loading";
+import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
+  const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+    ssr: false,
+  });
+import { useMemo } from "react";
 
 function editar() {
-  const [markdownText, setMarkdownText] = useState(`
-        # 🔵 Ejercicio X: Números primos en un rango
-        
-        ### 📂 Nombre del archivo: \`numeros_primos_rango.cpp\`
-        
-        📌 **Entrada:** Estándar  
-        📌 **Salida:** Estándar  
-        📌 **Estilo:** [Guía de Estilo de Google para C++](https://google.github.io/styleguide/cppguide.html)
-        
-        ## 📝 Descripción
-        
-        Escribe un programa que reciba dos números enteros (inicio y fin) y muestre todos los números primos en ese rango.
-        
-        ## 📌 Entrada
-        
-        - Dos números enteros: inicio y fin del rango, en líneas separadas.
-        
-        ## 📌 Salida
-        
-        - Cada número primo del rango, uno por línea. Si no hay números primos, no se muestra nada.
-        
-        ## 🏗️ Reglas de implementación
-        
-        ### ✅ **Formato y estilo**
-        
-        1. **Indentación y espaciado:** Usa **2 espacios** para la indentación (evita tabs).
-        2. **Llaves:** Siempre usa llaves \`{}\` en bloques de control, incluso si tienen una sola línea.
-        3. **Líneas de código:** Máximo **80 caracteres** por línea.
-        
-        ### 🏷️ **Nombres de variables y funciones**
-        
-        - Usa **snake_case** para variables y funciones.
-        - Usa **nombres descriptivos** y evita abreviaciones.
-        
-        ### 📝 **Comentarios**
-        
-        1. Explica cómo funciona la verificación de número primo.
-        2. Usa comentarios para aclarar bucles anidados.
-        
-        ## 🔍 Ejemplo
-        
-        ### Entrada:
-        
-        \`\`\`txt
-        10
-        20
-        \`\`\`
-        
-        ### Salida:
-        
-        \`\`\`txt
-        11
-        13
-        17
-        19
-        \`\`\`
-        
-        ## 🚀 Notas adicionales
-        
-        - Se recomienda crear una función bool \`es_primo(int n)\` para la verificación.
-        `);
-  return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
-      <div className="w-full text-primary flex items-center justify-between ">
-        <div>
-          <h1 className="text-2xl font-bold">@UserGithub</h1>
-          <p className="font-semibold">Nombre de tarea</p>
-        </div>
-      </div>
-      <div className="w-full h-[90%] flex flex-col gap-4 bg-white shadow-xl overflow-clip px-5 py-5 rounded-md text-primary text-sm">
-        {/* Contenedor de informacion */}
-        <div className="flex w-full justify-between">
-          {/* Informacion de retroalimentacion */}
-          <div className="flex flex-col">
-            <h1 className="font-bold">
-              PROGRAMACION-DE-ESTRUCTURAS-DINAMICAS-Sección-01-CICLO-02/2025
-            </h1>
-            <p>Workflow</p>
-            <p>Estado</p>
-            <p>Conclusion</p>
-            <span className="flex gap-5">
-              <p>
-                Calificacion: <a className="text-accent font-semibold">10/10</a>
-              </p>
-              <a className="flex gap-1 items-center underline hover:font-semibold">
-                <FaGithub className="text-lg" /> Ver ejecucion en github
-              </a>
-            </span>
-            <p className="font-semibold">Feedback powered by OpenAI</p>
-          </div>
-          {/* Botones de retroalimentacion */}
-          <div className="flex flex-col gap-2 justify-center">
-            <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-8 hover:bg-primary-hover py-2 rounded shadow-lg">
-              Guardar cambios
-            </button>
-            <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-8 hover:bg-primary-hover py-2 rounded shadow-lg">
-              Cancelar
-            </button>
-          </div>
-        </div>
+  const searchParams = useSearchParams();
+  const encodedData = searchParams.get("data");
+  const [loading, setLoading] = useState(true);
+  const { email, repo, org, name } = JSON.parse(atob(encodedData));
+  const router = useRouter();
+  const [feedback, setFeedback] = useState();
+  const [feedbackText, setFeedbackText] = useState("");
 
-        {/* Contenedor de feedback */}
-        <div
-          className="w-full h-3/4 rounded-md shadow-md overflow-y-clip bg-background  "
-        >
-          <textarea
-            className="w-full h-full text-sm font-mono  text-primary resize-none border-none outline-none
-            overflow-y-scroll [&::-webkit-scrollbar]:w-1
-        [&::-webkit-scrollbar-track]:bg-background
-        [&::-webkit-scrollbar-thumb]:bg-primary"
-            value={markdownText}
-            onChange={(e) => setMarkdownText(e.target.value)}
-          />
-        </div>
+
+  const getData = async () => {
+    try {
+      setLoading(true);
+      const response = await getFeedback(email, repo, org);
+      console.log(response);
+      setFeedback(response);
+      setFeedbackText(response.feedback);
+    } catch (error) {
+      console.error("Error:", error);
+      setFeedback([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateFeedback = async () => {
+    try {
+      setLoading(true);
+      const res = await patchFeedback(email, repo, feedbackText);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Formatear fecha
+  function formatFecha(fechaMongo) {
+    const fecha = new Date(fechaMongo);
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+  }
+
+  //Calcular promedio de calificaciones
+  const calculateAverage = (grade1, grade2) => {
+    const total = grade1 + grade2;
+    return parseFloat((total / 2).toFixed(2));
+  };
+
+  const options = useMemo(
+    () => ({
+  spellChecker: false,
+  placeholder: "Escribe la retroalimentación en Markdown...",
+  minHeight: "200px",
+  maxHeight: "300px", // Aplica solo al editor
+  autosave: {
+    enabled: true,
+    delay: 1000,
+    uniqueId: "editor_feedback",
+      },
+    }),
+    []
+  );
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const handleSave = () => {
+    updateFeedback();
+    router.back();
+  };
+
+  return (
+    <div
+      className="bg-background w-full min-h-screen lg:px-20 py-6 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
+    md:gap-4 mx-auto "
+    >
+      {/* Div 1: Cabecera */}
+      <div className="order-1 md:col-span-2 p-4 text-center">
+        <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] max-w-[250px] md:max-w-[382px] mx-auto font-[Bitter]">
+          {name || "@UserGitHub"}
+        </h1>
+        <p className="text-[11px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
+          Edita la retroalimentación aqui
+        </p>
       </div>
+
+      {loading ? (
+        <div className="order-2 md:order-2 col-span-2 ">
+          <Loading />
+        </div>
+      ) : (
+        <>
+          {/* Div 2 Info general de resultados*/}
+          <div className="order-2 p-4 lg:p-0 text-left md:order-2 font-[Bitter] text-[11px] leading-[13px] md:text-[16px] md:leading-[18px]">
+            {/* Título del repo */}
+            <h1 className="font-bold text-[14px] md:text-[18px] lg:text-[20px] mb-3 break-all">
+              {feedback.repo}
+            </h1>
+
+            <div className="flex flex-row flex-wrap gap-4 justify-between w-full text-[11px]">
+              {/* Columna izquierda */}
+              <div className="flex flex-col gap-2 w-[calc(50%-8px)]">
+                {/* Calificación */}
+                {(() => {
+                  const grade1 = feedback.gradeValue ?? 0;
+                  const grade2 = feedback.gradeFeedback ?? 0;
+                  const average = calculateAverage(grade1, grade2);
+                  const colorClass =
+                    average < 5.9 ? "text-red-600" : "text-green-600";
+                  return (
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold text-[11px] lg:text-[14px]">
+                        Calificación:
+                      </span>
+                      <span className={`${colorClass} lg:text-[13px]`}>
+                        {average}/10
+                      </span>
+                    </div>
+                  );
+                })()}
+
+                {/* Generado con */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Generado con:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">{feedback.modelIA}</span>
+                </div>
+
+                {/* Nota del test */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Nota del test:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">{feedback.gradeValue}</span>
+                </div>
+
+                {/* Revisado por */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Revisado por:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">
+                    {feedback.reviewedBy || "Sistema"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Columna derecha */}
+              <div className="flex flex-col gap-2 w-[calc(50%-8px)] items-end text-right">
+                {/* Ver en GitHub */}
+                <div className="flex items-center">
+                  <a
+                    className="flex items-center gap-1 hover:font-semibold text-[11px] lg:text-[14px]"
+                    href={feedback.workflow_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaGithub className="text-[11px] lg:text-[14px]" />
+                    Ver ejecución en GitHub
+                  </a>
+                </div>
+
+                {/* Fecha de creación */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Fecha de creación:
+                  </span>{" "}
+                  <span className="lg:text-[14px]">
+                    {formatFecha(feedback.createdAt)}
+                  </span>
+                </div>
+
+                {/* Nota retroalimentación */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Nota de retroalimentación:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">
+                    {feedback.gradeFeedback}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Div 3 Botones*/}
+          <div className="order-3 md:order-3 flex justify-center md:justify-end items-center h-full p-4 lg:p-0">
+            <div className="flex flex-col md:items-end space-y-[10px]">
+              <button
+                onClick={() => handleSave()}
+                className=" w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                Guardar cambios
+              </button>
+              <button
+                onClick={() => router.back()}
+                className=" w-[250px]  lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+
+          {/* Div 4 Retroalimentación */}
+          <div className="order-4 md:col-span-2 md:order-4 p-4 lg:p-0">
+            <SimpleMDE
+              value={feedbackText}
+              onChange={(value) => setFeedbackText(value)}
+              options={options}
+              
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

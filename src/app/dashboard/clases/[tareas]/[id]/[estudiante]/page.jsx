@@ -1,122 +1,397 @@
-import React from "react";
+"use client";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
-import ReactMarkdown from 'react-markdown';
-
-const markdownText = `
-# 🔵 Ejercicio X: Números primos en un rango
-
-### 📂 Nombre del archivo: \`numeros_primos_rango.cpp\`
-
-📌 **Entrada:** Estándar  
-📌 **Salida:** Estándar  
-📌 **Estilo:** [Guía de Estilo de Google para C++](https://google.github.io/styleguide/cppguide.html)
-
-## 📝 Descripción
-
-Escribe un programa que reciba dos números enteros (inicio y fin) y muestre todos los números primos en ese rango.
-
-## 📌 Entrada
-
-- Dos números enteros: inicio y fin del rango, en líneas separadas.
-
-## 📌 Salida
-
-- Cada número primo del rango, uno por línea. Si no hay números primos, no se muestra nada.
-
-## 🏗️ Reglas de implementación
-
-### ✅ **Formato y estilo**
-
-1. **Indentación y espaciado:** Usa **2 espacios** para la indentación (evita tabs).
-2. **Llaves:** Siempre usa llaves \`{}\` en bloques de control, incluso si tienen una sola línea.
-3. **Líneas de código:** Máximo **80 caracteres** por línea.
-
-### 🏷️ **Nombres de variables y funciones**
-
-- Usa **snake_case** para variables y funciones.
-- Usa **nombres descriptivos** y evita abreviaciones.
-
-### 📝 **Comentarios**
-
-1. Explica cómo funciona la verificación de número primo.
-2. Usa comentarios para aclarar bucles anidados.
-
-## 🔍 Ejemplo
-
-### Entrada:
-
-\`\`\`txt
-10
-20
-\`\`\`
-
-### Salida:
-
-\`\`\`txt
-11
-13
-17
-19
-\`\`\`
-
-## 🚀 Notas adicionales
-
-- Se recomienda crear una función bool \`es_primo(int n)\` para la verificación.
-`;
+import ReactMarkdown from "react-markdown";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  deleteFeedback,
+  generateFeedback,
+  getFeedback,
+  getRepoData,
+  getTaskConfig,
+  patchFeedback,
+  postFeedback,
+  postPullRequest,
+} from "@/services/githubService";
+import { useEffect, useState } from "react";
+import Loading from "@/components/loader/Loading";
+import { FaRegQuestionCircle, FaRegCheckCircle } from "react-icons/fa";
+import { useSession } from "next-auth/react";
 
 function entrega() {
-  return (
-    <div className="bg-background flex flex-col gap-5 w-full h-full p-8 overflow-clip">
-      <div className="w-full text-primary flex items-center justify-between ">
-        <div>
-          <h1 className="text-2xl font-bold">@UserGithub</h1>
-          <p className="font-semibold">Nombre de tarea</p>
-        </div>
-      </div>
-      <div className="w-full h-[90%] flex flex-col gap-4 bg-white shadow-xl overflow-clip px-5 py-5 rounded-md text-primary text-sm">
-        {/* Contenedor de informacion */}
-        <div className="flex w-full justify-between">
-          {/* Informacion de retroalimentacion */}
-          <div className="flex flex-col">
-            <h1 className="font-bold">
-              PROGRAMACION-DE-ESTRUCTURAS-DINAMICAS-Sección-01-CICLO-02/2025
-            </h1>
-            <p>Workflow</p>
-            <p>Estado</p>
-            <p>Conclusion</p>
-            <span className="flex gap-5">
-              <p>
-                Calificacion: <a className="text-accent font-semibold">10/10</a>
-              </p>
-              <a className="flex gap-1 items-center underline hover:font-semibold">
-                <FaGithub className="text-lg" /> Ver ejecucion en github
-              </a>
-            </span>
-            <p className="font-semibold">Feedback powered by OpenAI</p>
-          </div>
-          {/* Botones de retroalimentacion */}
-          <div className="flex flex-col gap-1 justify-center">
-            <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
-              Editar retroalimentacion
-            </button>
-            <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
-              Agregar pull request
-            </button>
-            <button className="flex items-center justify-center gap-2 font-semibold bg-primary text-white hover:text-white px-5 hover:bg-primary-hover py-2 rounded shadow-lg">
-              Volver a generar
-            </button>
-          </div>
-        </div>
+  const searchParams = useSearchParams();
+  const encodedData = searchParams.get("data");
+  const { email, repo, org, assignment, name } = JSON.parse(atob(encodedData));
+  const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState();
+  const [generating, setGenerating] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [taskConfig, setTaskConfig] = useState();
+  const [showSuccessModal, setShowSuccessModal] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showPullRequestModal, setShowPullRequestModal] = useState(false);
+  const { data: session } = useSession();
 
-        {/* Contenedor de feedback */}
-        <div
-          className="w-full h-3/4 p-5 rounded-md shadow-md overflow-y-scroll bg-background   [&::-webkit-scrollbar]:w-1
+  const getData = async () => {
+    try {
+      setLoading(true);
+      const response = await getFeedback(email, repo, org);
+
+      const configResponse = await getTaskConfig(
+        response.idTaskGithubClassroom
+      );
+      setTaskConfig(configResponse.data);
+      setFeedback(response);
+    } catch (error) {
+      console.error("Error:", error);
+      setFeedback([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateFeedback = async (email, id, feedback) => {
+    try {
+      const res = await patchFeedback(email, id, feedback);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createPullRequest = async () => {
+    setShowPullRequestModal(false);
+    try {
+      setAdding(true);
+      await postPullRequest(feedback.repo, feedback.feedback, org);
+      getData();
+      setAdding(false);
+
+      setShowSuccessModal("Pull request agregado correctamente");
+      setTimeout(() => {
+        setShowSuccessModal("");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSubmissionData = async () => {
+    try {
+      const response = await getRepoData(
+        feedback.repo,
+        org,
+        taskConfig.extension
+      );
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const generateNewFeedback = async () => {
+    setShowConfirmModal(false);
+    try {
+      setGenerating(true);
+      const repoData = await getSubmissionData();
+      const payload = {
+        grade: `${feedback.gradeValue}/${feedback.gradeTotal}`,
+        email: feedback.email,
+        reviewedBy: feedback.reviewedBy || session?.user?.name,
+        assignment: {
+          id: feedback.idTaskGithubClassroom,
+        },
+        repository: {
+          name: feedback.repo,
+        },
+      };
+
+      await deleteFeedback(feedback.email, feedback.idTaskGithubClassroom);
+      const res = await generateFeedback(
+        payload,
+        repoData,
+        taskConfig,
+        session.user.name
+      );
+      const newFeedback = res.feedback;
+      const newData = await updateFeedback(
+        feedback.email,
+        feedback.idTaskGithubClassroom,
+        newFeedback
+      );
+      getData();
+      setGenerating(false);
+      setShowSuccessModal("Retroalimentación generada correctamente");
+      setTimeout(() => {
+        setShowSuccessModal("");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Formatear fecha
+  function formatFecha(fechaMongo) {
+    const fecha = new Date(fechaMongo);
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+  }
+
+  //Calcular promedio de calificaciones
+  const calculateAverage = (grade1, grade2) => {
+    const total = grade1 + grade2;
+    return parseFloat((total / 2).toFixed(2));
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const pathname = usePathname();
+  return (
+    <div
+      className="bg-background w-full min-h-screen lg:px-20 py-10 flex flex-col gap-1 md:grid md:grid-cols-2 md:grid-rows-[auto_auto_1fr] 
+    md:gap-4 mx-auto "
+    >
+      {/* Div 1: Cabecera */}
+      <div className="order-1 md:col-span-2 text-center">
+        <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] max-w-[250px] md:max-w-[382px] mx-auto font-[Bitter]">
+          {name || "@UserGitHub"}
+        </h1>
+        <p className="text-[11px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
+          {assignment || "Nombre de la tarea"}
+        </p>
+      </div>
+
+      {loading ? (
+        <div className="order-2 md:order-2 col-span-2 ">
+          <Loading />
+        </div>
+      ) : (
+        <>
+          {/* Div 2 Info general de resultados*/}
+          <div className="order-2 p-4 lg:p-0 text-left md:order-2 font-[Bitter] text-[11px] leading-[13px] md:text-[16px] md:leading-[18px]">
+            {/* Título del repo */}
+            <h1 className="font-bold text-[14px] md:text-[18px] lg:text-[20px] mb-3 break-all">
+              {feedback.repo}
+            </h1>
+
+            <div className="flex flex-row flex-wrap gap-4 justify-between w-full text-[11px]">
+              {/* Columna izquierda */}
+              <div className="flex flex-col gap-2 w-[calc(50%-8px)]">
+                {/* Calificación */}
+                {(() => {
+                  const grade1 = feedback.gradeValue ?? 0;
+                  const grade2 = feedback.gradeFeedback ?? 0;
+                  const average = calculateAverage(grade1, grade2);
+                  const colorClass =
+                    average < 5.9 ? "text-red-600" : "text-green-600";
+                  return (
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold text-[11px] lg:text-[14px]">
+                        Calificación:
+                      </span>
+                      <span className={`${colorClass} lg:text-[13px]`}>
+                        {average}/10
+                      </span>
+                    </div>
+                  );
+                })()}
+
+                {/* Generado con */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Generado con:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">{feedback.modelIA}</span>
+                </div>
+
+                {/* Nota del test */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Nota del test:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">{feedback.gradeValue}</span>
+                </div>
+
+                {/* Revisado por */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Revisado por:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">
+                    {feedback.reviewedBy || "Sistema"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Columna derecha */}
+              <div className="flex flex-col gap-2 w-[calc(50%-8px)] items-end text-right">
+                {/* Ver en GitHub */}
+                <div className="flex items-center">
+                  <a
+                    className="flex items-center gap-1 hover:font-semibold text-[11px] lg:text-[14px]"
+                    href={feedback.workflow_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaGithub className="text-[11px] lg:text-[14px]" />
+                    Ver ejecución en GitHub
+                  </a>
+                </div>
+
+                {/* Fecha de creación */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Fecha de creación:
+                  </span>{" "}
+                  <span className="lg:text-[14px]">
+                    {formatFecha(feedback.createdAt)}
+                  </span>
+                </div>
+
+                {/* Nota retroalimentación */}
+                <div>
+                  <span className="font-semibold text-[11px] lg:text-[14px]">
+                    Nota de retroalimentación:
+                  </span>{" "}
+                  <span className="lg:text-[13px]">
+                    {feedback.gradeFeedback}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Div 3 Botones*/}
+          <div className="order-3 md:order-3 flex justify-center md:justify-end items-center h-full p-4 lg:p-0">
+            <div className="flex flex-col md:items-end space-y-[10px]">
+              {/* Botón 1: Editar retroalimentación */}
+              <Link
+                href={{
+                  pathname: `${pathname}/editar`,
+                  query: {
+                    data: btoa(
+                      JSON.stringify({
+                        email: email,
+                        repo: repo,
+                        org: org,
+                        name: name,
+                      })
+                    ),
+                  },
+                }}
+                className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all"
+              >
+                Editar retroalimentación
+              </Link>
+
+              {/* Botón 2: Agregar pull request */}
+              {feedback.feedback_status === "Generado" && (
+                <button
+                  onClick={() => setShowPullRequestModal(true)}
+                  disabled={adding}
+                  className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {!adding ? "Agregar Pull Request" : "Agregando..."}
+                </button>
+              )}
+
+              {/* Botón 3: Volver a generar */}
+              <button
+                onClick={() => setShowConfirmModal(true)}
+                disabled={generating}
+                className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {!generating ? "Volver a generar" : "Generando..."}
+              </button>
+            </div>
+          </div>
+
+          {/* Div 4 Retroalimentacion*/}
+          <div className="order-4 md:col-span-2 md:order-4 p-4 lg:p-0">
+            <div
+              className="w-full  p-5 rounded-md shadow-md overflow-y-auto max-h-[400px] lg:h-[550px] bg-white [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-background
         [&::-webkit-scrollbar-thumb]:bg-primary"
-        >
-          <ReactMarkdown>{markdownText}</ReactMarkdown>
+            >
+              <ReactMarkdown>{feedback.feedback}</ReactMarkdown>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Modal de confirmacion-------------------------- */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegQuestionCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              Retroalimentación
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¿Está seguro de volver a generar la retroalimentación a {name}?
+            </p>
+            <div className="w-full flex gap-2 justify-center items-center">
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={generateNewFeedback}
+              >
+                Si
+              </button>
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+      {/* Modal de exito-------------------------- */}
+      {showSuccessModal != "" && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegCheckCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">
+              {showSuccessModal}
+            </h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¡Accion realizada con exito!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Pull request */}
+      {showPullRequestModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
+          <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+            <FaRegQuestionCircle className="text-5xl" />
+            <h1 className="text-2xl text-primary font-bold">Pull Request</h1>
+            <p className="text-primary text-lg font-medium mb-2">
+              ¿Está seguro de agregar un pull request a {name}?
+            </p>
+            <div className="w-full flex gap-2 justify-center items-center">
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={createPullRequest}
+              >
+                Si
+              </button>
+              <button
+                className="flex w-1/3 lg:w-1/3   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                onClick={() => setShowPullRequestModal(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
