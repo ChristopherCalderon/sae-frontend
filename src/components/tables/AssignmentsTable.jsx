@@ -10,6 +10,7 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -89,14 +90,18 @@ function AssignmentsTable({
   org,
   globalFilter,
   setGlobalFilter,
-  teacher
+  teacher,
 }) {
   const pathname = usePathname(); //Pathname para guardar la ruta actual
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [sorting, setSorting] = useState([]); //Estado que guarda el sroting de la tabla
   const columnHelper = createColumnHelper(); //Creador de columnas de tanstack
-  // const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
+  //Paginacion
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 9,
+  });
 
   //Columnas tanstack---------------------------------------------------------
   const columns = [
@@ -231,17 +236,20 @@ function AssignmentsTable({
     state: {
       sorting,
       globalFilter,
+      pagination,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   //Componente-----------------------------------------------------------------------
   return (
-    <div className="relative p-4 overflow-x-auto lg:block hidden">
+    <div className="relative px-4 overflow-x-hidden lg:block hidden h-full mt-1 ">
       {/* Modal loader */}
       {loading && (
         <div className="absolute inset-0 bg-black/40 flex justify-center items-center z-10">
@@ -299,6 +307,33 @@ function AssignmentsTable({
           ))}
         </tbody>
       </table>
+      {table.getPageCount() > 1 ? (  <div className="flex items-center justify-between mt-3 absolute bottom-0 w-full pr-10 overflow-hidden">
+       {/* Botón “Anterior” */}
+        <div className="flex gap-1">
+          <button
+            className=" items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-2 hover:bg-secondary  rounded shadow-lg"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Anterior
+          </button>
+          {/* Botón “Siguiente” */}
+          <button
+            className=" items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-2 hover:bg-secondary py-1 rounded shadow-lg"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Siguiente
+          </button>
+        </div>
+
+        {/* Texto “Página X de Y” */}
+        <span>
+          Página {table.getState().pagination.pageIndex + 1} de{" "}
+          {table.getPageCount()}
+        </span>
+      </div>) : ""}
+    
     </div>
   );
 }
