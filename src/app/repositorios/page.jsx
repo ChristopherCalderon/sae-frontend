@@ -91,6 +91,7 @@ function repositorios() {
   };
 
   const generateNewFeedback = async () => {
+    setShowConfirmModal(false);
     setLoading(true);
     try {
       await Promise.all(

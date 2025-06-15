@@ -266,7 +266,7 @@ function ModelsPage() {
 
               <div className="w-full md:max-w-[500px] mx-auto">
                 <label className="text-[14px] font-bold md:text-[20px]">
-                  Nombre de la clave
+                  Nombre de la llave
                 </label>
                 <input
                   type="text"
@@ -281,10 +281,10 @@ function ModelsPage() {
 
               <div className="w-full md:max-w-[500px] mx-auto">
                 <label className="text-[14px] font-bold md:text-[20px]">
-                  Clave
+                  Llave
                 </label>
                 <input
-                  type="text"
+                  type="password"
                   value={llave}
                   onChange={(e) => setLlave(e.target.value)}
                   placeholder="Ej: sk-abc123xyz..."

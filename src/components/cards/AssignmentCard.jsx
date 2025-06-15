@@ -78,7 +78,11 @@ function AssignmentCard({
   const fontSizeClass = getFontSize(title);
 
   return (
-    <div className="bg-white relative w-full h-50 rounded-md px-4  text-primary flex flex-col justify-center gap-10 shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
+    <div
+      className={`bg-white relative w-full h-50 rounded-md px-4  text-primary flex flex-col justify-center gap-10 shadow-[0px_8px_8px_rgba(0,0,0,0.25)] ${
+        linkedTasks.includes(id.toString()) && "hidden"
+      }`}
+    >
       {/* Vineta y configuracion */}
       <div className="flex justify-between">
         {enabled ? (
@@ -146,9 +150,6 @@ function AssignmentCard({
 
       <div className="flex  items-center justify-between">
         <div className="flex w-full gap-5">
-          <span className="flex text-sm items-center gap-1 ">
-            <FaUser />
-          </span>
           <span className="flex text-sm items-center gap-1">
             <FaCheck />
             <span className="text-xs md:text-sm lg:text-sm flex gap-1">

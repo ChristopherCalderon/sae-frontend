@@ -20,7 +20,7 @@ function Configurar() {
   const [loading, setLoading] = useState(true);
   const [models, setModels] = useState();
   const [first, setFirst] = useState(true);
-  const [showEmptyData, setShowEmptyData] = useState(false);
+  const [showEmptyData, setShowEmptyData] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState({
     constraints: "",
@@ -32,6 +32,7 @@ function Configurar() {
     style: "",
     topic: "",
   });
+  const [saved, setSaved] = useState(false);
 
   const { data: session, status } = useSession();
 
@@ -61,7 +62,7 @@ function Configurar() {
       if (response) {
         setFirst(false);
         setFormData(response.data);
-        console.log(response.data);
+        setSaved(true)
       }
       setLoading(false);
     } catch (error) {
@@ -85,9 +86,9 @@ function Configurar() {
 
   const saveData = async () => {
     if (emptyData()) {
-      setShowEmptyData(true);
+      setShowEmptyData('Campos Vacios');
       setTimeout(() => {
-        setShowEmptyData(false);
+        setShowEmptyData('');
       }, 2000);
       return;
     }
@@ -114,6 +115,19 @@ function Configurar() {
 
   const handleChange = (e, field) => {
     setFormData({ ...formData, [field]: e.target.value });
+  };
+  const handleBack = (e, field) => {
+    if (!saved
+    ) {
+      setShowEmptyData('Configuración necesaria');
+      setTimeout(() => {
+        setShowEmptyData('');
+      }, 2000);
+      return;
+    } else {
+      
+      router.back();
+    }
   };
 
   const handleModelChange = (e) => {
@@ -152,11 +166,11 @@ function Configurar() {
   }, [pathname, status, taskId]);
 
   return (
-    <div className="bg-background flex flex-col gap-5 w-full h-screen py-8">
+    <div className="bg-background flex flex-col gap-4  lg:gap-5 w-full h-screen py-8 lg:py-4">
       {/* Header */}
       <div className="w-full flex flex-col items-center text-primary">
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] text-center max-w-[250px] md:max-w-[382px] font-[Bitter]">
-          Tarea de programación
+          Configurar tarea
         </h1>
         <p className="text-[11px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6">
           Vista general de configuración de la tarea
@@ -194,7 +208,7 @@ function Configurar() {
               </label>
               <div className="relative mt-2">
                 <select
-               className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
+                  className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
   md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
   lg:h-[42px] lg:text-[14px] lg:leading-[18px]"
                   value={formData.modelIA}
@@ -217,7 +231,7 @@ function Configurar() {
               </label>
               <div className="relative mt-2">
                 <select
-               className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
+                  className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
   md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
   lg:h-[42px] lg:text-[14px] lg:leading-[18px]"
                   value={formData.studentLevel}
@@ -237,9 +251,10 @@ function Configurar() {
                 Reglas de estilo
               </label>
               <input
-                             className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
+                className="w-full appearance-none h-[32px] px-[10px] py-[6px] text-[10px] leading-[14px] rounded-[5px] bg-white
   md:w-[308px] md:h-[51px] md:px-[16px] md:py-[12px] md:text-[16px] md:leading-[20px]
-  lg:h-[42px] lg:text-[14px] lg:leading-[18px] lg:mt-2" placeholder="Google Style"
+  lg:h-[42px] lg:text-[14px] lg:leading-[18px] lg:mt-2"
+                placeholder="Google Style"
                 value={formData.style}
                 onChange={(e) => handleChange(e, "style")}
               />
@@ -284,7 +299,7 @@ function Configurar() {
           {/* Botones */}
           <div className="w-full max-w-[271px] md:max-w-[647px] mx-auto flex justify-center gap-[13px] md:gap-[22px] mt-[10px]">
             <button
-              onClick={() => router.back()}
+              onClick={() => handleBack()}
               className="w-[80px] h-[36px] md:w-[200px] md:h-[42px] p-[10px] border-[2px] border-secondary text-secondary rounded-[5px] text-[14px] font-[Bitter] font-semibold bg-white"
             >
               Cancelar
@@ -315,11 +330,11 @@ function Configurar() {
       )}
 
       {/* Modal de datos vacios*/}
-      {showEmptyData && (
+      {showEmptyData != '' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 ">
           <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
             <RiErrorWarningLine className="text-5xl" />
-            <h1 className="text-2xl text-primary font-bold">Campos vacios</h1>
+            <h1 className="text-2xl text-primary font-bold">{showEmptyData}</h1>
             <p className="text-primary text-lg font-medium mb-2">
               Por favor, complete todos los campos requeridos.
             </p>

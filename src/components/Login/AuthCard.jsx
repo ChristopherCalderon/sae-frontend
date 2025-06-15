@@ -16,14 +16,13 @@ export default function AuthCard() {
   return (
     <div className="text-center font-primary space-y-6 w-full md:w-1/2 lg:w-1/3 flex flex-col items-center justify-center  bg-inherit px-10 py-20 rounded-lg">
       <img
-        src="/logo.jpg"
+        src="/logo.png"
         alt="logo"
-        className="rounded-full w-56 md:w-72 lg:w-80"
+        className=" w-56 md:w-72 lg:w-80"
       />
-      <h1 className="font-bold text-[24px] text-primary">RetroCode</h1>
       <div className="w-full flex flex-col gap-2">
         
-      <p className="font-semibold text-[13px] text-primary">
+      <p className="font-semibold text-lg lg:text-xl text-primary">
         Ingrese con su cuenta de GitHub
       </p>
       <div className="flex justify-center">
