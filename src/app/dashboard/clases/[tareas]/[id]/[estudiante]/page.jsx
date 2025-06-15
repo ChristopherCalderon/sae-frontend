@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FaGithub } from "react-icons/fa";
+import { FaEdit, FaGithub, FaUpload } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import Loading from "@/components/loader/Loading";
 import { FaRegQuestionCircle, FaRegCheckCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
+import { FaRepeat } from "react-icons/fa6";
 
 function entrega() {
   const searchParams = useSearchParams();
@@ -160,7 +161,7 @@ function entrega() {
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] max-w-[250px] md:max-w-[382px] mx-auto font-[Bitter]">
           {name || "@UserGitHub"}
         </h1>
-        <p className="text-[11px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
+        <p className="text-[18px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
           {assignment || "Nombre de la tarea"}
         </p>
       </div>
@@ -267,9 +268,8 @@ function entrega() {
 
           {/* Div 3 Botones*/}
           <div className="order-3 md:order-3 flex justify-center md:justify-end items-center h-full p-4 lg:p-0">
-            <div className="flex flex-col md:items-end space-y-[10px]">
-              {/* Botón 1: Editar retroalimentación */}
-              <Link
+            <div className="flex gap-2 md:gap-0 md:flex-col md:items-end md:space-y-[10px]">
+                            <Link
                 href={{
                   pathname: `${pathname}/editar`,
                   query: {
@@ -283,9 +283,12 @@ function entrega() {
                     ),
                   },
                 }}
-                className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all"
+                className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-10 md:px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all"
               >
-                Editar retroalimentación
+                <span className="md:flex lg:flex hidden">
+                  Editar retroalimentación
+                </span>
+                <FaEdit className="flex md:hidden" />
               </Link>
 
               {/* Botón 2: Agregar pull request */}
@@ -293,9 +296,12 @@ function entrega() {
                 <button
                   onClick={() => setShowPullRequestModal(true)}
                   disabled={adding}
-                  className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-10 md:px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {!adding ? "Agregar Pull Request" : "Agregando..."}
+                  <span className="md:flex lg:flex hidden">
+                    {!adding ? "Agregar Pull Request" : "Agregando..."}
+                  </span>
+                  <FaUpload className="flex md:hidden" />
                 </button>
               )}
 
@@ -303,9 +309,12 @@ function entrega() {
               <button
                 onClick={() => setShowConfirmModal(true)}
                 disabled={generating}
-                className="w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-10 md:px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {!generating ? "Volver a generar" : "Generando..."}
+                <span className="md:flex lg:flex hidden">
+                  {!generating ? "Volver a generar" : "Generando..."}
+                </span>
+                <FaRepeat className="flex md:hidden" />
               </button>
             </div>
           </div>

@@ -1,15 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaSave, FaTimes } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getFeedback, patchFeedback } from "@/services/githubService";
 import Loading from "@/components/loader/Loading";
 import "easymde/dist/easymde.min.css";
 import dynamic from "next/dynamic";
-  const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
-    ssr: false,
-  });
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 import { useMemo } from "react";
 
 function editar() {
@@ -20,7 +20,6 @@ function editar() {
   const router = useRouter();
   const [feedback, setFeedback] = useState();
   const [feedbackText, setFeedbackText] = useState("");
-
 
   const getData = async () => {
     try {
@@ -64,14 +63,14 @@ function editar() {
 
   const options = useMemo(
     () => ({
-  spellChecker: false,
-  placeholder: "Escribe la retroalimentación en Markdown...",
-  minHeight: "200px",
-  maxHeight: "300px", // Aplica solo al editor
-  autosave: {
-    enabled: true,
-    delay: 1000,
-    uniqueId: "editor_feedback",
+      spellChecker: false,
+      placeholder: "Escribe la retroalimentación en Markdown...",
+      minHeight: "200px",
+      maxHeight: "300px", // Aplica solo al editor
+      autosave: {
+        enabled: true,
+        delay: 1000,
+        uniqueId: "editor_feedback",
       },
     }),
     []
@@ -96,7 +95,7 @@ function editar() {
         <h1 className="font-semibold text-[20px] md:text-[26px] lg:text-[32px] leading-[24px] max-w-[250px] md:max-w-[382px] mx-auto font-[Bitter]">
           {name || "@UserGitHub"}
         </h1>
-        <p className="text-[11px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
+        <p className="text-[18px] md:text-[20px] leading-[13px] font-light text-center text-gray-500 max-w-[275px] md:max-w-[382px] mt-2 font-[Bitter] lg:mt-6 mx-auto">
           Edita la retroalimentación aqui
         </p>
       </div>
@@ -203,18 +202,20 @@ function editar() {
 
           {/* Div 3 Botones*/}
           <div className="order-3 md:order-3 flex justify-center md:justify-end items-center h-full p-4 lg:p-0">
-            <div className="flex flex-col md:items-end space-y-[10px]">
+            <div className="flex gap-4 md:gap-0 md:flex-col md:items-end md:space-y-[10px]">
               <button
                 onClick={() => handleSave()}
-                className=" w-[250px] lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-14 md:px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all"
               >
-                Guardar cambios
+                <span className="md:flex lg:flex hidden">Guardar cambios</span>
+                <FaSave className="flex md:hidden" />
               </button>
               <button
                 onClick={() => router.back()}
-                className=" w-[250px]  lg:w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full max-w-[300px] flex items-center justify-center gap-2 font-semibold bg-secondary lg:text-[16px] text-white hover:text-white px-14 md:px-5 py-2 rounded-[8px] shadow-md hover:bg-primary-hover transition-all"
               >
-                Cancelar
+                <span className="md:flex lg:flex hidden">Cancelar</span>
+                <FaTimes className="flex md:hidden" />
               </button>
             </div>
           </div>
@@ -225,7 +226,6 @@ function editar() {
               value={feedbackText}
               onChange={(value) => setFeedbackText(value)}
               options={options}
-              
             />
           </div>
         </>

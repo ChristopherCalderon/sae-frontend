@@ -167,7 +167,7 @@ function OrgUsersTable({
             />
 
             {showActions && (
-              <div className="absolute right-30 mr-2 bottom-0 w-48 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-10">
+              <div className="absolute right-30 mr-2 bottom-0 w-48 bg-white border border-gray-200 rounded-md shadow-lg px-2 py-1 z-10">
                 {user.organizations[0].isActive &&
                   user.organizations[0].role === "Teacher" && (
                     <button
@@ -175,7 +175,7 @@ function OrgUsersTable({
                         setShowActions(false);
                         handleAdminChange(orgId, user._id);
                       }}
-                      className="block w-full text-left text-sm text-primary px-4 py-2 hover:bg-gray-100"
+                      className="block w-full text-left text-sm text-primary px-4 py-1 hover:bg-gray-100"
                     >
                       Asignar Admin
                     </button>
@@ -190,7 +190,7 @@ function OrgUsersTable({
                         !user.organizations[0].isActive
                       );
                     }}
-                    className="block w-full text-left text-sm text-primary px-4 py-2 hover:bg-gray-100"
+                    className="block w-full text-left text-sm text-primary px-4 py-1 hover:bg-gray-100"
                   >
                     Cambiar estado
                   </button>
@@ -208,7 +208,7 @@ function OrgUsersTable({
                       ),
                     },
                   }}
-                  className="block w-full text-left text-sm text-primary px-4 py-2 hover:bg-gray-100"
+                  className="block w-full text-left text-sm text-primary px-4 py-1 hover:bg-gray-100"
                 >
                   Administrar modelos
                 </Link>
@@ -239,7 +239,7 @@ function OrgUsersTable({
   return (
     <div className="p-4 font-primary h-full w-11/12 lg:block hidden ">
       <div className="max-h-full overflow-y-auto overflow-x-auto border border-gray-300 rounded-xs shadow-md">
-        <table className="min-w-full border border-gray-300 rounded-xs shadow-md">
+        <table className="min-w-full border border-gray-300 rounded-xs shadow-md ">
           <thead className="bg-[#dcdcdc] text-left ">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

@@ -156,7 +156,7 @@ function AssignmentsTable({
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("feedback_status", {
-      header: () => "Retroalimentación",
+      header: () => "Estado",
 
       enableGlobalFilter: false,
       cell: (info) => (
@@ -252,8 +252,8 @@ function AssignmentsTable({
     <div className="relative px-4 overflow-x-hidden lg:block hidden h-full mt-1 ">
       {/* Modal loader */}
       {loading && (
-        <div className="absolute inset-0 bg-black/40 flex justify-center items-center z-10">
-          <div className="bg-white p-6 rounded shadow-md text-center">
+        <div className="absolute inset-0 flex justify-center items-center z-10">
+          <div className="bg-white p-10 rounded shadow-md text-center">
             <Loading />
             <p className="text-sm font-semibold">
               Generando retroalimentación...
@@ -264,8 +264,8 @@ function AssignmentsTable({
 
       {/* Success message */}
       {successMessage && (
-        <div className="absolute inset-0 bg-black/40 flex justify-center items-center z-10">
-          <div className="bg-white p-6 rounded shadow-md text-center">
+        <div className="absolute inset-0  flex justify-center items-center z-10">
+          <div className="bg-white p-10 rounded shadow-md text-center">
             {successMessage}
           </div>
         </div>
