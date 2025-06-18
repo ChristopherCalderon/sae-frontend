@@ -80,7 +80,7 @@ function AssignmentCard({
   return (
     <div
       className={`bg-white relative w-full h-50 rounded-md px-4  text-primary flex flex-col justify-center gap-10 shadow-[0px_8px_8px_rgba(0,0,0,0.25)] ${
-        linkedTasks.includes(id.toString()) && "hidden"
+        linkedTasks.includes(id.toString()) && ltiData && "hidden"
       }`}
     >
       {/* Vineta y configuracion */}
