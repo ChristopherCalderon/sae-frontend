@@ -123,8 +123,7 @@ function repositorios() {
     if (!token) {
       router.push("/");
     } else if (token && status === "authenticated") {
-      
-      setTeacher(session.user.name)
+      setTeacher(session.user.name);
       getData();
     } else {
       setLoading(false);
@@ -165,25 +164,18 @@ function repositorios() {
               </div>
             ) : (
               <div className="flex flex-col lg:w-full md:flex-row lg:flex-row justify-center items-center  gap-2">
-                {submissions.every(
-                  (submission) => submission.feedback_status === "Enviado"
-                ) && !loading ? (
-                  <button
-                    onClick={() => setSendModal(true)}
-                    className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-                  >
-                    <RiAiGenerate2 className="text-xl" />
-                    Enviar notas
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowConfirmModal(true)}
-                    className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-                  >
-                    <RiAiGenerate2 className="text-xl" />
-                    Generar retroalimentacion
-                  </button>
-                )}
+                {submissions.some(
+                  (submission) => submission.feedback_status == "Pendiente"
+                ) &&
+                  !loading && (
+                    <button
+                      onClick={() => setShowConfirmModal(true)}
+                      className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                    >
+                      <RiAiGenerate2 className="text-xl" />
+                      Generar retroalimentaciones
+                    </button>
+                  )}
 
                 <ExcelButton
                   data={submissions}
@@ -287,9 +279,7 @@ function repositorios() {
       {sendModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white w-full lg:w-1/4 flex flex-col gap-1 justify-center items-center p-6 rounded  text-center shadow-[0px_8px_8px_rgba(0,0,0,0.25)]">
-            <h1 className="text-2xl text-primary font-bold">
-              Enviar notas
-            </h1>
+            <h1 className="text-2xl text-primary font-bold">Enviar notas</h1>
             <p className="text-primary text-lg font-medium mb-2">
               Sera redirigido al moodle, seleccione nuevamente esta tarea para
               enviar las notas
