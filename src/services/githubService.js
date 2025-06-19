@@ -108,11 +108,10 @@ export const getFeedback = async (email, repo, org) => {
 };
 
 export const getStudentFeedback = async (email, repo) => {
-  const client = await apiClient();
   try {
     // Peticion inicial para obtener el feedback y repositorio
-    const res = await client.get(
-      `/feedback/search?email=${email}&idTaskGithubClassroom=${repo}`
+    const res = await axios.get(
+      `${baseURL}feedback/search?email=${email}&idTaskGithubClassroom=${repo}`
     );
 
     if (res.status !== 200) {
