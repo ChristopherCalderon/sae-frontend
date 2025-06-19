@@ -16,7 +16,6 @@ function FeedbackCard() {
   const searchParams = useSearchParams();
   const encodedData = searchParams.get("token");
 
-  console.log(feedback);
   const getData = async () => {
     if (!encodedData) {
       router.push("/");
@@ -50,7 +49,7 @@ function FeedbackCard() {
           {loading ? <p>Cargando...</p> : <h1>Retroalimentacion</h1>}
         </div>
       </div>
-      <div className="w-full h-full flex flex-col gap-4 bg-white shadow-xl overflow-clip px-5 py-5 rounded-md text-primary text-sm">
+      <div className="w-full h-[90%] flex flex-col gap-4 bg-white shadow-xl overflow-clip px-5 py-5 rounded-md text-primary text-sm">
         {loading ? (
           <Loading />
         ) : (
@@ -59,10 +58,13 @@ function FeedbackCard() {
             <div className="flex flex-col md:flex-row w-full md:justify-between py-2">
               {/* Informacion de retroalimentacion */}
               <div className="flex flex-col">
-                <span className="font-bold flex gap-1">Email: <p className="font-normal">{feedback.email}</p></span>
-                
-                <span className="font-bold flex gap-1">Repositorio: <p className="font-normal">{feedback.repo}</p></span>
-   
+                <span className="font-bold flex gap-1">
+                  Email: <p className="font-normal">{feedback.email}</p>
+                </span>
+
+                <span className="font-bold flex gap-1">
+                  Repositorio: <p className="font-normal">{feedback.repo}</p>
+                </span>
               </div>
               <div className="flex flex-col">
                 <span className="flex gap-5 font-medium">
@@ -77,7 +79,7 @@ function FeedbackCard() {
                   <p>
                     Nota de Retroalimentacion:{" "}
                     <a className=" font-semibold">
-                      {feedback.gradeValue} / {feedback.gradeTotal}
+                      {feedback.gradeFeedback} / {feedback.gradeTotal}
                     </a>
                   </p>
                 </span>
