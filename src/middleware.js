@@ -21,10 +21,6 @@ export default withAuth(
 
     // 3. Permitir acceso a /organizations solo si no tiene rol
     if (pathname === "/organizations") {
-      // Si ya tiene organización seleccionada, redirigir al dashboard
-      if (token?.selectedOrg) {
-        return NextResponse.redirect(new URL("/dashboard/clases", req.url));
-      }
       // Permitir acceso si es guest o necesita seleccionar org
       return NextResponse.next();
     }

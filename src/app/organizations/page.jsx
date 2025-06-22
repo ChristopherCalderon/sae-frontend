@@ -83,8 +83,40 @@ function OrganizationSelect() {
     }
   };
 
+    //Funcion para actualizar organizacion seleccionada
+  const handleResetOrg = async (orgName, orgId, orgRole) => {
+    setPendingOrg(orgName);
+
+    try {
+      // Actualización optimista
+      setLocalSession((prev) => ({
+        ...prev,
+        user: {
+          ...prev?.user,
+          activeRole: 'guest',
+          selectedOrg: null,
+          selectedOrgId: null,
+        },
+      }));
+
+      const result = await update({
+          activeRole: 'guest',
+          selectedOrg: null,
+          selectedOrgId: null,
+      });
+
+    } catch (error) {
+      setPendingOrg(null);
+      // Revertir en caso de error
+      setLocalSession(session);
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
+    handleResetOrg();
     getData();
+
   }, []);
 
   return (

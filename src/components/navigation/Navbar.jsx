@@ -13,6 +13,7 @@ import {
   FaBuilding,
   FaLayerGroup,
   FaUsers,
+  FaExchangeAlt,
 } from "react-icons/fa";
 import { GiBrain } from "react-icons/gi";
 import { HiAcademicCap } from "react-icons/hi";
@@ -68,14 +69,14 @@ function Navbar() {
           <Link
             href={"/dashboard/clases"}
             className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-             onClick={() => isMobile && setIsOpen(false)}
+            onClick={() => isMobile && setIsOpen(false)}
           >
             <FaChalkboardTeacher className="text-2xl" />
             <span className="">Mis clases</span>
           </Link>
           <Link
             href={"/dashboard/modelo"}
-              className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+            className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
             onClick={() => isMobile && setIsOpen(false)}
           >
             <FaBrain className="text-2xl" />
@@ -85,8 +86,8 @@ function Navbar() {
           {isAdmin && (
             <Link
               href={"/dashboard/modelos"}
-             className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-            onClick={() => isMobile && setIsOpen(false)}
+              className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+              onClick={() => isMobile && setIsOpen(false)}
             >
               <FaBuilding className="text-2xl" />
               <span>Modelos Org</span>
@@ -97,12 +98,20 @@ function Navbar() {
             <Link
               href={"/dashboard/admin"}
               className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
-             onClick={() => isMobile && setIsOpen(false)}
+              onClick={() => isMobile && setIsOpen(false)}
             >
               <FaUsers className="text-2xl" />
               <span>Administrar usuarios</span>
             </Link>
           )}
+          <Link
+            href={"/organizations"}
+            className="flex lg:flex-col justify-start gap-4  px-8 lg:px-0 lg:justify-center text-center items-center lg:gap-1 text-sm cursor-pointer hover:bg-primary hover:text-white p-2 rounded"
+            onClick={() => isMobile && setIsOpen(false)}
+          >
+            <FaExchangeAlt className="text-2xl" />
+            <span className="">Cambiar Org</span>
+          </Link>
         </div>
 
         <div>
@@ -125,8 +134,7 @@ function Navbar() {
     <>
       {/* Versión desktop  */}
       <div className="hidden lg:block w-[9%] h-screen bg-[#2d3145] text-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-        {status === 'loading' ?  '' : menuContent}
-
+        {status === "loading" ? "" : menuContent}
       </div>
 
       {/* Versión mobile/tablet */}
@@ -145,8 +153,6 @@ function Navbar() {
           >
             {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
-
- 
         </div>
 
         {/* Menú desplegable */}
