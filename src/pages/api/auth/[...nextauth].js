@@ -10,9 +10,10 @@ export default NextAuth({
       authorization: {
         params: {
           scope: "repo read:org admin:org user read:user user:email workflow",
-        },
-      },
-    }),
+          prompt: "consent" 
+        }
+      }
+    })
   ],
   callbacks: {
     async jwt({ token, account, trigger, session:updateData }) {
