@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL; 
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const apiClient = async () => {
   const session = await getSession();
@@ -153,7 +153,11 @@ export const getSubmissions = async (id) => {
 
           let gradeFeedback = 0;
 
-          let grade_test = parseInt(submission?.grade?.split("/")[0] || "0");
+          let grade_test = 0;
+
+          if (submission && submission.grade) {
+            grade_test = parseInt(submission.grade.split("/")[0]) || 0;
+          }
           try {
             // Petición para obtener nota de feedback
             const gradeRes = await client.get(
