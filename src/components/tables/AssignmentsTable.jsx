@@ -61,7 +61,6 @@ const generateOne = async (
 ) => {
   setLoading(true);
   try {
-    console.log(config);
     const repoData = await getData(repo.repository.name, org, config.extension);
     await generateFeedback(repo, repoData, config, teacher);
     setSuccessMessage("Generado correctamente");
@@ -100,7 +99,7 @@ function AssignmentsTable({
   //Paginacion
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 9,
+    pageSize: 8,
   });
 
   //Columnas tanstack---------------------------------------------------------
@@ -249,7 +248,7 @@ function AssignmentsTable({
 
   //Componente-----------------------------------------------------------------------
   return (
-    <div className="relative px-4 overflow-x-hidden lg:block hidden h-full mt-1 ">
+    <div className=" px-4 overflow-x-hidden lg:flex lg:flex-col lg:justify-center hidden h-full mt-1 ">
       {/* Modal loader */}
       {loading && (
         <div className="absolute inset-0 flex justify-center items-center z-10">
@@ -307,7 +306,8 @@ function AssignmentsTable({
           ))}
         </tbody>
       </table>
-      {table.getPageCount() > 1 ? (  <div className="flex items-center justify-between mt-3 absolute bottom-0 w-full pr-10 overflow-hidden">
+      {table.getPageCount() > 1 ? (  
+        <div className="flex items-center justify-between mt-3 w-full pr-10 overflow-hidden">
        {/* Botón “Anterior” */}
         <div className="flex gap-1">
           <button

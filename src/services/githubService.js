@@ -83,12 +83,22 @@ export const getFeedback = async (email, repo, org) => {
       return [];
     }
     console.log(res.data.repo);
-    const workflowRes = await client.get(
-      `/repo/${res.data.repo}/workflow/details?orgName=${org}`
-    );
+    // Petición para obtener detalles del workflow
+    let workflow = {};
+    try {
+      const workflowRes = await client.get(
+        `/repo/${res.data.repo}/workflow/details?orgName=${org}`
+      );
+      workflow = workflowRes.data?.data || {};
+    } catch (workflowError) {
+      console.warn("No se pudo obtener el workflow:", workflowError);
+      workflow = {};
+    }
+
+
     const statusRes = await client.get(`/feedback/status/${res.data.repo}`);
 
-    const workflow = workflowRes.data.data;
+
     const status = statusRes.data;
 
     console.log(status);
@@ -154,9 +164,9 @@ export const getSubmissions = async (id) => {
           let gradeFeedback = 0;
 
           let grade_test = 0;
-
+          console.log(submission)
           if (submission && submission.grade) {
-            grade_test = parseInt(submission.grade.split("/")[0]) || 0;
+            grade_test = parseInt(submission.grade.split("/")[0]);
           }
           try {
             // Petición para obtener nota de feedback
@@ -269,7 +279,13 @@ export const postFeedback = async (repo, repoData, config, teacher) => {
 
 export const generateFeedback = async (repo, repoData, config, teacher) => {
   const client = await apiClient();
-  const [value, total] = repo.grade.split("/").map(Number);
+
+  let [value, total] = [0, 10];
+
+  if (repo && repo.grade) {
+    [value, total] = repo.grade.split("/").map(Number);
+  }
+
   const payload = {
     readme: repoData.readme,
     code: repoData.code,

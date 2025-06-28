@@ -231,8 +231,8 @@ function entrega() {
               {/* Columna derecha */}
               <div className="flex flex-col gap-2 w-[calc(50%-8px)] items-end text-right">
                 {/* Ver en GitHub */}
-                <div className="flex items-center">
-                  <a
+                
+                {feedback.workflow_url?         <div className="flex items-center">       <a
                     className="flex items-center gap-1 hover:font-semibold text-[11px] lg:text-[14px]"
                     href={feedback.workflow_url}
                     target="_blank"
@@ -241,7 +241,15 @@ function entrega() {
                     <FaGithub className="text-[11px] lg:text-[14px]" />
                     Ver ejecución en GitHub
                   </a>
-                </div>
+                </div>: <div className="flex items-center">       <a
+                    className="flex items-center gap-1  text-[11px] lg:text-[14px]"
+        
+                  >
+                    <FaGithub className="text-[11px] lg:text-[14px]" />
+                    No se ejecuto ningun workflow
+                  </a>
+                </div>}
+   
 
                 {/* Fecha de creación */}
                 <div>
