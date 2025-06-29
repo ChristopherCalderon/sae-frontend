@@ -68,6 +68,8 @@ function repositorios() {
     }
   };
 
+  console.log(data)
+
   const postStatus = async () => {
       try {
         const length = submissions.length;
@@ -81,8 +83,10 @@ function repositorios() {
         const enviados = submissions.filter(
           (s) => s.feedback_status === "Enviado"
         ).length;
+
+        console.log(data.idtaskgithub)
   
-        const response = await postFeedbackStatus(id,
+        const response = await postFeedbackStatus(data.idtaskgithub,
           length,
           pendientes,
           generados,
@@ -158,10 +162,10 @@ function repositorios() {
   }, [token, status]);
 
     useEffect(()=>{
-      if(submissions.length != 0){
+      if(submissions.length != 0 && !loading){
         postStatus();
       }
-    },[submissions])
+    },[submissions, loading])
 
   return (
     <div className="bg-background font-primary font-bold h-screen flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8 overflow-clip">
