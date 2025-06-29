@@ -14,6 +14,7 @@ import {
   getSubmissions,
   getTaskConfig,
   postFeedback,
+  postFeedbackStatus,
 } from "@/services/githubService";
 import { decodeToken, postGrades } from "@/services/ltiService";
 import { useRouter, useParams } from "next/navigation";
@@ -66,6 +67,32 @@ function repositorios() {
       console.log(error);
     }
   };
+
+  const postStatus = async () => {
+      try {
+        const length = submissions.length;
+  
+        const pendientes = submissions.filter(
+          (s) => s.feedback_status === "Pendiente"
+        ).length;
+        const generados = submissions.filter(
+          (s) => s.feedback_status === "Generado"
+        ).length;
+        const enviados = submissions.filter(
+          (s) => s.feedback_status === "Enviado"
+        ).length;
+  
+        const response = await postFeedbackStatus(id,
+          length,
+          pendientes,
+          generados,
+          enviados
+        );
+        return response;
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
   const sendGrades = async () => {
     try {
@@ -129,6 +156,12 @@ function repositorios() {
       setLoading(false);
     }
   }, [token, status]);
+
+    useEffect(()=>{
+      if(submissions.length != 0){
+        postStatus();
+      }
+    },[submissions])
 
   return (
     <div className="bg-background font-primary font-bold h-screen flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8 overflow-clip">
