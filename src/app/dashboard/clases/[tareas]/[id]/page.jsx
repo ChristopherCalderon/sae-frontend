@@ -9,6 +9,7 @@ import {
   getSubmissions,
   getTaskConfig,
   postFeedback,
+  postFeedbackStatus,
 } from "@/services/githubService";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
@@ -35,14 +36,13 @@ function tarea() {
 
   const [globalFilter, setGlobalFilter] = useState(""); //Filtro de buscador
   // Filtrar submissions
-const filteredSubmissions = submissions.filter((submission) => {
-  const studentName = submission.students?.[0]?.login;
-  return (
-    typeof studentName === "string" &&
-    studentName.toLowerCase().startsWith(globalFilter.toLowerCase())
-  );
-});
-
+  const filteredSubmissions = submissions.filter((submission) => {
+    const studentName = submission.students?.[0]?.login;
+    return (
+      typeof studentName === "string" &&
+      studentName.toLowerCase().startsWith(globalFilter.toLowerCase())
+    );
+  });
 
   const getData = async () => {
     try {
@@ -63,6 +63,34 @@ const filteredSubmissions = submissions.filter((submission) => {
       console.error("Error:", error);
       setSubmissions([]);
     } finally {
+    }
+  };
+
+  console.log(submissions);
+
+  const postStatus = async () => {
+    try {
+      const length = submissions.length;
+
+      const pendientes = submissions.filter(
+        (s) => s.feedback_status === "Pendiente"
+      ).length;
+      const generados = submissions.filter(
+        (s) => s.feedback_status === "Generado"
+      ).length;
+      const enviados = submissions.filter(
+        (s) => s.feedback_status === "Enviado"
+      ).length;
+
+      const response = await postFeedbackStatus(id,
+        length,
+        pendientes,
+        generados,
+        enviados
+      );
+      return response;
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -95,20 +123,26 @@ const filteredSubmissions = submissions.filter((submission) => {
       console.log("Error al generar retroalimentación", error);
     } finally {
       getData();
-      setShowSuccessModal('Generar retroalimentación')
+      setShowSuccessModal("Generar retroalimentación");
     }
   };
 
   useEffect(() => {
     if (status === "authenticated") {
       setOrg(session.user.selectedOrg);
-      setTeacher(session.user.name)
+      setTeacher(session.user.name);
       getData();
     } else if (status === "loading") {
       // Sesión aún cargando
       setLoading(true);
     }
   }, [status]);
+
+  useEffect(()=>{
+    if(submissions.length != 0){
+      postStatus();
+    }
+  },[submissions])
   return (
     <div className="bg-background font-primary font-bold h-full flex flex-col items-center gap-5 w-full p-2 lg:p-5 py-8 overflow-clip">
       <div className="w-full flex flex-col items-center gap-2  text-primary">
@@ -121,29 +155,32 @@ const filteredSubmissions = submissions.filter((submission) => {
             curso
           </p>
         </div>
-        {!loading &&         <div className="flex flex-col lg:flex-row w-full  gap-2">
-          <input
-            type="text"
-            placeholder="Buscar nombre de repositorio..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className=" px-3 py-2 border-2 border-none bg-[#dcdcdc] rounded w-full lg:w-1/2 font-normal "
-          />
-          <div className="flex flex-col lg:w-1/2 md:flex-row lg:flex-row justify-center items-center  gap-2">
-          {submissions.some((submission) => submission.feedback_status == 'Pendiente') && !loading && (
-
-            <button
-              onClick={() => setShowConfirmModal(true)}
-              className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
-            >
-              <RiAiGenerate2 className="text-xl" />
-              Generar retroalimentaciones
-            </button>
-          )}
-            <ExcelButton data={submissions} setModal={setShowSuccessModal} />
+        {!loading && (
+          <div className="flex flex-col lg:flex-row w-full  gap-2">
+            <input
+              type="text"
+              placeholder="Buscar nombre de repositorio..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className=" px-3 py-2 border-2 border-none bg-[#dcdcdc] rounded w-full lg:w-1/2 font-normal "
+            />
+            <div className="flex flex-col lg:w-1/2 md:flex-row lg:flex-row justify-center items-center  gap-2">
+              {submissions.some(
+                (submission) => submission.feedback_status == "Pendiente"
+              ) &&
+                !loading && (
+                  <button
+                    onClick={() => setShowConfirmModal(true)}
+                    className="flex w-4/5 lg:w-full   items-center justify-center gap-2 font-semibold bg-white border-2 border-secondary text-secondary hover:text-white px-5 hover:bg-secondary py-1 rounded shadow-lg"
+                  >
+                    <RiAiGenerate2 className="text-xl" />
+                    Generar retroalimentaciones
+                  </button>
+                )}
+              <ExcelButton data={submissions} setModal={setShowSuccessModal} />
+            </div>
           </div>
-        </div>}
-
+        )}
       </div>
 
       <div
@@ -193,8 +230,8 @@ const filteredSubmissions = submissions.filter((submission) => {
               Generar retroalimentación
             </h1>
             <p className="text-primary text-lg font-medium mb-2">
-              ¿Está seguro de generar retroalimentación para 
-              todos los estudiantes?
+              ¿Está seguro de generar retroalimentación para todos los
+              estudiantes?
             </p>
             <div className="w-full flex gap-2 justify-center items-center">
               <button

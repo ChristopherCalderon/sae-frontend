@@ -277,6 +277,39 @@ export const postFeedback = async (repo, repoData, config, teacher) => {
   }
 };
 
+export const postFeedbackStatus = async (id, length, pendientes, generados, enviados) => {
+  const client = await apiClient();
+  const payload = {
+    idTaskGithubClassroom: id, 
+    countEntregas: length, 
+    countPendiente: pendientes, 
+    countGenerado: generados, 
+    countEnviado: enviados
+  };
+
+  console.log(payload);
+
+  try {
+    const res = await client.post(
+      `/task/feedback-status`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (res.status === 201) {
+      console.log(res);
+      return res.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const generateFeedback = async (repo, repoData, config, teacher) => {
   const client = await apiClient();
 
